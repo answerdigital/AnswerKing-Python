@@ -1,5 +1,0 @@
-django
-djangorestframework
-django-environ
-mysqlclient
-django-cors-headers
