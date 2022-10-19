@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "answerking-python"
+version = "0.1.0"
+description = ""
+authors = []
+readme = "README.md"
+packages = [{include = "answerking_python"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^4.1.2"
+djangorestframework = "^3.14.0"
+django-environ = "^0.9.0"
+mysqlclient = "^2.1.1"
+django-cors-headers = "^3.13.0"
+environ = "^1.0"
+
+[tool.poetry.dev-dependencies]
+black = "^22.10.0"
+pyright = "^1.1.275"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
