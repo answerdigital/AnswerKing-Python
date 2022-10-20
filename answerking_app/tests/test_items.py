@@ -1,15 +1,19 @@
 from django.test import TestCase, Client
 from answerking_app.models.models import Item
 
+from django.db.models.query import QuerySet
+from API_types import NewItemType, ItemType, ItemIDType, ErrorMessage
+
 client = Client()
+
 
 
 class ItemTests(TestCase):
     def setUp(self):
-        self.test_item_1 = Item.objects.create(
+        self.test_item_1: Item = Item.objects.create(
             name="Burger", price=1.20, description="desc", stock=100, calories=100
         )
-        self.test_item_2 = Item.objects.create(
+        self.test_item_2: Item = Item.objects.create(
             name="Coke", price=1.50, description="desc", stock=100, calories=100
         )
 
@@ -28,7 +32,7 @@ class ItemTests(TestCase):
 
     def test_get_all_with_items_returns_ok(self):
         # Arrange
-        expected = [
+        expected: list[ItemType] = [
             {
                 "id": self.test_item_1.id,
                 "name": self.test_item_1.name,
@@ -57,7 +61,7 @@ class ItemTests(TestCase):
 
     def test_get_id_valid_returns_ok(self):
         # Arrange
-        expected = {
+        expected: ItemType = {
             "id": self.test_item_1.id,
             "name": self.test_item_1.name,
             "price": f"{self.test_item_1.price:.2f}",
@@ -76,7 +80,7 @@ class ItemTests(TestCase):
 
     def test_get_id_invalid_returns_not_found(self):
         # Arrange
-        expected = {
+        expected: ErrorMessage = {
             "error": {"message": "Request failed", "details": "Object not found"}
         }
 
@@ -91,22 +95,22 @@ class ItemTests(TestCase):
     def test_post_valid_returns_ok(self):
         # Arrange
         old_list = client.get("/api/items").json()
-        post_data = {
+        post_data: NewItemType = {
             "name": "Whopper",
             "price": "1.50",
             "description": "desc",
             "stock": 100,
             "calories": 100,
         }
-        expected = {"id": self.test_item_2.id + 1}
-        expected.update(post_data)
+        expected_id: ItemIDType = {"id": self.test_item_2.id + 1}
+        expected: ItemType = {**expected_id, **post_data}
 
         # Act
         response = client.post("/api/items", post_data, content_type="application/json")
         actual = response.json()
 
-        created_item = Item.objects.filter(name="Whopper")[0]
-        updated_list = Item.objects.all()
+        created_item: Item = Item.objects.filter(name="Whopper")[0]
+        updated_list: QuerySet[Item] = Item.objects.all()
 
         # Assert
         self.assertNotIn(actual, old_list)
@@ -116,8 +120,8 @@ class ItemTests(TestCase):
 
     def test_post_invalid_json_returns_bad_request(self):
         # Arrange
-        invalid_json_data = '{"invalid": }'
-        expected_json_error = {
+        invalid_json_data: str = '{"invalid": }'
+        expected_json_error: ErrorMessage = {
             "error": {
                 "message": "Failed data validation",
                 "details": "Invalid JSON in body. Expecting value",
@@ -136,14 +140,14 @@ class ItemTests(TestCase):
 
     def test_post_invalid_name_returns_bad_request(self):
         # Arrange
-        invalid_post_data = {
+        invalid_post_data: NewItemType = {
             "name": "Bad data£",
             "price": "1.50",
             "description": "desc",
             "stock": 100,
             "calories": 100,
         }
-        expected_failure_error = {
+        expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
                 "details": "Object could not be created",
@@ -162,14 +166,14 @@ class ItemTests(TestCase):
 
     def test_post_invalid_price_returns_bad_request(self):
         # Arrange
-        invalid_post_data = {
+        invalid_post_data: NewItemType = {
             "name": "Bad data",
             "price": "1.50f",
             "description": "desc",
             "stock": 100,
             "calories": 100,
         }
-        expected_failure_error = {
+        expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
                 "details": "Object could not be created",
@@ -188,14 +192,14 @@ class ItemTests(TestCase):
 
     def test_post_invalid_description_returns_bad_request(self):
         # Arrange
-        invalid_post_data = {
+        invalid_post_data: NewItemType = {
             "name": "Bad data",
             "price": "1.50",
             "description": "desc&",
             "stock": 100,
             "calories": 100,
         }
-        expected_failure_error = {
+        expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
                 "details": "Object could not be created",
@@ -214,14 +218,14 @@ class ItemTests(TestCase):
 
     def test_post_invalid_stock_returns_bad_request(self):
         # Arrange
-        invalid_post_data = {
+        invalid_post_data: NewItemType = {
             "name": "Bad data",
             "price": "1.50",
             "description": "desc",
             "stock": "f100",
             "calories": 100,
         }
-        expected_failure_error = {
+        expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
                 "details": "Object could not be created",
@@ -240,14 +244,14 @@ class ItemTests(TestCase):
 
     def test_post_negative_stock_returns_bad_request(self):
         # Arrange
-        invalid_post_data = {
+        invalid_post_data: NewItemType = {
             "name": "Bad data",
             "price": "1.50",
             "description": "desc",
             "stock": -100,
             "calories": 100,
         }
-        expected_failure_error = {
+        expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
                 "details": "Object could not be created",
@@ -266,14 +270,14 @@ class ItemTests(TestCase):
 
     def test_post_invalid_calories_returns_bad_request(self):
         # Arrange
-        invalid_post_data = {
+        invalid_post_data: NewItemType = {
             "name": "Bad data",
             "price": "1.50",
             "description": "desc",
             "stock": 100,
             "calories": "100f",
         }
-        expected_failure_error = {
+        expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
                 "details": "Object could not be created",
@@ -292,14 +296,14 @@ class ItemTests(TestCase):
 
     def test_post_negative_calories_returns_bad_request(self):
         # Arrange
-        invalid_post_data = {
+        invalid_post_data: NewItemType = {
             "name": "Bad data",
             "price": "1.50",
             "description": "desc",
             "stock": 100,
             "calories": -100,
         }
-        expected_failure_error = {
+        expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
                 "details": "Object could not be created",
@@ -319,15 +323,15 @@ class ItemTests(TestCase):
     def test_put_valid_returns_ok(self):
         # Arrange
         old_item = client.get(f"/api/items/{self.test_item_1.id}").json()
-        post_data = {
+        post_data: NewItemType = {
             "name": "New Burger",
             "price": "1.75",
             "description": "new desc",
             "stock": 0,
             "calories": 200,
         }
-        expected = {"id": self.test_item_1.id}
-        expected.update(post_data)
+        expected_id: ItemIDType = {"id": self.test_item_1.id}
+        expected: ItemType = {**expected_id, **post_data}
 
         # Act
         response = client.put(
@@ -337,8 +341,8 @@ class ItemTests(TestCase):
         )
         actual = response.json()
 
-        updated_item = Item.objects.filter(name="New Burger")[0]
-        updated_list = Item.objects.all()
+        updated_item: Item = Item.objects.filter(name="New Burger")[0]
+        updated_list: QuerySet[Item] = Item.objects.all()
 
         # Assert
         self.assertNotEqual(old_item, actual)
@@ -348,7 +352,7 @@ class ItemTests(TestCase):
 
     def test_put_invalid_id_returns_bad_request(self):
         # Arrange
-        expected = {
+        expected: ErrorMessage = {
             "error": {"message": "Request failed", "details": "Object not found"}
         }
 
@@ -362,8 +366,8 @@ class ItemTests(TestCase):
 
     def test_put_invalid_json_returns_bad_request(self):
         # Arrange
-        invalid_json_data = '{"invalid": }'
-        expected_json_error = {
+        invalid_json_data: str = '{"invalid": }'
+        expected_json_error: ErrorMessage = {
             "error": {
                 "message": "Failed data validation",
                 "details": "Invalid JSON in body. Expecting value",
@@ -384,14 +388,14 @@ class ItemTests(TestCase):
 
     def test_put_invalid_details_returns_bad_request(self):
         # Arrange
-        invalid_post_data = {
+        invalid_post_data: NewItemType = {
             "name": "Bad data£",
             "price": "1.50",
             "description": "*",
             "stock": 100,
             "calories": 100,
         }
-        expected_failure_error = {
+        expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
                 "details": "Object could not be updated",
@@ -412,11 +416,11 @@ class ItemTests(TestCase):
 
     def test_delete_valid_returns_ok(self):
         # Arrange
-        item = Item.objects.filter(pk=self.test_item_1.id)
+        item: QuerySet[Item] = Item.objects.filter(pk=self.test_item_1.id)
 
         # Act
         response = client.delete(f"/api/items/{self.test_item_1.id}")
-        items = Item.objects.all()
+        items: QuerySet[Item] = Item.objects.all()
 
         # Assert
         self.assertEqual(response.status_code, 204)
@@ -424,7 +428,7 @@ class ItemTests(TestCase):
 
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
-        expected = {
+        expected: ErrorMessage = {
             "error": {"message": "Request failed", "details": "Object not found"}
         }
 
