@@ -16,27 +16,27 @@ class ItemSerializer(serializers.ModelSerializer):
         model = Item
         fields = ("id", "name", "price", "description", "stock", "calories")
 
-    def validate_name(self, value: str):
+    def validate_name(self, value: str) -> str:
         return validate_name_string(value)
 
-    def validate_price(self, value: Decimal):
+    def validate_price(self, value: any) -> Decimal:
         return validate_price(value)
 
-    def validate_description(self, value: str):
+    def validate_description(self, value: str) -> str:
         return validate_descriptive_string(value)
 
-    def validate_stock(self, value: int):
+    def validate_stock(self, value: int) -> int:
         return validate_positive_number(value)
 
-    def validate_calories(self, value: int):
+    def validate_calories(self, value: int) -> int:
         return validate_positive_number(value)
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    items = ItemSerializer(many=True)
+    items: ItemSerializer = ItemSerializer(many=True)
 
     class Meta:
-        model = Category
+        model: Category = Category
         fields = ("id", "name", "items")
 
     def validate_name(self, value: str):

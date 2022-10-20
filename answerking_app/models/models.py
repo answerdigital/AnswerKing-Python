@@ -19,29 +19,29 @@ class Category(models.Model):
     name: str = models.CharField(max_length=50)
     items: Item = models.ManyToManyField(Item)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class Status(models.Model):
     status = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.status
 
 
 class Order(models.Model):
-    status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    status: Status = models.ForeignKey(Status, on_delete=models.CASCADE)
     address: str = models.CharField(max_length=200)
     total: Decimal = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
     order_items: 'OrderLine' = models.ManyToManyField(Item, through="OrderLine")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.address
 
     def calculate_total(self) -> None:
         total: Decimal = Decimal(0.00)
-        orderlines = OrderLine.objects.filter(order=self.pk).values()
+        orderlines: OrderLine = OrderLine.objects.filter(order=self.pk).values()
 
         if orderlines:
             for ol in orderlines:
@@ -52,8 +52,8 @@ class Order(models.Model):
 
 
 class OrderLine(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    order: Order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    item: Item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity: IntegerField = models.IntegerField(default=0)
     sub_total: DecimalField = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
 
