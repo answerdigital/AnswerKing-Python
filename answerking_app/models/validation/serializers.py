@@ -1,5 +1,6 @@
+from decimal import Decimal
 from rest_framework import serializers
-
+from rest_framework.fields import ReadOnlyField, CharField
 from answerking_app.models.models import Order, OrderLine, Item, Category
 from answerking_app.models.validation.validators import (
     validate_name_string,
@@ -15,19 +16,19 @@ class ItemSerializer(serializers.ModelSerializer):
         model = Item
         fields = ("id", "name", "price", "description", "stock", "calories")
 
-    def validate_name(self, value):
+    def validate_name(self, value: str):
         return validate_name_string(value)
 
-    def validate_price(self, value):
+    def validate_price(self, value: Decimal):
         return validate_price(value)
 
-    def validate_description(self, value):
+    def validate_description(self, value: str):
         return validate_descriptive_string(value)
 
-    def validate_stock(self, value):
+    def validate_stock(self, value: int):
         return validate_positive_number(value)
 
-    def validate_calories(self, value):
+    def validate_calories(self, value: int):
         return validate_positive_number(value)
 
 
@@ -38,14 +39,14 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ("id", "name", "items")
 
-    def validate_name(self, value):
+    def validate_name(self, value: str):
         return validate_name_string(value)
 
 
 class OrderLineSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source="item.id")
-    name = serializers.ReadOnlyField(source="item.name")
-    price = serializers.ReadOnlyField(source="item.price")
+    id: ReadOnlyField = serializers.ReadOnlyField(source="item.id")
+    name: ReadOnlyField = serializers.ReadOnlyField(source="item.name")
+    price: ReadOnlyField = serializers.ReadOnlyField(source="item.price")
     # item = ItemSerializer()
 
     class Meta:
@@ -57,7 +58,7 @@ class OrderLineSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    status = serializers.CharField(source="status.status")
+    status: CharField = serializers.CharField(source="status.status")
     order_items = OrderLineSerializer(source="orderline_set", many=True)
 
     class Meta:
