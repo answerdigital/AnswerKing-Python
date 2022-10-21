@@ -38,7 +38,7 @@ class Order(models.Model):
     def __str__(self) -> str:
         return self.address
 
-    def calculate_total(self) -> None:
+    def calculate_total(self):
         total = Decimal(0.00)
         orderlines = OrderLine.objects.filter(order=self.pk).values()
 

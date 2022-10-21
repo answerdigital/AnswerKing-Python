@@ -23,7 +23,7 @@ class ItemSerializer(serializers.ModelSerializer):
     def validate_price(self, value: typing.Any) -> Decimal:
         return validate_price(value)
 
-    def validate_description(self, value: str | None) -> str:
+    def validate_description(self, value: str | None) -> str | None:
         return validate_descriptive_string(value)
 
     def validate_stock(self, value: typing.Any) -> int:
