@@ -8,7 +8,6 @@ from API_types import NewItemType, ItemType, ItemIDType
 client = Client()
 
 
-
 class ItemTests(TestCase):
     def setUp(self):
         self.test_item_1: Item = Item.objects.create(

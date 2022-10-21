@@ -1,8 +1,8 @@
 from typing import TypedDict
 
+
 class NewItemType(TypedDict):
     name: str
-    price: str
     price: str
     description: str
     stock: int
