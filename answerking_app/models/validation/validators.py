@@ -4,9 +4,9 @@ from decimal import Decimal, InvalidOperation
 from django.core.exceptions import ValidationError
 
 
-def validate_positive_number(value) -> int:
+def validate_positive_number(value: any) -> int:
     try:
-        value: int = int(value)
+        value = int(value)
         if value < 0 or value > 2147483647:
             raise ValidationError(f"'{value}' is not a valid positive number")
         return value
@@ -14,9 +14,9 @@ def validate_positive_number(value) -> int:
         raise ValidationError(f"'{value}' is not a valid positive number")
 
 
-def validate_price(value) -> Decimal:
+def validate_price(value: any) -> Decimal:
     try:
-        value: Decimal = Decimal(value)
+        value = Decimal(value)
         if value < 0:
             raise ValidationError(f"'{value}' is not a valid positive number")
         value = Decimal(round(value, 2))
@@ -25,14 +25,14 @@ def validate_price(value) -> Decimal:
         raise ValidationError(f"'{value}' is not a valid price")
 
 
-def validate_name_string(value: str) -> str:
+def validate_name_string(value: str | None) -> str:
     if not value or len(value) > 50:
         raise ValidationError(f"'{value}' cannot be empty or more than 50 characters")
 
     if not re.match("^[a-zA-Z !]+$", value):
         raise ValidationError(f"'{value}' contains invalid characters")
 
-    value: str = re.sub(" +", " ", value)
+    value = re.sub(" +", " ", value)
 
     return value
 
@@ -47,7 +47,7 @@ def validate_descriptive_string(value: str) -> str:
     if not re.match("^[a-zA-Z .!,#]+$", value):
         raise ValidationError(f"'{value}' contains invalid characters")
 
-    value: str = re.sub(" +", " ", value)
+    value = re.sub(" +", " ", value)
 
     return value
 
@@ -59,6 +59,6 @@ def validate_address_string(value: str) -> str:
     if not re.match("^[a-zA-Z0-9 ,-]+$", value):
         raise ValidationError("Contains invalid characters")
 
-    value: str = re.sub(" +", " ", value)
+    value = re.sub(" +", " ", value)
 
     return value

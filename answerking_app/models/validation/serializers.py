@@ -1,6 +1,5 @@
 from decimal import Decimal
 from rest_framework import serializers
-from rest_framework.fields import ReadOnlyField, CharField
 from answerking_app.models.models import Order, OrderLine, Item, Category
 from answerking_app.models.validation.validators import (
     validate_name_string,
@@ -33,32 +32,32 @@ class ItemSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    items: ItemSerializer = ItemSerializer(many=True)
+    items = ItemSerializer(many=True)
 
     class Meta:
-        model: Category = Category
+        model = Category
         fields = ("id", "name", "items")
 
-    def validate_name(self, value: str):
+    def validate_name(self, value: str) -> str:
         return validate_name_string(value)
 
 
 class OrderLineSerializer(serializers.ModelSerializer):
-    id: ReadOnlyField = serializers.ReadOnlyField(source="item.id")
-    name: ReadOnlyField = serializers.ReadOnlyField(source="item.name")
-    price: ReadOnlyField = serializers.ReadOnlyField(source="item.price")
+    id = serializers.ReadOnlyField(source="item.id")
+    name = serializers.ReadOnlyField(source="item.name")
+    price = serializers.ReadOnlyField(source="item.price")
     # item = ItemSerializer()
 
     class Meta:
         model = OrderLine
         fields = ("id", "name", "price", "quantity", "sub_total")
 
-    def validate_quantity(self, value):
+    def validate_quantity(self, value) -> int:
         return validate_positive_number(value)
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    status: CharField = serializers.CharField(source="status.status")
+    status = serializers.CharField(source="status.status")
     order_items = OrderLineSerializer(source="orderline_set", many=True)
 
     class Meta:
@@ -71,5 +70,5 @@ class OrderSerializer(serializers.ModelSerializer):
             "total",
         )
 
-    def validate_address(self, value):
+    def validate_address(self, value) -> str:
         return validate_address_string(value)
