@@ -4,7 +4,7 @@ from answerking_app.views.ErrorType import ErrorMessage
 from django.db.models.query import QuerySet
 from API_types import (
     CategoryType,
-    CategoryIDType,
+    IDType,
     NewCategoryType,
     ItemType,
 )
@@ -141,7 +141,7 @@ class CategoryTests(TestCase):
         }
         post_data: NewCategoryType = {"name": "Vegetarian", "items": [item]}
 
-        expected_id: CategoryIDType = {"id": self.test_cat_2.id + 1}
+        expected_id: IDType = {"id": self.test_cat_2.id + 1}
         expected: CategoryType = {**post_data, **expected_id}
 
         # Act
@@ -165,7 +165,7 @@ class CategoryTests(TestCase):
         # Arrange
         old_list = client.get("/api/categories").json()
         post_data: NewCategoryType = {"name": "Gluten Free", "items": []}
-        expected_id: CategoryIDType = {"id": self.test_cat_2.id + 1}
+        expected_id: IDType = {"id": self.test_cat_2.id + 1}
         expected: CategoryType = {**post_data, **expected_id}
 
         # Act
@@ -235,7 +235,7 @@ class CategoryTests(TestCase):
             "calories": self.test_item_3.calories,
         }
         post_data: NewCategoryType = {"name": "New Name", "items": [new_item]}
-        expected_id: CategoryIDType = {f"id": self.test_cat_1.id}
+        expected_id: IDType = {f"id": self.test_cat_1.id}
         expected: CategoryType = {**post_data, **expected_id}
 
         expected["items"] = [
@@ -280,7 +280,7 @@ class CategoryTests(TestCase):
         old_category = client.get(f"/api/categories/{self.test_cat_1.id}").json()
 
         post_data: NewCategoryType = {"name": "New Name", "items": []}
-        expected_id: CategoryIDType = {f"id": self.test_cat_1.id}
+        expected_id: IDType = {f"id": self.test_cat_1.id}
         expected: CategoryType = {**post_data, **expected_id}
         expected["items"] = [
             {

@@ -3,10 +3,9 @@ from answerking_app.models.models import Item
 
 from django.db.models.query import QuerySet
 from answerking_app.views.ErrorType import ErrorMessage
-from API_types import NewItemType, ItemType, ItemIDType
+from API_types import NewItemType, ItemType, IDType
 
 client = Client()
-
 
 
 class ItemTests(TestCase):
@@ -103,7 +102,7 @@ class ItemTests(TestCase):
             "stock": 100,
             "calories": 100,
         }
-        expected_id: ItemIDType = {"id": self.test_item_2.id + 1}
+        expected_id: IDType = {"id": self.test_item_2.id + 1}
         expected: ItemType = {**expected_id, **post_data}
 
         # Act
@@ -331,7 +330,7 @@ class ItemTests(TestCase):
             "stock": 0,
             "calories": 200,
         }
-        expected_id: ItemIDType = {"id": self.test_item_1.id}
+        expected_id: IDType = {"id": self.test_item_1.id}
         expected: ItemType = {**expected_id, **post_data}
 
         # Act
