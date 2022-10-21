@@ -1,2 +1,36 @@
 # AnswerKing-Python
 Answer King Python App
+***
+### Requirements:
+- #### Python 3.10+
+- #### Poetry
+  - Uses `pyproject.toml` to build a virtual environment and installs all necessary packages
+  - Follow installation documentation to configure Poetry for Windows https://python-poetry.org/docs/
+- #### node.js
+  - Required by `pyright` package to detect and verify correct types have been used in the codebase
+***
+### Installation:
+- Open root folder and run command `poetry install`
+- This will install a virtual environment to a path that looks like this `C:\Users\Username\AppData\Local\pypoetry\Cache\virtualenvs`. Alternatively, run command `poetry env info` or `poetry show -v`in the folder containing `pyproject.toml` and this will display where the virtual environment was installed
+
+### Run:
+- Run program using `poetry run python manage.py runserver`
+***
+### Test:
+- Test program using `poetry run python manage.py test`
+
+***
+### Development:
+Commands for maintaining consistency and PEP8 standards across codebase, as well as checking code coverage.
+- #### pyright:
+  - `poetry run pyright`
+- #### black:
+  - Run in root folder `poetry run black .`
+    - To follow PEP8 guidelines for line length `poetry run black --line-length=79 .`
+- #### pycodestyle:
+  - Run in root folder `poetry run pycodestyle .`
+    - To ignore `E501 line too long` error as this will be handled by `black`. Run `poetry run pycodestyle --ignore=E501 .`
+- #### coverage:
+  - Test using coverage `poetry run coverage run manage.py test`
+    - View coverage report in the terminal `poetry run coverage report`
+    - Generate interactive coverage file to view in a browser `poetry run coverage html`, then open `htmlcov/index.html`
