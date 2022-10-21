@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "answerking_app.apps.AnswerkingAppConfig",
     "rest_framework",
     "corsheaders",
+    "coverage",
 ]
 
 MIDDLEWARE = [

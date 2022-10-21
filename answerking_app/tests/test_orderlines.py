@@ -301,11 +301,11 @@ class OrderLineTests(TestCase):
     def test_delete_item_when_in_order_returns_bad_request(self):
         # Arrange
         expected = {
-                    "error": {
-                        "message": "Request failed",
-                        "details": "Item exists in an order",
-                    }
-                }
+            "error": {
+                "message": "Request failed",
+                "details": "Item exists in an order",
+            }
+        }
 
         # Act
         response = client.delete(f"/api/items/{self.test_item_1.id}")
