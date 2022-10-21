@@ -1,11 +1,11 @@
 from django.test import TestCase, Client
 from answerking_app.models.models import Item, Category
+from answerking_app.views.ErrorType import ErrorMessage
 from django.db.models.query import QuerySet
 from API_types import (
     CategoryType,
     CategoryIDType,
     NewCategoryType,
-    ErrorMessage,
     ItemType,
 )
 
