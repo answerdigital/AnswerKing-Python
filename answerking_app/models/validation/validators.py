@@ -1,10 +1,11 @@
 import re
+import typing
 
 from decimal import Decimal, InvalidOperation
 from django.core.exceptions import ValidationError
 
 
-def validate_positive_number(value: any) -> int:
+def validate_positive_number(value: typing.Any) -> int:
     try:
         value = int(value)
         if value < 0 or value > 2147483647:
@@ -14,7 +15,7 @@ def validate_positive_number(value: any) -> int:
         raise ValidationError(f"'{value}' is not a valid positive number")
 
 
-def validate_price(value: any) -> Decimal:
+def validate_price(value: typing.Any) -> Decimal:
     try:
         value = Decimal(value)
         if value < 0:
@@ -37,7 +38,7 @@ def validate_name_string(value: str | None) -> str:
     return value
 
 
-def validate_descriptive_string(value: str) -> str:
+def validate_descriptive_string(value: str | None) -> str | None:
     if not value:
         return value
 
@@ -52,7 +53,7 @@ def validate_descriptive_string(value: str) -> str:
     return value
 
 
-def validate_address_string(value: str) -> str:
+def validate_address_string(value: str | None) -> str:
     if not value or len(value) > 200:
         raise ValidationError(f"'{value}' cannot be empty or more than 200 characters")
 
