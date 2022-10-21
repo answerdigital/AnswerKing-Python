@@ -33,9 +33,9 @@ def validate_name_string(value: str | None) -> str:
     if not re.match("^[a-zA-Z !]+$", value):
         raise ValidationError(f"'{value}' contains invalid characters")
 
-    value = re.sub(" +", " ", value)
+    return_value = re.sub(" +", " ", value)
 
-    return value
+    return return_value
 
 
 def validate_descriptive_string(value: str | None) -> str | None:
@@ -48,9 +48,9 @@ def validate_descriptive_string(value: str | None) -> str | None:
     if not re.match("^[a-zA-Z .!,#]+$", value):
         raise ValidationError(f"'{value}' contains invalid characters")
 
-    value = re.sub(" +", " ", value)
+    return_value = re.sub(" +", " ", value)
 
-    return value
+    return return_value
 
 
 def validate_address_string(value: str | None) -> str:
