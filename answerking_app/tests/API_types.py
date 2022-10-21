@@ -1,8 +1,8 @@
 from typing import TypedDict
 
-
 class NewItemType(TypedDict):
     name: str
+    price: str
     price: str
     description: str
     stock: int
@@ -15,12 +15,3 @@ class ItemIDType(TypedDict):
 
 class ItemType(ItemIDType, NewItemType):
     pass
-
-
-class ErrorMessageContent(TypedDict):
-    message: str
-    details: str
-
-
-class ErrorMessage(TypedDict):
-    error: ErrorMessageContent
