@@ -29,14 +29,11 @@ class CategoryTests(TestCase):
     def test_get_all_without_categories_returns_no_content(self):
         # Arrange
         Category.objects.all().delete()
-        expected = []
 
         # Act
         response = client.get("/api/categories")
-        actual = []
 
         # Assert
-        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 204)
 
     def test_get_all_with_categories_returns_ok(self):
