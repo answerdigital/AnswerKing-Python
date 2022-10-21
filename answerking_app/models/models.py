@@ -1,4 +1,4 @@
-import decimal
+from decimal import Decimal
 
 from django.db import models
 
@@ -10,7 +10,7 @@ class Item(models.Model):
     stock = models.IntegerField(default=0)
     calories = models.IntegerField(default=0)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -18,14 +18,14 @@ class Category(models.Model):
     name = models.CharField(max_length=50)
     items = models.ManyToManyField(Item)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class Status(models.Model):
     status = models.CharField(max_length=50)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.status
 
 
@@ -35,16 +35,14 @@ class Order(models.Model):
     total = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
     order_items = models.ManyToManyField(Item, through="OrderLine")
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.address
 
     def calculate_total(self):
-        total = decimal.Decimal(0.00)
+        total = Decimal(0.00)
         orderlines = OrderLine.objects.filter(order=self.pk).values()
 
-        if not orderlines:
-            total = 0.00
-        else:
+        if orderlines:
             for ol in orderlines:
                 total += ol["sub_total"]
 
