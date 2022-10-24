@@ -1,6 +1,10 @@
 from typing import TypedDict
 
 
+class IDType(TypedDict):
+    id: int
+
+
 class NewItemType(TypedDict):
     name: str
     price: str
@@ -9,9 +13,14 @@ class NewItemType(TypedDict):
     calories: int
 
 
-class ItemIDType(TypedDict):
-    id: int
+class ItemType(IDType, NewItemType):
+    pass
 
 
-class ItemType(ItemIDType, NewItemType):
+class NewCategoryType(TypedDict):
+    name: str
+    items: list[ItemType]
+
+
+class CategoryType(IDType, NewCategoryType):
     pass
