@@ -1,51 +1,50 @@
-from answerking_app.models.models import Item, Order, OrderLine
+from django.db.models import QuerySet
+
+from answerking_app.models.models import Item, OrderLine
 from answerking_app.models.validation.serializers import ItemSerializer
 
-
-def get_all():
-    items = Item.objects.all()
-
-    if not items:
-        return []
-
-    return items
+from answerking_app.services.service_types.ItemTypes import ItemDict
 
 
-def get_by_id(item_id):
+def get_all() -> QuerySet[Item]:
+    return Item.objects.all()
+
+
+def get_by_id(item_id: str) -> Item | None:
     try:
-        item_id = int(item_id)
+        item_id_as_int: int = int(item_id)
     except ValueError:
         return None
 
     try:
-        item = Item.objects.get(pk=item_id)
+        item: Item = Item.objects.get(pk=item_id_as_int)
         return item
     except Item.DoesNotExist:
         return None
 
 
-def create(body):
-    serialized_item = ItemSerializer(data=body)
+def create(body: ItemDict) -> Item | None:
+    serialized_item: ItemSerializer = ItemSerializer(data=body)
     if not serialized_item.is_valid():
         return None
 
-    existing = Item.objects.filter(name=serialized_item.data["name"]).exists()
+    existing: bool = Item.objects.filter(name=serialized_item.data["name"]).exists()
     if existing:
         return None
 
-    item = Item(**serialized_item.data)
+    item: Item = Item(**serialized_item.data)
     item.save()
 
     return item
 
 
-def update(item, body):
-    serialized_item = ItemSerializer(data=body)
+def update(item: Item, body: ItemDict) -> Item | None:
+    serialized_item: ItemSerializer = ItemSerializer(data=body)
     if not serialized_item.is_valid():
         return None
 
     try:
-        existing = Item.objects.get(name=serialized_item.data["name"])
+        existing: Item = Item.objects.get(name=serialized_item.data["name"])
         if not item == existing:
             return None
     except Item.DoesNotExist:
@@ -61,8 +60,8 @@ def update(item, body):
     return item
 
 
-def delete(item):
-    existing_orderitems = OrderLine.objects.filter(item=item.id)
+def delete(item: Item) -> bool:
+    existing_orderitems: OrderLine = OrderLine.objects.filter(item=item.id)
     if existing_orderitems:
         return False
 

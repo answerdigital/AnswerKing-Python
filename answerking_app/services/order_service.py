@@ -1,55 +1,54 @@
 from decimal import Decimal, InvalidOperation
 
+from django.db.models import QuerySet
 from django.core.exceptions import ValidationError
 from django.db import DataError
 
 from answerking_app.models.models import Order, Item, Status
-from answerking_app.models.validation.serializers import (
-    OrderSerializer,
-    OrderLineSerializer,
-)
+
 from answerking_app.models.validation.validators import (
     validate_positive_number,
     validate_price,
     validate_address_string,
 )
 
-
-def get_all():
-    orders = Order.objects.all()
-
-    if not orders:
-        return []
-
-    return orders
+from answerking_app.services.service_types.OrderTypes import (
+    OrderCreateDict,
+    OrderItems,
+    OrderUpdateDict,
+)
 
 
-def get_by_id(order_id):
+def get_all() -> QuerySet[Order]:
+    return Order.objects.all()
+
+
+def get_by_id(order_id: str) -> Order | None:
     try:
-        order_id = int(order_id)
+        order_id_as_int: int = int(order_id)
     except ValueError:
         return None
 
     try:
-        order = Order.objects.get(pk=order_id)
+        order: Order = Order.objects.get(pk=order_id_as_int)
         return order
     except Order.DoesNotExist:
         return None
 
 
-def create(body):
+def create(body: OrderCreateDict) -> Order | None:
     try:
-        address = validate_address_string(body["address"])
+        address: str = validate_address_string(body["address"])
     except (KeyError, ValidationError):
         return None
 
     status, _ = Status.objects.get_or_create(status="Pending")
 
-    created_order = Order(address=address, status=status, total=0.00)
+    created_order: Order = Order(address=address, status=status, total=0.00)
     created_order.save()
 
     try:
-        order_items = body["order_items"]
+        order_items: list[OrderItems] = body["order_items"]
         if not order_items:
             return created_order
     except KeyError:
@@ -58,11 +57,11 @@ def create(body):
     for oi in order_items:
         try:
             try:
-                item = Item.objects.get(pk=oi["id"])
-                quantity = int(oi["quantity"])
-                price = item.price
-                stock = item.stock
-                sub_total = Decimal(quantity * price)
+                item: Item = Item.objects.get(pk=oi["id"])
+                quantity: int = int(oi["quantity"])
+                price: Decimal = item.price
+                stock: int = item.stock
+                sub_total: Decimal = Decimal(quantity * price)
             except (KeyError, InvalidOperation, ValueError):
                 created_order.delete()
                 return None
@@ -83,9 +82,9 @@ def create(body):
     return created_order
 
 
-def update(order, body):
+def update(order: Order, body: OrderUpdateDict) -> Order | None:
     try:
-        address = validate_address_string(body["address"])
+        address: str = validate_address_string(body["address"])
         order.address = address
     except ValidationError:
         return None
@@ -93,8 +92,8 @@ def update(order, body):
         pass
 
     try:
-        updated_status = body["status"]
-        status = Status.objects.get(status=updated_status)
+        updated_status: str = body["status"]
+        status: Status = Status.objects.get(status=updated_status)
         order.status = status
     except Status.DoesNotExist:
         return None
@@ -106,13 +105,13 @@ def update(order, body):
     return order
 
 
-def add_item(order, item, quantity):
+def add_item(order: Order, item: Item, quantity: int) -> Order | None:
     try:
         quantity = validate_positive_number(quantity)
         if quantity == 0:
             return remove_item(order, item)
 
-        sub_total = validate_price(quantity * item.price)
+        sub_total: Decimal = validate_price(quantity * item.price)
     except ValidationError:
         return None
 
@@ -135,7 +134,7 @@ def add_item(order, item, quantity):
     return order
 
 
-def remove_item(order, item):
+def remove_item(order: Order, item: Item) -> Order:
     order.order_items.remove(item)
     order.calculate_total()
     return order
