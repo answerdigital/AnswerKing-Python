@@ -11,17 +11,31 @@ class OrderLineTests(TestCase):
         self.status_pending = Status.objects.create(status="Pending")
 
         self.test_item_1 = Item.objects.create(
-            name="Burger", price=2.50, description="desc", stock=100, calories=100
+            name="Burger",
+            price=2.50,
+            description="desc",
+            stock=100,
+            calories=100,
         )
         self.test_item_2 = Item.objects.create(
-            name="Coke", price=1.50, description="desc", stock=100, calories=100
+            name="Coke",
+            price=1.50,
+            description="desc",
+            stock=100,
+            calories=100,
         )
         self.test_item_3 = Item.objects.create(
-            name="Chips", price=1.50, description="desc", stock=100, calories=100
+            name="Chips",
+            price=1.50,
+            description="desc",
+            stock=100,
+            calories=100,
         )
 
         self.test_order_1 = Order.objects.create(
-            address="123 Street, Leeds, LS73PP", status=self.status_pending, total=7.50
+            address="123 Street, Leeds, LS73PP",
+            status=self.status_pending,
+            total=7.50,
         )
 
         self.test_order_1.order_items.add(
@@ -176,7 +190,10 @@ class OrderLineTests(TestCase):
     def test_nonexistant_orderid_returns_not_found(self):
         # Arrange
         expected = {
-            "error": {"message": "Request failed", "details": "Object not found"}
+            "error": {
+                "message": "Request failed",
+                "details": "Object not found",
+            }
         }
 
         # Act
@@ -194,7 +211,10 @@ class OrderLineTests(TestCase):
     def test_nonexistant_itemid_returns_not_found(self):
         # Arrange
         expected = {
-            "error": {"message": "Request failed", "details": "Object not found"}
+            "error": {
+                "message": "Request failed",
+                "details": "Object not found",
+            }
         }
 
         # Act
@@ -212,7 +232,10 @@ class OrderLineTests(TestCase):
     def test_invalid_orderid_returns_not_found(self):
         # Arrange
         expected = {
-            "error": {"message": "Request failed", "details": "Object not found"}
+            "error": {
+                "message": "Request failed",
+                "details": "Object not found",
+            }
         }
 
         # Act
@@ -230,7 +253,10 @@ class OrderLineTests(TestCase):
     def test_invalid_itemid_returns_not_found(self):
         # Arrange
         expected = {
-            "error": {"message": "Request failed", "details": "Object not found"}
+            "error": {
+                "message": "Request failed",
+                "details": "Object not found",
+            }
         }
 
         # Act
@@ -287,11 +313,16 @@ class OrderLineTests(TestCase):
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
         expected = {
-            "error": {"details": "Object not found", "message": "Request failed"}
+            "error": {
+                "details": "Object not found",
+                "message": "Request failed",
+            }
         }
 
         # Act
-        response = client.delete(f"/api/orders/{self.test_order_1.id}/orderline/100000")
+        response = client.delete(
+            f"/api/orders/{self.test_order_1.id}/orderline/100000"
+        )
         actual = response.json()
 
         # Assert
