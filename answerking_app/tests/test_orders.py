@@ -12,27 +12,44 @@ class OrderTests(TestCase):
         self.status_complete = Status.objects.create(status="Completed")
 
         self.test_item_1 = Item.objects.create(
-            name="Burger", price=1.20, description="desc", stock=100, calories=100
+            name="Burger",
+            price=1.20,
+            description="desc",
+            stock=100,
+            calories=100,
         )
         self.test_item_2 = Item.objects.create(
-            name="Coke", price=1.50, description="desc", stock=100, calories=100
+            name="Coke",
+            price=1.50,
+            description="desc",
+            stock=100,
+            calories=100,
         )
         self.test_item_3 = Item.objects.create(
-            name="Chips", price=1.50, description="desc", stock=100, calories=100
+            name="Chips",
+            price=1.50,
+            description="desc",
+            stock=100,
+            calories=100,
         )
 
         self.test_order_1 = Order.objects.create(
-            address="123 Street, Leeds, LS73PP", status=self.status_pending, total=7.50
+            address="123 Street, Leeds, LS73PP",
+            status=self.status_pending,
+            total=7.50,
         )
         self.test_order_2 = Order.objects.create(
-            address="456 Test Lane, Bradford, BD30PA", status=self.status_pending
+            address="456 Test Lane, Bradford, BD30PA",
+            status=self.status_pending,
         )
 
         self.test_order_1.order_items.add(
-            self.test_item_1, through_defaults={"quantity": 2, "sub_total": 5}
+            self.test_item_1,
+            through_defaults={"quantity": 2, "sub_total": 5},
         )
         self.test_order_1.order_items.add(
-            self.test_item_2, through_defaults={"quantity": 1, "sub_total": 2.5}
+            self.test_item_2,
+            through_defaults={"quantity": 1, "sub_total": 2.5},
         )
 
     def tearDown(self):
@@ -40,18 +57,18 @@ class OrderTests(TestCase):
         Order.objects.all().delete()
         Status.objects.all().delete()
 
-    def test_get_all_without_orders_returns_no_content(self):
+    def test_get_all_without_orders_returns_empty_list(self):
         # Arrange
         Order.objects.all().delete()
         expected = []
 
         # Act
         response = client.get("/api/orders")
-        actual = []
+        actual = response.json()
 
         # Assert
         self.assertEqual(expected, actual)
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
 
     def test_get_all_with_orders_returns_ok(self):
         # Arrange
@@ -131,7 +148,10 @@ class OrderTests(TestCase):
     def test_get_id_invalid_returns_not_found(self):
         # Arrange
         expected = {
-            "error": {"message": "Request failed", "details": "Object not found"}
+            "error": {
+                "message": "Request failed",
+                "details": "Object not found",
+            }
         }
 
         # Act
@@ -213,7 +233,10 @@ class OrderTests(TestCase):
             "quantity": 1,
             "sub_total": f"{self.test_item_3.price:.2f}",
         }
-        post_data = {"address": "test street 123", "order_items": [order_item]}
+        post_data = {
+            "address": "test street 123",
+            "order_items": [order_item],
+        }
 
         expected = {
             "id": self.test_order_2.id + 1,
@@ -281,7 +304,10 @@ class OrderTests(TestCase):
 
     def test_post_invalid_items_returns_bad_request(self):
         # Arrange
-        invalid_post_data = {"address": "test", "order_items": [{"values": "invalid"}]}
+        invalid_post_data = {
+            "address": "test",
+            "order_items": [{"values": "invalid"}],
+        }
         expected_failure_error = {
             "error": {
                 "message": "Request failed",
@@ -302,7 +328,10 @@ class OrderTests(TestCase):
     def test_put_valid_address_and_status_returns_ok(self):
         # Arrange
         old_order = client.get(f"/api/orders/{self.test_order_1.id}").json()
-        post_data = {"address": "test", "status": self.status_complete.status}
+        post_data = {
+            "address": "test",
+            "status": self.status_complete.status,
+        }
         expected = {f"id": self.test_order_1.id, "total": "7.50"}
         expected.update(post_data)
         expected["order_items"] = [
@@ -486,7 +515,10 @@ class OrderTests(TestCase):
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
         expected = {
-            "error": {"message": "Request failed", "details": "Object not found"}
+            "error": {
+                "message": "Request failed",
+                "details": "Object not found",
+            }
         }
 
         # Act

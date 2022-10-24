@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from answerking_app.models.models import Item, Category
 from answerking_app.views.ErrorType import ErrorMessage
 from django.db.models.query import QuerySet
-from API_types import (
+from answerking_app.tests.API_types import (
     CategoryType,
     IDType,
     NewCategoryType,
@@ -15,13 +15,25 @@ client = Client()
 class CategoryTests(TestCase):
     def setUp(self):
         self.test_item_1: Item = Item.objects.create(
-            name="Burger", price=1.20, description="desc", stock=100, calories=100
+            name="Burger",
+            price=1.20,
+            description="desc",
+            stock=100,
+            calories=100,
         )
         self.test_item_2: Item = Item.objects.create(
-            name="Coke", price=1.50, description="desc", stock=100, calories=100
+            name="Coke",
+            price=1.50,
+            description="desc",
+            stock=100,
+            calories=100,
         )
         self.test_item_3: Item = Item.objects.create(
-            name="Chips", price=1.50, description="desc", stock=100, calories=100
+            name="Chips",
+            price=1.50,
+            description="desc",
+            stock=100,
+            calories=100,
         )
 
         self.test_cat_1: Category = Category.objects.create(name="Burgers")
@@ -37,12 +49,16 @@ class CategoryTests(TestCase):
     def test_get_all_without_categories_returns_no_content(self):
         # Arrange
         Category.objects.all().delete()
+        expected = []
 
         # Act
         response = client.get("/api/categories")
+        actual = response.json()
 
         # Assert
-        self.assertEqual(response.status_code, 204)
+        # Assert
+        self.assertEqual(expected, actual)
+        self.assertEqual(response.status_code, 200)
 
     def test_get_all_with_categories_returns_ok(self):
         # Arrange
@@ -69,7 +85,11 @@ class CategoryTests(TestCase):
                     },
                 ],
             },
-            {"id": self.test_cat_2.id, "name": self.test_cat_2.name, "items": []},
+            {
+                "id": self.test_cat_2.id,
+                "name": self.test_cat_2.name,
+                "items": [],
+            },
         ]
 
         # Act
@@ -116,7 +136,10 @@ class CategoryTests(TestCase):
     def test_get_id_invalid_returns_not_found(self):
         # Arrange
         expected: ErrorMessage = {
-            "error": {"message": "Request failed", "details": "Object not found"}
+            "error": {
+                "message": "Request failed",
+                "details": "Object not found",
+            }
         }
 
         # Act
@@ -150,7 +173,9 @@ class CategoryTests(TestCase):
         )
         actual = response.json()
 
-        created_category: Category = Category.objects.filter(name="Vegetarian")[0]
+        created_category: Category = Category.objects.filter(
+            name="Vegetarian"
+        )[0]
         created_category_items: list[ItemType] = actual["items"]
         updated_list: QuerySet[Category] = Category.objects.all()
 
@@ -195,7 +220,9 @@ class CategoryTests(TestCase):
 
         # Act
         response = client.post(
-            "/api/categories", invalid_json_data, content_type="application/json"
+            "/api/categories",
+            invalid_json_data,
+            content_type="application/json",
         )
         actual = response.json()
 
@@ -205,7 +232,10 @@ class CategoryTests(TestCase):
 
     def test_post_invalid_details_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewCategoryType = {"name": "Vegetarian%", "items": []}
+        invalid_post_data: NewCategoryType = {
+            "name": "Vegetarian%",
+            "items": [],
+        }
         expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
@@ -215,7 +245,9 @@ class CategoryTests(TestCase):
 
         # Act
         response = client.post(
-            "/api/categories", invalid_post_data, content_type="application/json"
+            "/api/categories",
+            invalid_post_data,
+            content_type="application/json",
         )
         actual = response.json()
 
@@ -225,7 +257,9 @@ class CategoryTests(TestCase):
 
     def test_put_valid_with_items_returns_ok(self):
         # Arrange
-        old_category = client.get(f"/api/categories/{self.test_cat_1.id}").json()
+        old_category = client.get(
+            f"/api/categories/{self.test_cat_1.id}"
+        ).json()
         new_item: ItemType = {
             "id": self.test_item_3.id,
             "name": self.test_item_3.name,
@@ -234,7 +268,10 @@ class CategoryTests(TestCase):
             "stock": self.test_item_3.stock,
             "calories": self.test_item_3.calories,
         }
-        post_data: NewCategoryType = {"name": "New Name", "items": [new_item]}
+        post_data: NewCategoryType = {
+            "name": "New Name",
+            "items": [new_item],
+        }
         expected_id: IDType = {f"id": self.test_cat_1.id}
         expected: CategoryType = {**post_data, **expected_id}
 
@@ -266,7 +303,9 @@ class CategoryTests(TestCase):
         )
         actual = response.json()
 
-        updated_category: Category = Category.objects.filter(name="New Name")[0]
+        updated_category: Category = Category.objects.filter(name="New Name")[
+            0
+        ]
         updated_list: QuerySet[Category] = Category.objects.all()
 
         # Assert
@@ -277,7 +316,9 @@ class CategoryTests(TestCase):
 
     def test_put_valid_without_items_returns_ok(self):
         # Arrange
-        old_category = client.get(f"/api/categories/{self.test_cat_1.id}").json()
+        old_category = client.get(
+            f"/api/categories/{self.test_cat_1.id}"
+        ).json()
 
         post_data: NewCategoryType = {"name": "New Name", "items": []}
         expected_id: IDType = {f"id": self.test_cat_1.id}
@@ -309,7 +350,9 @@ class CategoryTests(TestCase):
         )
         actual = response.json()
 
-        updated_category: Category = Category.objects.filter(name="New Name")[0]
+        updated_category: Category = Category.objects.filter(name="New Name")[
+            0
+        ]
         updated_list: QuerySet[Category] = Category.objects.all()
 
         # Assert
@@ -321,7 +364,10 @@ class CategoryTests(TestCase):
     def test_put_invalid_id_returns_bad_request(self):
         # Arrange
         expected: ErrorMessage = {
-            "error": {"message": "Request failed", "details": "Object not found"}
+            "error": {
+                "message": "Request failed",
+                "details": "Object not found",
+            }
         }
 
         # Act
@@ -356,7 +402,10 @@ class CategoryTests(TestCase):
 
     def test_put_invalid_details_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewCategoryType = {"name": "New Name*", "items": []}
+        invalid_post_data: NewCategoryType = {
+            "name": "New Name*",
+            "items": [],
+        }
         expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
@@ -391,7 +440,10 @@ class CategoryTests(TestCase):
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
         expected: ErrorMessage = {
-            "error": {"message": "Request failed", "details": "Object not found"}
+            "error": {
+                "message": "Request failed",
+                "details": "Object not found",
+            }
         }
 
         # Act
