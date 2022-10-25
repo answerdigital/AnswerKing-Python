@@ -15,25 +15,13 @@ client = Client()
 class CategoryTests(TestCase):
     def setUp(self):
         self.test_item_1: Item = Item.objects.create(
-            name="Burger",
-            price=1.20,
-            description="desc",
-            stock=100,
-            calories=100,
+            name="Burger", price=1.20, description="desc", stock=100, calories=100
         )
         self.test_item_2: Item = Item.objects.create(
-            name="Coke",
-            price=1.50,
-            description="desc",
-            stock=100,
-            calories=100,
+            name="Coke", price=1.50, description="desc", stock=100, calories=100
         )
         self.test_item_3: Item = Item.objects.create(
-            name="Chips",
-            price=1.50,
-            description="desc",
-            stock=100,
-            calories=100,
+            name="Chips", price=1.50, description="desc", stock=100, calories=100
         )
 
         self.test_cat_1: Category = Category.objects.create(name="Burgers")
@@ -85,11 +73,7 @@ class CategoryTests(TestCase):
                     },
                 ],
             },
-            {
-                "id": self.test_cat_2.id,
-                "name": self.test_cat_2.name,
-                "items": [],
-            },
+            {"id": self.test_cat_2.id, "name": self.test_cat_2.name, "items": []},
         ]
 
         # Act
@@ -136,10 +120,7 @@ class CategoryTests(TestCase):
     def test_get_id_invalid_returns_not_found(self):
         # Arrange
         expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
+            "error": {"message": "Request failed", "details": "Object not found"}
         }
 
         # Act
@@ -220,9 +201,7 @@ class CategoryTests(TestCase):
 
         # Act
         response = client.post(
-            "/api/categories",
-            invalid_json_data,
-            content_type="application/json",
+            "/api/categories", invalid_json_data, content_type="application/json"
         )
         actual = response.json()
 
@@ -232,10 +211,7 @@ class CategoryTests(TestCase):
 
     def test_post_invalid_details_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewCategoryType = {
-            "name": "Vegetarian%",
-            "items": [],
-        }
+        invalid_post_data: NewCategoryType = {"name": "Vegetarian%", "items": []}
         expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
@@ -245,9 +221,7 @@ class CategoryTests(TestCase):
 
         # Act
         response = client.post(
-            "/api/categories",
-            invalid_post_data,
-            content_type="application/json",
+            "/api/categories", invalid_post_data, content_type="application/json"
         )
         actual = response.json()
 
@@ -364,10 +338,7 @@ class CategoryTests(TestCase):
     def test_put_invalid_id_returns_bad_request(self):
         # Arrange
         expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
+            "error": {"message": "Request failed", "details": "Object not found"}
         }
 
         # Act
@@ -440,10 +411,7 @@ class CategoryTests(TestCase):
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
         expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
+            "error": {"message": "Request failed", "details": "Object not found"}
         }
 
         # Act
