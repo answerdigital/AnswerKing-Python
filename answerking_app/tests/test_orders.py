@@ -4,7 +4,10 @@ from answerking_app.models.models import Item, Order, Status, OrderLine
 from answerking_app.tests.API_types import (
     OrderType,
     NewOrderAddressType,
-    OrderItemType, NewOrderType, UpdateOrderType, NewStatusType,
+    OrderItemType,
+    NewOrderType,
+    UpdateOrderType,
+    NewStatusType,
 )
 from answerking_app.views.ErrorType import ErrorMessage
 
@@ -212,7 +215,7 @@ class OrderTests(TestCase):
             "id": self.test_order_2.id + 1,
             "status": self.status_pending.status,
             "total": "0.00",
-            **post_data
+            **post_data,
         }
 
         # Act
@@ -361,7 +364,7 @@ class OrderTests(TestCase):
                     "sub_total": "2.50",
                 },
             ],
-            "total": "7.50"
+            "total": "7.50",
         }
 
         # Act
@@ -493,7 +496,10 @@ class OrderTests(TestCase):
 
     def test_put_invalid_status_returns_bad_request(self):
         # Arrange
-        invalid_post_data: UpdateOrderType = {"address": "test", "status": "invalid"}
+        invalid_post_data: UpdateOrderType = {
+            "address": "test",
+            "status": "invalid",
+        }
         expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",

@@ -16,12 +16,16 @@ from answerking_app.views.ErrorType import ErrorMessage
 
 class ItemListView(View):
     @csrf_exempt
-    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse | HttpResponse:
+    def get(
+        self, request: HttpRequest, *args, **kwargs
+    ) -> JsonResponse | HttpResponse:
         items: QuerySet[Item] = item_service.get_all()
         response: list[ReturnDict] = []
 
         if items:
-            response: list[ReturnDict] = [ItemSerializer(item).data for item in items]
+            response: list[ReturnDict] = [
+                ItemSerializer(item).data for item in items
+            ]
 
         return JsonResponse(response, encoder=DjangoJSONEncoder, safe=False)
 
@@ -84,7 +88,9 @@ class ItemDetailView(View):
         return JsonResponse(response, encoder=DjangoJSONEncoder, safe=False)
 
     @csrf_exempt
-    def put(self, request: HttpRequest, *args, **kwargs) -> JsonResponse | HttpResponse:
+    def put(
+        self, request: HttpRequest, *args, **kwargs
+    ) -> JsonResponse | HttpResponse:
         item: Item | None = item_service.get_by_id(kwargs["item_id"])
         if not item:
             error_msg: ErrorMessage = {
@@ -129,7 +135,9 @@ class ItemDetailView(View):
 
         response: ReturnDict = ItemSerializer(updated_item).data
 
-        return JsonResponse(response, status=200, encoder=DjangoJSONEncoder, safe=False)
+        return JsonResponse(
+            response, status=200, encoder=DjangoJSONEncoder, safe=False
+        )
 
     @csrf_exempt
     def delete(
