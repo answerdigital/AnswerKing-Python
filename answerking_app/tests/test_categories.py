@@ -15,25 +15,13 @@ client = Client()
 class CategoryTests(TestCase):
     def setUp(self):
         self.test_item_1: Item = Item.objects.create(
-            name="Burger",
-            price=1.20,
-            description="desc",
-            stock=100,
-            calories=100,
+            name="Burger", price=1.20, description="desc", stock=100, calories=100
         )
         self.test_item_2: Item = Item.objects.create(
-            name="Coke",
-            price=1.50,
-            description="desc",
-            stock=100,
-            calories=100,
+            name="Coke", price=1.50, description="desc", stock=100, calories=100
         )
         self.test_item_3: Item = Item.objects.create(
-            name="Chips",
-            price=1.50,
-            description="desc",
-            stock=100,
-            calories=100,
+            name="Chips", price=1.50, description="desc", stock=100, calories=100
         )
 
         self.test_cat_1: Category = Category.objects.create(name="Burgers")
@@ -85,11 +73,7 @@ class CategoryTests(TestCase):
                     },
                 ],
             },
-            {
-                "id": self.test_cat_2.id,
-                "name": self.test_cat_2.name,
-                "items": [],
-            },
+            {"id": self.test_cat_2.id, "name": self.test_cat_2.name, "items": []},
         ]
 
         # Act
@@ -136,10 +120,7 @@ class CategoryTests(TestCase):
     def test_get_id_invalid_returns_not_found(self):
         # Arrange
         expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
+            "error": {"message": "Request failed", "details": "Object not found"}
         }
 
         # Act
@@ -173,9 +154,7 @@ class CategoryTests(TestCase):
         )
         actual = response.json()
 
-        created_category: Category = Category.objects.filter(
-            name="Vegetarian"
-        )[0]
+        created_category: Category = Category.objects.filter(name="Vegetarian")[0]
         created_category_items: list[ItemType] = actual["items"]
         updated_list: QuerySet[Category] = Category.objects.all()
 
@@ -191,7 +170,7 @@ class CategoryTests(TestCase):
         old_list = client.get("/api/categories").json()
         post_data: NewCategoryType = {"name": "Gluten Free", "items": []}
         expected_id: IDType = {"id": self.test_cat_2.id + 1}
-        expected: CategoryType = {**post_data, **expected_id}
+        expected: CategoryType =  {**post_data, **expected_id}
 
         # Act
         response = client.post(
@@ -220,9 +199,7 @@ class CategoryTests(TestCase):
 
         # Act
         response = client.post(
-            "/api/categories",
-            invalid_json_data,
-            content_type="application/json",
+            "/api/categories", invalid_json_data, content_type="application/json"
         )
         actual = response.json()
 
@@ -232,10 +209,7 @@ class CategoryTests(TestCase):
 
     def test_post_invalid_details_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewCategoryType = {
-            "name": "Vegetarian%",
-            "items": [],
-        }
+        invalid_post_data: NewCategoryType = {"name": "Vegetarian%", "items": []}
         expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
@@ -245,9 +219,7 @@ class CategoryTests(TestCase):
 
         # Act
         response = client.post(
-            "/api/categories",
-            invalid_post_data,
-            content_type="application/json",
+            "/api/categories", invalid_post_data, content_type="application/json"
         )
         actual = response.json()
 
@@ -257,9 +229,7 @@ class CategoryTests(TestCase):
 
     def test_put_valid_with_items_returns_ok(self):
         # Arrange
-        old_category = client.get(
-            f"/api/categories/{self.test_cat_1.id}"
-        ).json()
+        old_category = client.get(f"/api/categories/{self.test_cat_1.id}").json()
         new_item: ItemType = {
             "id": self.test_item_3.id,
             "name": self.test_item_3.name,
@@ -303,9 +273,7 @@ class CategoryTests(TestCase):
         )
         actual = response.json()
 
-        updated_category: Category = Category.objects.filter(name="New Name")[
-            0
-        ]
+        updated_category: Category = Category.objects.filter(name="New Name")[0]
         updated_list: QuerySet[Category] = Category.objects.all()
 
         # Assert
@@ -316,9 +284,7 @@ class CategoryTests(TestCase):
 
     def test_put_valid_without_items_returns_ok(self):
         # Arrange
-        old_category = client.get(
-            f"/api/categories/{self.test_cat_1.id}"
-        ).json()
+        old_category = client.get(f"/api/categories/{self.test_cat_1.id}").json()
 
         post_data: NewCategoryType = {"name": "New Name", "items": []}
         expected_id: IDType = {f"id": self.test_cat_1.id}
@@ -350,9 +316,7 @@ class CategoryTests(TestCase):
         )
         actual = response.json()
 
-        updated_category: Category = Category.objects.filter(name="New Name")[
-            0
-        ]
+        updated_category: Category = Category.objects.filter(name="New Name")[0]
         updated_list: QuerySet[Category] = Category.objects.all()
 
         # Assert
@@ -364,10 +328,7 @@ class CategoryTests(TestCase):
     def test_put_invalid_id_returns_bad_request(self):
         # Arrange
         expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
+            "error": {"message": "Request failed", "details": "Object not found"}
         }
 
         # Act
@@ -440,10 +401,7 @@ class CategoryTests(TestCase):
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
         expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
+            "error": {"message": "Request failed", "details": "Object not found"}
         }
 
         # Act

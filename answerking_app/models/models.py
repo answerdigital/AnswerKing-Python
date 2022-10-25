@@ -54,9 +54,7 @@ class OrderLine(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
-    sub_total = models.DecimalField(
-        max_digits=18, decimal_places=2, default=0.00
-    )
+    sub_total = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
 
     class Meta:
         unique_together = [["order", "item"]]
