@@ -326,9 +326,7 @@ class OrderLineTests(TestCase):
         }
 
         # Act
-        response = client.delete(
-            f"/api/orders/{self.test_order_1.id}/orderline/100000"
-        )
+        response = client.delete(f"/api/orders/{self.test_order_1.id}/orderline/100000")
         actual = response.json()
 
         # Assert

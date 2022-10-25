@@ -19,9 +19,7 @@ class OrderTests(TestCase):
 
     def setUp(self):
         self.status_pending: Status = Status.objects.create(status="Pending")
-        self.status_complete: Status = Status.objects.create(
-            status="Completed"
-        )
+        self.status_complete: Status = Status.objects.create(status="Completed")
 
         self.test_item_1: Item = Item.objects.create(
             name="Burger",
