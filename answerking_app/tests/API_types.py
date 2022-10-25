@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, Any
 
 
 class IDType(TypedDict):
@@ -38,9 +38,19 @@ class NewOrderAddressType(TypedDict):
     address: str
 
 
-class OrderType(IDType, NewOrderAddressType, TypedDict):
-    status: str
+class NewOrderType(NewOrderAddressType, TypedDict):
     order_items: list[OrderItemType]
+
+
+class NewStatusType(TypedDict):
+    status: str
+
+
+class UpdateOrderType(NewOrderAddressType, NewStatusType):
+    pass
+
+
+class OrderType(IDType, NewOrderType, NewStatusType, TypedDict):
     total: str
 
 

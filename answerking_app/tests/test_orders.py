@@ -4,7 +4,7 @@ from answerking_app.models.models import Item, Order, Status, OrderLine
 from answerking_app.tests.API_types import (
     OrderType,
     NewOrderAddressType,
-    OrderItemType,
+    OrderItemType, NewOrderType, UpdateOrderType, NewStatusType,
 )
 from answerking_app.views.ErrorType import ErrorMessage
 
@@ -204,16 +204,15 @@ class OrderTests(TestCase):
         # Arrange
         old_list = client.get("/api/orders").json()
 
-        post_data: dict[str, str | list] = {
+        post_data: NewOrderType = {
             "address": "test street 123",
             "order_items": [],
         }
         expected: OrderType = {
             "id": self.test_order_2.id + 1,
-            "address": "test street 123",
             "status": self.status_pending.status,
-            "order_items": [],
             "total": "0.00",
+            **post_data
         }
 
         # Act
@@ -244,12 +243,12 @@ class OrderTests(TestCase):
             "quantity": 1,
             "sub_total": f"{self.test_item_3.price:.2f}",
         }
-        post_data: dict = {
+        post_data: NewOrderType = {
             "address": "test street 123",
             "order_items": [order_item],
         }
 
-        expected: dict = {
+        expected: OrderType = {
             "id": self.test_order_2.id + 1,
             "status": self.status_pending.status,
             "total": f"{self.test_item_3.price:.2f}",
@@ -315,7 +314,7 @@ class OrderTests(TestCase):
 
     def test_post_invalid_items_returns_bad_request(self):
         # Arrange
-        invalid_post_data: dict = {
+        invalid_post_data: NewOrderType = {
             "address": "test",
             "order_items": [{"values": "invalid"}],
         }
@@ -339,14 +338,13 @@ class OrderTests(TestCase):
     def test_put_valid_address_and_status_returns_ok(self):
         # Arrange
         old_order = client.get(f"/api/orders/{self.test_order_1.id}").json()
-        post_data: dict = {
+        post_data: UpdateOrderType = {
             "address": "test",
             "status": self.status_complete.status,
         }
         expected: OrderType = {
             "id": self.test_order_1.id,
-            "address": "test",
-            "status": self.status_complete.status,
+            **post_data,
             "order_items": [
                 {
                     "id": self.test_item_1.id,
@@ -363,7 +361,7 @@ class OrderTests(TestCase):
                     "sub_total": "2.50",
                 },
             ],
-            "total": "7.50",
+            "total": "7.50"
         }
 
         # Act
@@ -389,7 +387,7 @@ class OrderTests(TestCase):
         post_data: NewOrderAddressType = {"address": "test"}
         expected: OrderType = {
             "id": self.test_order_1.id,
-            "address": "test",
+            **post_data,
             "status": self.status_pending.status,
             "order_items": [
                 {
@@ -430,11 +428,11 @@ class OrderTests(TestCase):
     def test_put_valid_status_returns_ok(self):
         # Arrange
         old_order = client.get(f"/api/orders/{self.test_order_1.id}").json()
-        post_data: dict = {"status": self.status_complete.status}
+        post_data: NewStatusType = {"status": self.status_complete.status}
         expected: OrderType = {
             "id": self.test_order_1.id,
             "address": self.test_order_1.address,
-            "status": self.status_complete.status,
+            **post_data,
             "order_items": [
                 {
                     "id": self.test_item_1.id,
@@ -495,7 +493,7 @@ class OrderTests(TestCase):
 
     def test_put_invalid_status_returns_bad_request(self):
         # Arrange
-        invalid_post_data: dict = {"address": "test", "status": "invalid"}
+        invalid_post_data: UpdateOrderType = {"address": "test", "status": "invalid"}
         expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
