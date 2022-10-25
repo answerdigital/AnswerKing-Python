@@ -28,9 +28,7 @@ def create(body: ItemDict) -> Item | None:
     if not serialized_item.is_valid():
         return None
 
-    existing: bool = Item.objects.filter(
-        name=serialized_item.data["name"]
-    ).exists()
+    existing: bool = Item.objects.filter(name=serialized_item.data["name"]).exists()
     if existing:
         return None
 

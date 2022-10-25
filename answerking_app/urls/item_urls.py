@@ -1,8 +1,10 @@
+from functools import partial
+
 from django.urls import path
 
 from answerking_app.views import item_views
 
-urlpatterns = [
+urlpatterns: list[partial] = [
     path("items", item_views.ItemListView.as_view(), name="item_list"),
     path(
         "items/<item_id>",

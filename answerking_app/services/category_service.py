@@ -49,9 +49,7 @@ def update(category: Category, body: CategoryDict) -> Category | None:
         return None
 
     try:
-        existing: Category = Category.objects.get(
-            name=serialized_cat.data["name"]
-        )
+        existing: Category = Category.objects.get(name=serialized_cat.data["name"])
         if not category == existing:
             return None
     except Category.DoesNotExist:

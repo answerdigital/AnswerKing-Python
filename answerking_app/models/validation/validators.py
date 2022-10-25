@@ -27,9 +27,7 @@ def validate_price(value: typing.Any) -> Decimal:
 
 def validate_name_string(value: str | None) -> str:
     if not value or len(value) > 50:
-        raise ValidationError(
-            f"'{value}' cannot be empty or more than 50 characters"
-        )
+        raise ValidationError(f"'{value}' cannot be empty or more than 50 characters")
 
     if not re.match("^[a-zA-Z !]+$", value):
         raise ValidationError(f"'{value}' contains invalid characters")
@@ -56,9 +54,7 @@ def validate_descriptive_string(value: str | None) -> str | None:
 
 def validate_address_string(value: str | None) -> str:
     if not value or len(value) > 200:
-        raise ValidationError(
-            f"'{value}' cannot be empty or more than 200 characters"
-        )
+        raise ValidationError(f"'{value}' cannot be empty or more than 200 characters")
 
     if not re.match("^[a-zA-Z0-9 ,-]+$", value):
         raise ValidationError("Contains invalid characters")
