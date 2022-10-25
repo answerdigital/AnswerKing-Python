@@ -26,7 +26,9 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=50)),
                 (
                     "price",
-                    models.DecimalField(decimal_places=2, default=0.0, max_digits=18),
+                    models.DecimalField(
+                        decimal_places=2, default=0.0, max_digits=18
+                    ),
                 ),
                 (
                     "description",
@@ -51,7 +53,9 @@ class Migration(migrations.Migration):
                 ("address", models.CharField(max_length=200)),
                 (
                     "total",
-                    models.DecimalField(decimal_places=2, default=0.0, max_digits=18),
+                    models.DecimalField(
+                        decimal_places=2, default=0.0, max_digits=18
+                    ),
                 ),
             ],
         ),
@@ -85,7 +89,9 @@ class Migration(migrations.Migration):
                 ("quantity", models.IntegerField(default=0)),
                 (
                     "sub_total",
-                    models.DecimalField(decimal_places=2, default=0.0, max_digits=18),
+                    models.DecimalField(
+                        decimal_places=2, default=0.0, max_digits=18
+                    ),
                 ),
                 (
                     "item",
@@ -117,7 +123,8 @@ class Migration(migrations.Migration):
             model_name="order",
             name="status",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="answerking_app.status"
+                on_delete=django.db.models.deletion.CASCADE,
+                to="answerking_app.status",
             ),
         ),
         migrations.CreateModel(

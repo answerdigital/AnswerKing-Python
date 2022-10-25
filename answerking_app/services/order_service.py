@@ -72,7 +72,10 @@ def create(body: OrderCreateDict) -> Order | None:
 
             created_order.order_items.add(
                 item,
-                through_defaults={"quantity": quantity, "sub_total": sub_total},
+                through_defaults={
+                    "quantity": quantity,
+                    "sub_total": sub_total,
+                },
             )
         except Item.DoesNotExist:
             pass
@@ -118,7 +121,11 @@ def add_item(order: Order, item: Item, quantity: int) -> Order | None:
     if item not in order.order_items.all():
         try:
             order.order_items.add(
-                item, through_defaults={"quantity": quantity, "sub_total": sub_total}
+                item,
+                through_defaults={
+                    "quantity": quantity,
+                    "sub_total": sub_total,
+                },
             )
         except DataError:
             return None

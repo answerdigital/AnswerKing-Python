@@ -1,7 +1,11 @@
 from django.db.models import QuerySet
 from django.test import TestCase, Client
 from answerking_app.models.models import Item, Order, Status, OrderLine
-from answerking_app.tests.API_types import OrderType, NewOrderAddressType, OrderItemType
+from answerking_app.tests.API_types import (
+    OrderType,
+    NewOrderAddressType,
+    OrderItemType,
+)
 from answerking_app.views.ErrorType import ErrorMessage
 
 client = Client()
@@ -12,30 +16,48 @@ class OrderTests(TestCase):
 
     def setUp(self):
         self.status_pending: Status = Status.objects.create(status="Pending")
-        self.status_complete: Status = Status.objects.create(status="Completed")
+        self.status_complete: Status = Status.objects.create(
+            status="Completed"
+        )
 
         self.test_item_1: Item = Item.objects.create(
-            name="Burger", price=1.20, description="desc", stock=100, calories=100
+            name="Burger",
+            price=1.20,
+            description="desc",
+            stock=100,
+            calories=100,
         )
         self.test_item_2: Item = Item.objects.create(
-            name="Coke", price=1.50, description="desc", stock=100, calories=100
+            name="Coke",
+            price=1.50,
+            description="desc",
+            stock=100,
+            calories=100,
         )
         self.test_item_3: Item = Item.objects.create(
-            name="Chips", price=1.50, description="desc", stock=100, calories=100
+            name="Chips",
+            price=1.50,
+            description="desc",
+            stock=100,
+            calories=100,
         )
 
         self.test_order_1: Order = Order.objects.create(
-            address="123 Street, Leeds, LS73PP", status=self.status_pending, total=7.50
+            address="123 Street, Leeds, LS73PP",
+            status=self.status_pending,
+            total=7.50,
         )
         self.test_order_2: Order = Order.objects.create(
-            address="456 Test Lane, Bradford, BD30PA", status=self.status_pending
+            address="456 Test Lane, Bradford, BD30PA",
+            status=self.status_pending,
         )
 
         self.test_order_1.order_items.add(
             self.test_item_1, through_defaults={"quantity": 2, "sub_total": 5}
         )
         self.test_order_1.order_items.add(
-            self.test_item_2, through_defaults={"quantity": 1, "sub_total": 2.5}
+            self.test_item_2,
+            through_defaults={"quantity": 1, "sub_total": 2.5},
         )
 
     def tearDown(self):
@@ -134,7 +156,10 @@ class OrderTests(TestCase):
     def test_get_id_invalid_returns_not_found(self):
         # Arrange
         expected: ErrorMessage = {
-            "error": {"message": "Request failed", "details": "Object not found"}
+            "error": {
+                "message": "Request failed",
+                "details": "Object not found",
+            }
         }
 
         # Act
@@ -154,7 +179,8 @@ class OrderTests(TestCase):
             "id": self.test_order_2.id + 1,
             "status": self.status_pending.status,
             "order_items": [],
-            "total": "0.00", **post_data
+            "total": "0.00",
+            **post_data,
         }
 
         # Act
@@ -178,13 +204,16 @@ class OrderTests(TestCase):
         # Arrange
         old_list = client.get("/api/orders").json()
 
-        post_data: dict[str, str | list] = {"address": "test street 123", "order_items": []}
+        post_data: dict[str, str | list] = {
+            "address": "test street 123",
+            "order_items": [],
+        }
         expected: OrderType = {
             "id": self.test_order_2.id + 1,
             "address": "test street 123",
             "status": self.status_pending.status,
             "order_items": [],
-            "total": "0.00"
+            "total": "0.00",
         }
 
         # Act
@@ -215,12 +244,16 @@ class OrderTests(TestCase):
             "quantity": 1,
             "sub_total": f"{self.test_item_3.price:.2f}",
         }
-        post_data: dict = {"address": "test street 123", "order_items": [order_item]}
+        post_data: dict = {
+            "address": "test street 123",
+            "order_items": [order_item],
+        }
 
         expected: dict = {
             "id": self.test_order_2.id + 1,
             "status": self.status_pending.status,
-            "total": f"{self.test_item_3.price:.2f}", **post_data
+            "total": f"{self.test_item_3.price:.2f}",
+            **post_data,
         }
 
         # Act
@@ -282,7 +315,10 @@ class OrderTests(TestCase):
 
     def test_post_invalid_items_returns_bad_request(self):
         # Arrange
-        invalid_post_data: dict = {"address": "test", "order_items": [{"values": "invalid"}]}
+        invalid_post_data: dict = {
+            "address": "test",
+            "order_items": [{"values": "invalid"}],
+        }
         expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Request failed",
@@ -303,27 +339,32 @@ class OrderTests(TestCase):
     def test_put_valid_address_and_status_returns_ok(self):
         # Arrange
         old_order = client.get(f"/api/orders/{self.test_order_1.id}").json()
-        post_data: dict = {"address": "test", "status": self.status_complete.status}
+        post_data: dict = {
+            "address": "test",
+            "status": self.status_complete.status,
+        }
         expected: OrderType = {
             "id": self.test_order_1.id,
             "address": "test",
             "status": self.status_complete.status,
-            "order_items": [{
-                               "id": self.test_item_1.id,
-                               "name": self.test_item_1.name,
-                               "price": f"{self.test_item_1.price:.2f}",
-                               "quantity": 2,
-                               "sub_total": "5.00",
-                           },
-                           {
-                               "id": self.test_item_2.id,
-                               "name": self.test_item_2.name,
-                               "price": f"{self.test_item_2.price:.2f}",
-                               "quantity": 1,
-                               "sub_total": "2.50",
-                           },
-                       ],
-            "total": "7.50"}
+            "order_items": [
+                {
+                    "id": self.test_item_1.id,
+                    "name": self.test_item_1.name,
+                    "price": f"{self.test_item_1.price:.2f}",
+                    "quantity": 2,
+                    "sub_total": "5.00",
+                },
+                {
+                    "id": self.test_item_2.id,
+                    "name": self.test_item_2.name,
+                    "price": f"{self.test_item_2.price:.2f}",
+                    "quantity": 1,
+                    "sub_total": "2.50",
+                },
+            ],
+            "total": "7.50",
+        }
 
         # Act
         response = client.put(
@@ -364,9 +405,10 @@ class OrderTests(TestCase):
                     "price": f"{self.test_item_2.price:.2f}",
                     "quantity": 1,
                     "sub_total": "2.50",
-                }
+                },
             ],
-            "total": "7.50"}
+            "total": "7.50",
+        }
 
         # Act
         response = client.put(
@@ -393,20 +435,23 @@ class OrderTests(TestCase):
             "id": self.test_order_1.id,
             "address": self.test_order_1.address,
             "status": self.status_complete.status,
-            "order_items": [{
-                "id": self.test_item_1.id,
-                "name": self.test_item_1.name,
-                "price": f"{self.test_item_1.price:.2f}",
-                "quantity": 2,
-                "sub_total": "5.00",
-            }, {
-                "id": self.test_item_2.id,
-                "name": self.test_item_2.name,
-                "price": f"{self.test_item_2.price:.2f}",
-                "quantity": 1,
-                "sub_total": "2.50",
-            }],
-            "total": "7.50"
+            "order_items": [
+                {
+                    "id": self.test_item_1.id,
+                    "name": self.test_item_1.name,
+                    "price": f"{self.test_item_1.price:.2f}",
+                    "quantity": 2,
+                    "sub_total": "5.00",
+                },
+                {
+                    "id": self.test_item_2.id,
+                    "name": self.test_item_2.name,
+                    "price": f"{self.test_item_2.price:.2f}",
+                    "quantity": 1,
+                    "sub_total": "2.50",
+                },
+            ],
+            "total": "7.50",
         }
 
         # Act
@@ -485,7 +530,10 @@ class OrderTests(TestCase):
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
         expected: ErrorMessage = {
-            "error": {"message": "Request failed", "details": "Object not found"}
+            "error": {
+                "message": "Request failed",
+                "details": "Object not found",
+            }
         }
 
         # Act
