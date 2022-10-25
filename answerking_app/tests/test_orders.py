@@ -69,14 +69,11 @@ class OrderTests(TestCase):
     def test_get_all_without_orders_returns_no_content(self):
         # Arrange
         Order.objects.all().delete()
-        expected: list = []
 
         # Act
         response = client.get("/api/orders")
-        actual: list = []
 
         # Assert
-        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 204)
 
     def test_get_all_with_orders_returns_ok(self):
