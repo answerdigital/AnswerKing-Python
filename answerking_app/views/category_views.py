@@ -16,7 +16,9 @@ from answerking_app.views.ErrorType import ErrorMessage
 
 class CategoryListView(View):
     @csrf_exempt
-    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse | HttpResponse:
+    def get(
+        self, request: HttpRequest, *args, **kwargs
+    ) -> JsonResponse | HttpResponse:
         categories: QuerySet[Category] = category_service.get_all()
         response: list[ReturnDict] = []
 
@@ -60,13 +62,17 @@ class CategoryListView(View):
 
         response: ReturnDict = CategorySerializer(created_category).data
 
-        return JsonResponse(response, status=200, encoder=DjangoJSONEncoder, safe=False)
+        return JsonResponse(
+            response, status=200, encoder=DjangoJSONEncoder, safe=False
+        )
 
 
 class CategoryDetailView(View):
     @csrf_exempt
     def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        category: Category | None = category_service.get_by_id(kwargs["cat_id"])
+        category: Category | None = category_service.get_by_id(
+            kwargs["cat_id"]
+        )
 
         if not category:
             error_msg: ErrorMessage = {
@@ -85,8 +91,12 @@ class CategoryDetailView(View):
         return JsonResponse(response, encoder=DjangoJSONEncoder, safe=False)
 
     @csrf_exempt
-    def put(self, request: HttpRequest, *args, **kwargs) -> JsonResponse | HttpResponse:
-        category: Category | None = category_service.get_by_id(kwargs["cat_id"])
+    def put(
+        self, request: HttpRequest, *args, **kwargs
+    ) -> JsonResponse | HttpResponse:
+        category: Category | None = category_service.get_by_id(
+            kwargs["cat_id"]
+        )
         if not category:
             error_msg: ErrorMessage = {
                 "error": {
@@ -115,7 +125,9 @@ class CategoryDetailView(View):
                 status=400,
             )
 
-        updated_category: Category | None = category_service.update(category, body)
+        updated_category: Category | None = category_service.update(
+            category, body
+        )
         if not updated_category:
             error_msg: ErrorMessage = {
                 "error": {
@@ -130,13 +142,17 @@ class CategoryDetailView(View):
 
         response: ReturnDict = CategorySerializer(updated_category).data
 
-        return JsonResponse(response, status=200, encoder=DjangoJSONEncoder, safe=False)
+        return JsonResponse(
+            response, status=200, encoder=DjangoJSONEncoder, safe=False
+        )
 
     @csrf_exempt
     def delete(
         self, request: HttpRequest, *args, **kwargs
     ) -> JsonResponse | HttpResponse:
-        category: Category | None = category_service.get_by_id(kwargs["cat_id"])
+        category: Category | None = category_service.get_by_id(
+            kwargs["cat_id"]
+        )
         if not category:
             error_msg: ErrorMessage = {
                 "error": {
@@ -157,7 +173,9 @@ class CategoryDetailView(View):
 class CategoryItemListView(View):
     @csrf_exempt
     def put(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        category: Category | None = category_service.get_by_id(kwargs["cat_id"])
+        category: Category | None = category_service.get_by_id(
+            kwargs["cat_id"]
+        )
         item: Item | None = item_service.get_by_id(kwargs["item_id"])
         if not category or not item:
             error_msg: ErrorMessage = {
@@ -191,7 +209,9 @@ class CategoryItemListView(View):
 
     @csrf_exempt
     def delete(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        category: Category | None = category_service.get_by_id(kwargs["cat_id"])
+        category: Category | None = category_service.get_by_id(
+            kwargs["cat_id"]
+        )
         item: Item | None = item_service.get_by_id(kwargs["item_id"])
         if not category or not item:
             error_msg: ErrorMessage = {

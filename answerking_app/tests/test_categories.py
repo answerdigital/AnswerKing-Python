@@ -173,7 +173,9 @@ class CategoryTests(TestCase):
         )
         actual = response.json()
 
-        created_category: Category = Category.objects.filter(name="Vegetarian")[0]
+        created_category: Category = Category.objects.filter(
+            name="Vegetarian"
+        )[0]
         created_category_items: list[ItemType] = actual["items"]
         updated_list: QuerySet[Category] = Category.objects.all()
 
@@ -255,7 +257,9 @@ class CategoryTests(TestCase):
 
     def test_put_valid_with_items_returns_ok(self):
         # Arrange
-        old_category = client.get(f"/api/categories/{self.test_cat_1.id}").json()
+        old_category = client.get(
+            f"/api/categories/{self.test_cat_1.id}"
+        ).json()
         new_item: ItemType = {
             "id": self.test_item_3.id,
             "name": self.test_item_3.name,
@@ -299,7 +303,9 @@ class CategoryTests(TestCase):
         )
         actual = response.json()
 
-        updated_category: Category = Category.objects.filter(name="New Name")[0]
+        updated_category: Category = Category.objects.filter(name="New Name")[
+            0
+        ]
         updated_list: QuerySet[Category] = Category.objects.all()
 
         # Assert
@@ -310,7 +316,9 @@ class CategoryTests(TestCase):
 
     def test_put_valid_without_items_returns_ok(self):
         # Arrange
-        old_category = client.get(f"/api/categories/{self.test_cat_1.id}").json()
+        old_category = client.get(
+            f"/api/categories/{self.test_cat_1.id}"
+        ).json()
 
         post_data: NewCategoryType = {"name": "New Name", "items": []}
         expected_id: IDType = {f"id": self.test_cat_1.id}
@@ -342,7 +350,9 @@ class CategoryTests(TestCase):
         )
         actual = response.json()
 
-        updated_category: Category = Category.objects.filter(name="New Name")[0]
+        updated_category: Category = Category.objects.filter(name="New Name")[
+            0
+        ]
         updated_list: QuerySet[Category] = Category.objects.all()
 
         # Assert
