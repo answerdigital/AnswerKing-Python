@@ -1,4 +1,4 @@
-.PHONY: clean test
+.PHONY: clean test lint migrate
 
 clean:
 	find . -name "*.pyc" -print0 | xargs -0 rm -rf
@@ -8,14 +8,18 @@ clean:
 	-rm -rf dist
 	-rm -rf src/*.egg-info
 
+lint:
+	poetry run black . --line-length=79
+	poetry run pycodestyle --ignore=E501 .
+	poetry run pyright
+
 test: clean
-	-poetry run coverage run --omit="/migrations/, answerking/" manage.py test
-	-poetry run coverage report
-	-poetry run coverage html
+	poetry run coverage run --omit=*/migrations/*,*answerking/* manage.py test --noinput
+	poetry run coverage report
+	poetry run coverage html
 
-format:
-	-poetry run black . --line-length=79
-	-poetry run pycodestyle --ignore=E501 .
-	-poetry run pyright
+migrate:
+	poetry run python manage.py makemigrations
+	poetry run python manage.py migrate
 
-all: format clean test
+prepare: lint test
