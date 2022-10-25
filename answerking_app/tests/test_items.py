@@ -121,9 +121,7 @@ class ItemTests(TestCase):
         expected: ItemType = {**expected_id, **post_data}
 
         # Act
-        response = client.post(
-            "/api/items", post_data, content_type="application/json"
-        )
+        response = client.post("/api/items", post_data, content_type="application/json")
         actual = response.json()
 
         created_item: Item = Item.objects.filter(name="Whopper")[0]
