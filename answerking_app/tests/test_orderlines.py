@@ -1,5 +1,11 @@
 from django.test import TestCase, Client
 from answerking_app.models.models import Item, Order, Status
+from answerking_app.views.ErrorType import ErrorMessage
+from answerking_app.tests.API_types import (
+    OrderType,
+    OrderItemQtyType,
+    OrderIncorrectItemQtyType,
+)
 
 client = Client()
 
@@ -8,34 +14,20 @@ class OrderLineTests(TestCase):
     maxDiff = None
 
     def setUp(self):
-        self.status_pending = Status.objects.create(status="Pending")
+        self.status_pending: Status = Status.objects.create(status="Pending")
 
-        self.test_item_1 = Item.objects.create(
-            name="Burger",
-            price=2.50,
-            description="desc",
-            stock=100,
-            calories=100,
+        self.test_item_1: Item = Item.objects.create(
+            name="Burger", price=2.50, description="desc", stock=100, calories=100
         )
-        self.test_item_2 = Item.objects.create(
-            name="Coke",
-            price=1.50,
-            description="desc",
-            stock=100,
-            calories=100,
+        self.test_item_2: Item = Item.objects.create(
+            name="Coke", price=1.50, description="desc", stock=100, calories=100
         )
-        self.test_item_3 = Item.objects.create(
-            name="Chips",
-            price=1.50,
-            description="desc",
-            stock=100,
-            calories=100,
+        self.test_item_3: Item = Item.objects.create(
+            name="Chips", price=1.50, description="desc", stock=100, calories=100
         )
 
-        self.test_order_1 = Order.objects.create(
-            address="123 Street, Leeds, LS73PP",
-            status=self.status_pending,
-            total=7.50,
+        self.test_order_1: Order = Order.objects.create(
+            address="123 Street, Leeds, LS73PP", status=self.status_pending, total=7.50
         )
 
         self.test_order_1.order_items.add(
@@ -53,7 +45,7 @@ class OrderLineTests(TestCase):
 
     def test_add_new_orderline_valid_returns_ok(self):
         # Arrange
-        expected = {
+        expected: OrderType = {
             "id": self.test_order_1.id,
             "address": self.test_order_1.address,
             "status": self.status_pending.status,
@@ -75,7 +67,7 @@ class OrderLineTests(TestCase):
             ],
             "total": "6.50",
         }
-        post_data = {"quantity": 1}
+        post_data: OrderItemQtyType = {"quantity": 1}
 
         # Act
         response = client.put(
@@ -91,7 +83,7 @@ class OrderLineTests(TestCase):
 
     def test_update_existing_orderline_valid_returns_ok(self):
         # Arrange
-        expected = {
+        expected: OrderType = {
             "id": self.test_order_1.id,
             "address": self.test_order_1.address,
             "status": self.status_pending.status,
@@ -106,7 +98,7 @@ class OrderLineTests(TestCase):
             ],
             "total": "2.50",
         }
-        post_data = {"quantity": 1}
+        post_data: OrderItemQtyType = {"quantity": 1}
 
         # Act
         response = client.put(
@@ -122,14 +114,14 @@ class OrderLineTests(TestCase):
 
     def test_update_existing_orderline_zero_quantity_returns_ok(self):
         # Arrange
-        expected = {
+        expected: OrderType = {
             "id": self.test_order_1.id,
             "address": self.test_order_1.address,
             "status": self.status_pending.status,
             "order_items": [],
             "total": "0.00",
         }
-        post_data = {"quantity": 0}
+        post_data: OrderItemQtyType = {"quantity": 0}
 
         # Act
         response = client.put(
@@ -145,13 +137,13 @@ class OrderLineTests(TestCase):
 
     def test_update_existing_orderline_invalid_returns_bad_request(self):
         # Arrange
-        expected_failure_error = {
+        expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Resource update failure",
                 "details": "Failed to add item to order",
             }
         }
-        post_data = {"quantity": "f"}
+        post_data: OrderIncorrectItemQtyType = {"quantity": "f"}
 
         # Act
         response = client.put(
@@ -167,13 +159,13 @@ class OrderLineTests(TestCase):
 
     def test_update_existing_orderline_negative_returns_bad_request(self):
         # Arrange
-        expected_failure_error = {
+        expected_failure_error: ErrorMessage = {
             "error": {
                 "message": "Resource update failure",
                 "details": "Failed to add item to order",
             }
         }
-        post_data = {"quantity": -1}
+        post_data: OrderIncorrectItemQtyType = {"quantity": -1}
 
         # Act
         response = client.put(
@@ -189,11 +181,8 @@ class OrderLineTests(TestCase):
 
     def test_nonexistant_orderid_returns_not_found(self):
         # Arrange
-        expected = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
+        expected: ErrorMessage = {
+            "error": {"message": "Request failed", "details": "Object not found"}
         }
 
         # Act
@@ -210,11 +199,8 @@ class OrderLineTests(TestCase):
 
     def test_nonexistant_itemid_returns_not_found(self):
         # Arrange
-        expected = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
+        expected: ErrorMessage = {
+            "error": {"message": "Request failed", "details": "Object not found"}
         }
 
         # Act
@@ -231,11 +217,8 @@ class OrderLineTests(TestCase):
 
     def test_invalid_orderid_returns_not_found(self):
         # Arrange
-        expected = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
+        expected: ErrorMessage = {
+            "error": {"message": "Request failed", "details": "Object not found"}
         }
 
         # Act
@@ -252,11 +235,8 @@ class OrderLineTests(TestCase):
 
     def test_invalid_itemid_returns_not_found(self):
         # Arrange
-        expected = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
+        expected: ErrorMessage = {
+            "error": {"message": "Request failed", "details": "Object not found"}
         }
 
         # Act
@@ -273,7 +253,7 @@ class OrderLineTests(TestCase):
 
     def test_delete_valid_returns_ok(self):
         # Arrange
-        expected = {
+        expected: OrderType = {
             "id": self.test_order_1.id,
             "address": self.test_order_1.address,
             "status": self.status_pending.status,
@@ -293,7 +273,7 @@ class OrderLineTests(TestCase):
 
     def test_delete_nonexistant_id_returns_not_found(self):
         # Arrange
-        expected = {
+        expected: ErrorMessage = {
             "error": {
                 "message": "Resource update failure",
                 "details": "Item not in order",
@@ -312,11 +292,8 @@ class OrderLineTests(TestCase):
 
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
-        expected = {
-            "error": {
-                "details": "Object not found",
-                "message": "Request failed",
-            }
+        expected: ErrorMessage = {
+            "error": {"details": "Object not found", "message": "Request failed"}
         }
 
         # Act
@@ -329,7 +306,7 @@ class OrderLineTests(TestCase):
 
     def test_delete_item_when_in_order_returns_bad_request(self):
         # Arrange
-        expected = {
+        expected: ErrorMessage = {
             "error": {
                 "message": "Request failed",
                 "details": "Item exists in an order",
