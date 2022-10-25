@@ -16,7 +16,9 @@ from answerking_app.views.ErrorType import ErrorMessage
 
 class OrderListView(View):
     @csrf_exempt
-    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse | HttpResponse:
+    def get(
+        self, request: HttpRequest, *args, **kwargs
+    ) -> JsonResponse | HttpResponse:
         orders: QuerySet[Order] = order_service.get_all()
         response: list[ReturnDict] = []
 
@@ -60,7 +62,9 @@ class OrderListView(View):
 
         response: ReturnDict = OrderSerializer(created_order).data
 
-        return JsonResponse(response, status=200, encoder=DjangoJSONEncoder, safe=False)
+        return JsonResponse(
+            response, status=200, encoder=DjangoJSONEncoder, safe=False
+        )
 
 
 class OrderDetailView(View):
@@ -85,7 +89,9 @@ class OrderDetailView(View):
         return JsonResponse(response, encoder=DjangoJSONEncoder, safe=False)
 
     @csrf_exempt
-    def put(self, request: HttpRequest, *args, **kwargs) -> JsonResponse | HttpResponse:
+    def put(
+        self, request: HttpRequest, *args, **kwargs
+    ) -> JsonResponse | HttpResponse:
         order: Order | None = order_service.get_by_id(kwargs["order_id"])
         if not order:
             error_msg: ErrorMessage = {
@@ -130,7 +136,9 @@ class OrderDetailView(View):
 
         response: ReturnDict = OrderSerializer(updated_order).data
 
-        return JsonResponse(response, status=200, encoder=DjangoJSONEncoder, safe=False)
+        return JsonResponse(
+            response, status=200, encoder=DjangoJSONEncoder, safe=False
+        )
 
     @csrf_exempt
     def delete(
@@ -156,7 +164,9 @@ class OrderDetailView(View):
 
 class OrderItemListView(View):
     @csrf_exempt
-    def put(self, request: HttpRequest, *args, **kwargs) -> JsonResponse | HttpResponse:
+    def put(
+        self, request: HttpRequest, *args, **kwargs
+    ) -> JsonResponse | HttpResponse:
         order: Order | None = order_service.get_by_id(kwargs["order_id"])
         item: Item | None = item_service.get_by_id(kwargs["item_id"])
         if not order or not item:
