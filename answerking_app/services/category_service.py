@@ -1,11 +1,8 @@
 from django.db.models import QuerySet
 
 from answerking_app.models.models import Category, Item
-from answerking_app.models.validation.serializers import (
-    CategorySerializer,
-    ItemSerializer,
-)
-
+from answerking_app.models.serializers import (CategorySerializer,
+                                               ItemSerializer)
 from answerking_app.services.service_types.CategoryTypes import CategoryDict
 from answerking_app.services.service_types.ItemTypes import ItemWithIDDict
 
@@ -49,9 +46,7 @@ def update(category: Category, body: CategoryDict) -> Category | None:
         return None
 
     try:
-        existing: Category = Category.objects.get(
-            name=serialized_cat.data["name"]
-        )
+        existing: Category = Category.objects.get(name=serialized_cat.data["name"])
         if not category == existing:
             return None
     except Category.DoesNotExist:

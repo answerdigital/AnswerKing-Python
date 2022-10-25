@@ -1,22 +1,14 @@
 from decimal import Decimal, InvalidOperation
 
-from django.db.models import QuerySet
 from django.core.exceptions import ValidationError
 from django.db import DataError
+from django.db.models import QuerySet
 
-from answerking_app.models.models import Order, Item, Status
-
-from answerking_app.models.validation.validators import (
-    validate_positive_number,
-    validate_price,
-    validate_address_string,
-)
-
-from answerking_app.services.service_types.OrderTypes import (
-    OrderCreateDict,
-    OrderItems,
-    OrderUpdateDict,
-)
+from answerking_app.models.models import Item, Order, Status
+from answerking_app.models.serializers import OrderSerializer
+from answerking_app.services.service_types.OrderTypes import (OrderCreateDict,
+                                                              OrderItems,
+                                                              OrderUpdateDict)
 
 
 def get_all() -> QuerySet[Order]:
@@ -37,32 +29,32 @@ def get_by_id(order_id: str) -> Order | None:
 
 
 def create(body: OrderCreateDict) -> Order | None:
-    try:
-        address: str = validate_address_string(body["address"])
-    except (KeyError, ValidationError):
+    serialized_order = OrderSerializer(data=body)
+    if not serialized_order.is_valid():
         return None
-
     status, _ = Status.objects.get_or_create(status="Pending")
 
-    created_order: Order = Order(address=address, status=status, total=0.00)
+    created_order: Order = Order(
+        address=serialized_order.data["address"], status=status, total=0.00
+    )
     created_order.save()
 
     try:
-        order_items: list[OrderItems] = body["order_items"]
-        if not order_items:
+        if not serialized_order.data["order_items"]:
             return created_order
     except KeyError:
         return created_order
 
-    for oi in order_items:
+    for oi in serialized_order.data["order_items"]:
         try:
             try:
+                # note for tommorrow, id doesn not exist in the oi object
                 item: Item = Item.objects.get(pk=oi["id"])
                 quantity: int = int(oi["quantity"])
                 price: Decimal = item.price
                 stock: int = item.stock
                 sub_total: Decimal = Decimal(quantity * price)
-            except (KeyError, InvalidOperation, ValueError):
+            except (KeyError, InvalidOperation, ValueError) as e:
                 created_order.delete()
                 return None
 
@@ -109,14 +101,8 @@ def update(order: Order, body: OrderUpdateDict) -> Order | None:
 
 
 def add_item(order: Order, item: Item, quantity: int) -> Order | None:
-    try:
-        quantity = validate_positive_number(quantity)
-        if quantity == 0:
-            return remove_item(order, item)
-
-        sub_total: Decimal = validate_price(quantity * item.price)
-    except ValidationError:
-        return None
+    if quantity == 0:
+        return remove_item(order, item)
 
     if item not in order.order_items.all():
         try:

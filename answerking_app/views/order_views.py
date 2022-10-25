@@ -1,17 +1,15 @@
 from django.db.models import QuerySet
-from rest_framework.utils.serializer_helpers import ReturnDict
+from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.utils.serializer_helpers import ReturnDict
 from rest_framework.views import APIView, csrf_exempt
 
-from answerking_app.models.models import Order, Item
-from answerking_app.services import order_service, item_service
-from answerking_app.models.validation.serializers import OrderSerializer
-from answerking_app.services.service_types.OrderTypes import (
-    OrderCreateDict,
-    OrderUpdateDict,
-)
+from answerking_app.models.models import Item, Order
+from answerking_app.models.serializers import OrderSerializer
+from answerking_app.services import item_service, order_service
+from answerking_app.services.service_types.OrderTypes import (OrderCreateDict,
+                                                              OrderUpdateDict)
 from answerking_app.views.ErrorType import ErrorMessage
 
 

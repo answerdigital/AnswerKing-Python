@@ -1,8 +1,7 @@
 from django.db.models import QuerySet
 
 from answerking_app.models.models import Item, OrderLine
-from answerking_app.models.validation.serializers import ItemSerializer
-
+from answerking_app.models.serializers import ItemSerializer
 from answerking_app.services.service_types.ItemTypes import ItemDict
 
 
@@ -28,9 +27,7 @@ def create(body: ItemDict) -> Item | None:
     if not serialized_item.is_valid():
         return None
 
-    existing: bool = Item.objects.filter(
-        name=serialized_item.data["name"]
-    ).exists()
+    existing: bool = Item.objects.filter(name=serialized_item.data["name"]).exists()
     if existing:
         return None
 

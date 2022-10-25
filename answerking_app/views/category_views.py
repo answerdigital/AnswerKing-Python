@@ -1,13 +1,13 @@
 from django.db.models import QuerySet
 from rest_framework import status
-from rest_framework.utils.serializer_helpers import ReturnDict
-from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.utils.serializer_helpers import ReturnDict
 from rest_framework.views import APIView, csrf_exempt
 
 from answerking_app.models.models import Category, Item
+from answerking_app.models.serializers import CategorySerializer
 from answerking_app.services import category_service, item_service
-from answerking_app.models.validation.serializers import CategorySerializer
 from answerking_app.services.service_types.CategoryTypes import CategoryDict
 from answerking_app.views.ErrorType import ErrorMessage
 
@@ -85,7 +85,6 @@ class CategoryDetailView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        body: CategoryDict = request.data
         updated_category: Category | None = category_service.update(
             category, body
         )
