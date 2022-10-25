@@ -5,7 +5,6 @@ from django.db.models.query import QuerySet
 from answerking_app.views.ErrorType import ErrorMessage
 from answerking_app.tests.API_types import NewItemType, ItemType, IDType
 
-
 client = Client()
 
 

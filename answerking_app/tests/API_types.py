@@ -1,4 +1,4 @@
-from typing import TypedDict, Any
+from typing import TypedDict
 
 
 class IDType(TypedDict):

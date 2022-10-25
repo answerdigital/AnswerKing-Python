@@ -189,7 +189,7 @@ class CategoryTests(TestCase):
         old_list = client.get("/api/categories").json()
         post_data: NewCategoryType = {"name": "Gluten Free", "items": []}
         expected_id: IDType = {"id": self.test_cat_2.id + 1}
-        expected: CategoryType = {**post_data, **expected_id}
+        expected: CategoryType =  {**post_data, **expected_id}
 
         # Act
         response = client.post(
