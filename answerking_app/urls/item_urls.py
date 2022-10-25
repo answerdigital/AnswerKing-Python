@@ -6,5 +6,9 @@ from answerking_app.views import item_views
 
 urlpatterns: list[partial] = [
     path("items", item_views.ItemListView.as_view(), name="item_list"),
-    path("items/<item_id>", item_views.ItemDetailView.as_view(), name="item_detail"),
+    path(
+        "items/<item_id>",
+        item_views.ItemDetailView.as_view(),
+        name="item_detail",
+    ),
 ]

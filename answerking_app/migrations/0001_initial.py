@@ -123,7 +123,8 @@ class Migration(migrations.Migration):
             model_name="order",
             name="status",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="answerking_app.status"
+                on_delete=django.db.models.deletion.CASCADE,
+                to="answerking_app.status",
             ),
         ),
         migrations.CreateModel(
