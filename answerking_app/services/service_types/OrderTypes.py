@@ -14,3 +14,11 @@ class OrderCreateDict(TypedDict):
 class OrderUpdateDict(TypedDict):
     address: str
     status: str
+
+
+class QuantityUpdateDict(TypedDict):
+    quantity: int
+
+
+class StatusUpdateDict(TypedDict):
+    status: str

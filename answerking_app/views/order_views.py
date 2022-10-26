@@ -136,23 +136,8 @@ class OrderItemListView(APIView):
                 error_msg,
                 status=status.HTTP_404_NOT_FOUND,
             )
-
-        try:
-            body: dict = request.data
-            quantity: int = body["quantity"]
-        except KeyError as e:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Failed data validation",
-                    "details": f"'quantity' not found in json body.",
-                }
-            }
-            return Response(
-                error_msg,
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        order: Order | None = order_service.add_item(order, item, quantity)
+        body: dict = request.data
+        order: Order | None = order_service.add_item(order, item, body)
         if not order:
             error_msg: ErrorMessage = {
                 "error": {

@@ -1,14 +1,13 @@
 from decimal import Decimal, InvalidOperation
 
-from django.core.exceptions import ValidationError
 from django.db import DataError
 from django.db.models import QuerySet
 
 from answerking_app.models.models import Item, Order, Status
-from answerking_app.models.serializers import OrderSerializer
-from answerking_app.services.service_types.OrderTypes import (OrderCreateDict,
-                                                              OrderItems,
-                                                              OrderUpdateDict)
+from answerking_app.models.serializers import (ClientOrderInfoUpdateSerializer,
+                                               ClientOrderSerializer)
+from answerking_app.services.service_types.OrderTypes import (
+    OrderCreateDict, OrderUpdateDict, QuantityUpdateDict, StatusUpdateDict)
 
 
 def get_all() -> QuerySet[Order]:
@@ -29,7 +28,7 @@ def get_by_id(order_id: str) -> Order | None:
 
 
 def create(body: OrderCreateDict) -> Order | None:
-    serialized_order = OrderSerializer(data=body)
+    serialized_order = ClientOrderSerializer(data=body)
     if not serialized_order.is_valid():
         return None
     status, _ = Status.objects.get_or_create(status="Pending")
@@ -48,13 +47,13 @@ def create(body: OrderCreateDict) -> Order | None:
     for oi in serialized_order.data["order_items"]:
         try:
             try:
-                # note for tommorrow, id doesn not exist in the oi object
+                # note for tommorrow, io doesn not exist in the oi object
                 item: Item = Item.objects.get(pk=oi["id"])
                 quantity: int = int(oi["quantity"])
                 price: Decimal = item.price
                 stock: int = item.stock
                 sub_total: Decimal = Decimal(quantity * price)
-            except (KeyError, InvalidOperation, ValueError) as e:
+            except (KeyError, InvalidOperation, ValueError):
                 created_order.delete()
                 return None
 
@@ -78,51 +77,48 @@ def create(body: OrderCreateDict) -> Order | None:
 
 
 def update(order: Order, body: OrderUpdateDict) -> Order | None:
-    try:
-        address: str = validate_address_string(body["address"])
-        order.address = address
-    except ValidationError:
+    serialized_order = ClientOrderSerializer(data=body)
+    if not serialized_order.is_valid():
         return None
-    except KeyError:
-        pass
-
-    try:
-        updated_status: str = body["status"]
-        status: Status = Status.objects.get(status=updated_status)
-        order.status = status
-    except Status.DoesNotExist:
-        return None
-    except KeyError:
-        pass
-
+    order.address = serialized_order.data["address"]
     order.save()
 
     return order
 
 
-def add_item(order: Order, item: Item, quantity: int) -> Order | None:
-    if quantity == 0:
-        return remove_item(order, item)
+def add_item(
+    order: Order, item: Item, body: QuantityUpdateDict | StatusUpdateDict
+) -> Order | None:
+    serialized_body = ClientOrderInfoUpdateSerializer(data=body)
+    if not serialized_body.is_valid():
+        return None
+    quantity: int | None = serialized_body.data.get("quantity", None)
+    status: str | None = serialized_body.data.get("status", None)
 
-    if item not in order.order_items.all():
+    if quantity == 0:
+        remove_item(order, item)
+    elif quantity and item not in order.order_items.all():
         try:
             order.order_items.add(
                 item,
                 through_defaults={
                     "quantity": quantity,
-                    "sub_total": sub_total,
+                    "sub_total": item.price * quantity,
                 },
             )
         except DataError:
             return None
-    else:
+    elif quantity:
         try:
             order.orderline_set.filter(item=item.id).update(
-                quantity=quantity, sub_total=sub_total
+                quantity=quantity, sub_total=quantity * item.price
             )
         except DataError:
             return None
 
+    if status:
+        status_db: Status = Status.objects.get(status=updated_status)
+        order.status = status_db
     order.calculate_total()
     return order
 

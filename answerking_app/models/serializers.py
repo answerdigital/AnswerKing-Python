@@ -95,6 +95,9 @@ class OrderSerializer(serializers.ModelSerializer):
         trim_whitespace=True,
     )
 
+    def validate_address(self, value: str) -> str:
+        return compress_white_spaces(value)
+
     class Meta:
         model = Order
         fields = (
@@ -104,3 +107,48 @@ class OrderSerializer(serializers.ModelSerializer):
             "order_items",
             "total",
         )
+
+
+class ClientOrderLineSerializer(ItemSerializer):
+    id = serializers.IntegerField()
+    quantity = serializers.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)]
+    )
+
+    class Meta:
+        model = OrderLine
+        fields = ("id", "quantity")
+
+
+class ClientOrderSerializer(serializers.ModelSerializer):
+    order_items = ClientOrderLineSerializer(many=True, required=False)
+    address = serializers.CharField(
+        max_length=200,
+        allow_blank=False,
+        validators=[RegexValidator("^[a-zA-Z0-9 ,-]+$")],
+        trim_whitespace=True,
+    )
+
+    def validate_address(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+    class Meta:
+        model = Order
+        fields = ("order_items", "address")
+
+
+class ClientOrderInfoUpdateSerializer(serializers.ModelSerializer):
+    quantity = serializers.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
+        required=False,
+    )
+    status = serializers.CharField(
+        max_length=50,
+        allow_blank=False,
+        validators=[RegexValidator("^[a-zA-Z !]+$")],
+        required=False,
+    )
+
+    class Meta:
+        model = OrderLine
+        fields = ("quantity", "status")
