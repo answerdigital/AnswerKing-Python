@@ -8,8 +8,10 @@ from rest_framework.views import APIView, csrf_exempt
 from answerking_app.models.models import Item, Order
 from answerking_app.models.serializers import OrderSerializer
 from answerking_app.services import item_service, order_service
-from answerking_app.services.service_types.OrderTypes import (OrderCreateDict,
-                                                              OrderUpdateDict)
+from answerking_app.services.service_types.OrderTypes import (
+    OrderCreateDict,
+    OrderUpdateDict,
+)
 from answerking_app.views.ErrorType import ErrorMessage
 
 
