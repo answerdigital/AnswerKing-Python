@@ -85,7 +85,7 @@ def update(order: Order, body: OrderUpdateDict) -> Order | None:
     status: str | None = serialized_info.data.get("status", None)
 
     if address:
-        order.address = serialized_order.data["address"]
+        order.address = serialized_info.data["address"]
         order.save()
 
     if status:
