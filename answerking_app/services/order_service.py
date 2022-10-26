@@ -48,7 +48,6 @@ def create(body: OrderCreateDict) -> Order | None:
     for oi in serialized_order.data["order_items"]:
         try:
             try:
-                # note for tommorrow, io doesn not exist in the oi object
                 item: Item = Item.objects.get(pk=oi["id"])
                 quantity: int = int(oi["quantity"])
                 price: Decimal = item.price
