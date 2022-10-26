@@ -1,10 +1,7 @@
 import re
 
-from django.core.validators import (
-    MaxValueValidator,
-    MinValueValidator,
-    RegexValidator,
-)
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    RegexValidator)
 from rest_framework import serializers
 
 from answerking_app.models.models import Category, Item, Order, OrderLine
@@ -141,10 +138,14 @@ class ClientOrderSerializer(serializers.ModelSerializer):
 
 
 class ClientOrderInfoUpdateSerializer(serializers.ModelSerializer):
-    quantity = serializers.IntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
+    address = serializers.CharField(
+        max_length=200,
+        allow_blank=False,
+        validators=[RegexValidator("^[a-zA-Z0-9 ,-]+$")],
+        trim_whitespace=True,
         required=False,
     )
+
     status = serializers.CharField(
         max_length=50,
         allow_blank=False,
@@ -154,4 +155,14 @@ class ClientOrderInfoUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderLine
-        fields = ("quantity", "status")
+        fields = ("address", "status")
+
+
+class ClientQuantityUpdateSerializer(serializers.ModelSerializer):
+    quantity = serializers.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)]
+    )
+
+    class Meta:
+        model = OrderLine
+        fields = ("quantity",)
