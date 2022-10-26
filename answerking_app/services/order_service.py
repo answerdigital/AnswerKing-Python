@@ -117,7 +117,7 @@ def add_item(
             return None
 
     if status:
-        status_db: Status = Status.objects.get(status=updated_status)
+        status_db: Status = Status.objects.get(status=status)
         order.status = status_db
     order.calculate_total()
     return order

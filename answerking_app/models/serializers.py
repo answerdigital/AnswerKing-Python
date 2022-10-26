@@ -1,7 +1,10 @@
 import re
 
-from django.core.validators import (MaxValueValidator, MinValueValidator,
-                                    RegexValidator)
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+    RegexValidator,
+)
 from rest_framework import serializers
 
 from answerking_app.models.models import Category, Item, Order, OrderLine
