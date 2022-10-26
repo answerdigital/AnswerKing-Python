@@ -1,52 +1,35 @@
-import json
-from json import JSONDecodeError
-
 from django.db.models import QuerySet
-from django.http import HttpResponse, JsonResponse, HttpRequest
-from django.core.serializers.json import DjangoJSONEncoder
-from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.utils.serializer_helpers import ReturnDict
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView, csrf_exempt
 
 from answerking_app.models.models import Order, Item
 from answerking_app.services import order_service, item_service
 from answerking_app.models.validation.serializers import OrderSerializer
+from answerking_app.services.service_types.OrderTypes import (
+    OrderCreateDict,
+    OrderUpdateDict,
+)
 from answerking_app.views.ErrorType import ErrorMessage
 
 
-class OrderListView(View):
+class OrderListView(APIView):
     @csrf_exempt
-    def get(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> JsonResponse | HttpResponse:
+    def get(self, request: Request, *args, **kwargs) -> Response:
         orders: QuerySet[Order] = order_service.get_all()
         response: list[ReturnDict] = []
 
         if orders:
             response = [OrderSerializer(order).data for order in orders]
 
-        return JsonResponse(response, encoder=DjangoJSONEncoder, safe=False)
+        return Response(response, status=status.HTTP_200_OK)
 
     @csrf_exempt
-    def post(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> JsonResponse | HttpResponse:
-        try:
-            body: dict | None = json.loads(request.body)
-            if not body:
-                return HttpResponse(status=400)
-        except JSONDecodeError as e:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Failed data validation",
-                    "details": f"Invalid JSON in body. {e.msg}",
-                }
-            }
-            return JsonResponse(
-                error_msg,
-                status=400,
-            )
+    def post(self, request: Request, *args, **kwargs) -> Response:
 
+        body: OrderCreateDict = request.data
         created_order: Order | None = order_service.create(body)
         if not created_order:
             error_msg: ErrorMessage = {
@@ -55,21 +38,19 @@ class OrderListView(View):
                     "details": "Object could not be created",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
                 status=400,
             )
 
         response: ReturnDict = OrderSerializer(created_order).data
 
-        return JsonResponse(
-            response, status=200, encoder=DjangoJSONEncoder, safe=False
-        )
+        return Response(response, status=status.HTTP_200_OK)
 
 
-class OrderDetailView(View):
+class OrderDetailView(APIView):
     @csrf_exempt
-    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    def get(self, request: Request, *args, **kwargs) -> Response:
         order: Order | None = order_service.get_by_id(kwargs["order_id"])
 
         if not order:
@@ -79,19 +60,17 @@ class OrderDetailView(View):
                     "details": "Object not found",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=404,
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         response: ReturnDict = OrderSerializer(order).data
 
-        return JsonResponse(response, encoder=DjangoJSONEncoder, safe=False)
+        return Response(response, status=status.HTTP_200_OK)
 
     @csrf_exempt
-    def put(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> JsonResponse | HttpResponse:
+    def put(self, request: Request, *args, **kwargs) -> Response:
         order: Order | None = order_service.get_by_id(kwargs["order_id"])
         if not order:
             error_msg: ErrorMessage = {
@@ -100,27 +79,12 @@ class OrderDetailView(View):
                     "details": "Object not found",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=404,
+                status=status.HTTP_404_NOT_FOUND,
             )
 
-        try:
-            body: dict | None = json.loads(request.body)
-            if not body:
-                return HttpResponse(status=400)
-        except JSONDecodeError as e:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Failed data validation",
-                    "details": f"Invalid JSON in body. {e.msg}",
-                }
-            }
-            return JsonResponse(
-                error_msg,
-                status=400,
-            )
-
+        body: OrderUpdateDict = request.data
         updated_order: Order | None = order_service.update(order, body)
         if not updated_order:
             error_msg: ErrorMessage = {
@@ -129,21 +93,17 @@ class OrderDetailView(View):
                     "details": "Object could not be updated",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=400,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         response: ReturnDict = OrderSerializer(updated_order).data
 
-        return JsonResponse(
-            response, status=200, encoder=DjangoJSONEncoder, safe=False
-        )
+        return Response(response, status=status.HTTP_200_OK)
 
     @csrf_exempt
-    def delete(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> JsonResponse | HttpResponse:
+    def delete(self, request: Request, *args, **kwargs) -> Response:
         order: Order | None = order_service.get_by_id(kwargs["order_id"])
         if not order:
             error_msg: ErrorMessage = {
@@ -152,21 +112,19 @@ class OrderDetailView(View):
                     "details": "Object not found",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=404,
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         order.delete()
 
-        return HttpResponse(status=204)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class OrderItemListView(View):
+class OrderItemListView(APIView):
     @csrf_exempt
-    def put(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> JsonResponse | HttpResponse:
+    def put(self, request: Request, *args, **kwargs) -> Response:
         order: Order | None = order_service.get_by_id(kwargs["order_id"])
         item: Item | None = item_service.get_by_id(kwargs["item_id"])
         if not order or not item:
@@ -176,15 +134,13 @@ class OrderItemListView(View):
                     "details": "Object not found",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=404,
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         try:
-            body: dict | None = json.loads(request.body)
-            if not body:
-                return HttpResponse(status=400)
+            body: dict = request.data
             quantity: int = body["quantity"]
         except KeyError as e:
             error_msg: ErrorMessage = {
@@ -193,20 +149,9 @@ class OrderItemListView(View):
                     "details": f"'quantity' not found in json body.",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=400,
-            )
-        except JSONDecodeError as e:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Failed data validation",
-                    "details": f"Invalid JSON in body. {e.msg}",
-                }
-            }
-            return JsonResponse(
-                error_msg,
-                status=400,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         order: Order | None = order_service.add_item(order, item, quantity)
@@ -217,17 +162,17 @@ class OrderItemListView(View):
                     "details": "Failed to add item to order",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=400,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         response: ReturnDict = OrderSerializer(order).data
 
-        return JsonResponse(response, encoder=DjangoJSONEncoder, safe=False)
+        return Response(response, status=status.HTTP_200_OK)
 
     @csrf_exempt
-    def delete(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    def delete(self, request: Request, *args, **kwargs) -> Response:
         order: Order | None = order_service.get_by_id(kwargs["order_id"])
         item: Item | None = item_service.get_by_id(kwargs["item_id"])
         if not order or not item:
@@ -237,9 +182,9 @@ class OrderItemListView(View):
                     "details": "Object not found",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=404,
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         if item not in order.order_items.all():
@@ -249,9 +194,9 @@ class OrderItemListView(View):
                     "details": "Item not in order",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=400,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         order: Order | None = order_service.remove_item(order, item)
@@ -262,11 +207,11 @@ class OrderItemListView(View):
                     "details": "Failed to delete item from order",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=400,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         response: ReturnDict = OrderSerializer(order).data
 
-        return JsonResponse(response, encoder=DjangoJSONEncoder, safe=False)
+        return Response(response, status=status.HTTP_200_OK)

@@ -155,3 +155,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 # SECURE_FRAME_DENY = False
 # SECURE_CONTENT_TYPE_NOSNIFF = False
 # SECURE_BROWSER_XSS_FILTER = False
+
+REST_FRAMEWORK = {
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+    ]
+}
