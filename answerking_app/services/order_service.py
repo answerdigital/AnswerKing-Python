@@ -4,11 +4,17 @@ from django.db import DataError
 from django.db.models import QuerySet
 
 from answerking_app.models.models import Item, Order, Status
-from answerking_app.models.serializers import (ClientOrderInfoUpdateSerializer,
-                                               ClientOrderSerializer,
-                                               ClientQuantityUpdateSerializer)
+from answerking_app.models.serializers import (
+    ClientOrderInfoUpdateSerializer,
+    ClientOrderSerializer,
+    ClientQuantityUpdateSerializer,
+)
 from answerking_app.services.service_types.OrderTypes import (
-    OrderCreateDict, OrderUpdateDict, QuantityUpdateDict, StatusUpdateDict)
+    OrderCreateDict,
+    OrderUpdateDict,
+    QuantityUpdateDict,
+    StatusUpdateDict,
+)
 
 
 def get_all() -> QuerySet[Order]:
@@ -98,7 +104,9 @@ def update(order: Order, body: OrderUpdateDict) -> Order | None:
     return order
 
 
-def add_item(order: Order, item: Item, body: QuantityUpdateDict) -> Order | None:
+def add_item(
+    order: Order, item: Item, body: QuantityUpdateDict
+) -> Order | None:
     serialized_body = ClientQuantityUpdateSerializer(data=body)
     if not serialized_body.is_valid():
         return None
