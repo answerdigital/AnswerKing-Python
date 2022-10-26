@@ -8,7 +8,6 @@ from rest_framework.views import APIView, csrf_exempt
 from answerking_app.models.models import Category, Item
 from answerking_app.models.serializers import CategorySerializer
 from answerking_app.services import category_service, item_service
-from answerking_app.services.service_types.CategoryTypes import CategoryDict
 from answerking_app.views.ErrorType import ErrorMessage
 
 
@@ -26,8 +25,9 @@ class CategoryListView(APIView):
     @csrf_exempt
     def post(self, request: Request, *args, **kwargs) -> Response:
 
-        body: CategoryDict = request.data
-        created_category: Category | None = category_service.create(body)
+        created_category: Category | None = category_service.create(
+            request.data
+        )
         if not created_category:
             error_msg: ErrorMessage = {
                 "error": {
@@ -86,7 +86,7 @@ class CategoryDetailView(APIView):
             )
 
         updated_category: Category | None = category_service.update(
-            category, body
+            category, request.data
         )
         if not updated_category:
             error_msg: ErrorMessage = {

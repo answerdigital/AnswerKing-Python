@@ -53,29 +53,26 @@ def create(body: OrderCreateDict) -> Order | None:
 
     for oi in serialized_order.data["order_items"]:
         try:
-            try:
-                item: Item = Item.objects.get(pk=oi["id"])
-                quantity: int = int(oi["quantity"])
-                price: Decimal = item.price
-                stock: int = item.stock
-                sub_total: Decimal = Decimal(quantity * price)
-            except (KeyError, InvalidOperation, ValueError):
-                created_order.delete()
-                return None
-
-            if quantity > stock:
-                created_order.delete()
-                return None
-
-            created_order.order_items.add(
-                item,
-                through_defaults={
-                    "quantity": quantity,
-                    "sub_total": sub_total,
-                },
-            )
+            item: Item = Item.objects.get(pk=oi["id"])
         except Item.DoesNotExist:
-            pass
+            created_order.delete()
+            return None
+
+        quantity: int = int(oi["quantity"])
+        price: Decimal = item.price
+        stock: int = item.stock
+        sub_total: Decimal = Decimal(quantity * price)
+        if quantity > stock:
+            created_order.delete()
+            return None
+
+        created_order.order_items.add(
+            item,
+            through_defaults={
+                "quantity": quantity,
+                "sub_total": sub_total,
+            },
+        )
 
     created_order.calculate_total()
 
