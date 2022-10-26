@@ -238,7 +238,7 @@ class ItemTests(TestCase):
             "name": "Bad data",
             "price": "1.50",
             "description": "desc",
-            "stock": "f100",
+            "stock": "f100",  # type: ignore
             "calories": 100,
         }
         expected_failure_error: ErrorMessage = {
@@ -291,7 +291,7 @@ class ItemTests(TestCase):
             "price": "1.50",
             "description": "desc",
             "stock": 100,
-            "calories": "100f",
+            "calories": "100f",  # type: ignore
         }
         expected_failure_error: ErrorMessage = {
             "error": {

@@ -19,7 +19,9 @@ class OrderTests(TestCase):
 
     def setUp(self):
         self.status_pending: Status = Status.objects.create(status="Pending")
-        self.status_complete: Status = Status.objects.create(status="Completed")
+        self.status_complete: Status = Status.objects.create(
+            status="Completed"
+        )
 
         self.test_item_1: Item = Item.objects.create(
             name="Burger",
@@ -314,7 +316,7 @@ class OrderTests(TestCase):
         # Arrange
         invalid_post_data: NewOrderType = {
             "address": "test",
-            "order_items": [{"values": "invalid"}],
+            "order_items": [{"values": "invalid"}],  # type: ignore
         }
         expected_failure_error: ErrorMessage = {
             "error": {

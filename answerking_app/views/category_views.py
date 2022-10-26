@@ -1,52 +1,32 @@
-import json
-from json import JSONDecodeError
-
 from django.db.models import QuerySet
-from django.http import HttpResponse, JsonResponse, HttpRequest
-from django.core.serializers.json import DjangoJSONEncoder
-from django.views import View
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status
 from rest_framework.utils.serializer_helpers import ReturnDict
+from rest_framework.response import Response
+from rest_framework.request import Request
+from rest_framework.views import APIView, csrf_exempt
 
 from answerking_app.models.models import Category, Item
 from answerking_app.services import category_service, item_service
 from answerking_app.models.validation.serializers import CategorySerializer
+from answerking_app.services.service_types.CategoryTypes import CategoryDict
 from answerking_app.views.ErrorType import ErrorMessage
 
 
-class CategoryListView(View):
+class CategoryListView(APIView):
     @csrf_exempt
-    def get(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> JsonResponse | HttpResponse:
+    def get(self, request: Request, *args, **kwargs) -> Response:
         categories: QuerySet[Category] = category_service.get_all()
         response: list[ReturnDict] = []
 
         if categories:
             response = [CategorySerializer(cat).data for cat in categories]
 
-        return JsonResponse(response, encoder=DjangoJSONEncoder, safe=False)
+        return Response(response, status=status.HTTP_200_OK)
 
     @csrf_exempt
-    def post(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> JsonResponse | HttpResponse:
-        try:
-            body: dict | None = json.loads(request.body)
-            if not body:
-                return HttpResponse(status=400)
-        except JSONDecodeError as e:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Failed data validation",
-                    "details": f"Invalid JSON in body. {e.msg}",
-                }
-            }
-            return JsonResponse(
-                error_msg,
-                status=400,
-            )
+    def post(self, request: Request, *args, **kwargs) -> Response:
 
+        body: CategoryDict = request.data
         created_category: Category | None = category_service.create(body)
         if not created_category:
             error_msg: ErrorMessage = {
@@ -55,21 +35,19 @@ class CategoryListView(View):
                     "details": "Object could not be created",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=400,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         response: ReturnDict = CategorySerializer(created_category).data
 
-        return JsonResponse(
-            response, status=200, encoder=DjangoJSONEncoder, safe=False
-        )
+        return Response(response, status=status.HTTP_200_OK)
 
 
-class CategoryDetailView(View):
+class CategoryDetailView(APIView):
     @csrf_exempt
-    def get(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    def get(self, request: Request, *args, **kwargs) -> Response:
         category: Category | None = category_service.get_by_id(
             kwargs["cat_id"]
         )
@@ -81,19 +59,17 @@ class CategoryDetailView(View):
                     "details": "Object not found",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=404,
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         response: ReturnDict = CategorySerializer(category).data
 
-        return JsonResponse(response, encoder=DjangoJSONEncoder, safe=False)
+        return Response(response, status=status.HTTP_200_OK)
 
     @csrf_exempt
-    def put(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> JsonResponse | HttpResponse:
+    def put(self, request: Request, *args, **kwargs) -> Response:
         category: Category | None = category_service.get_by_id(
             kwargs["cat_id"]
         )
@@ -104,27 +80,12 @@ class CategoryDetailView(View):
                     "details": "Object not found",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=404,
+                status=status.HTTP_404_NOT_FOUND,
             )
 
-        try:
-            body: dict | None = json.loads(request.body)
-            if not body:
-                return HttpResponse(status=400)
-        except JSONDecodeError as e:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Failed data validation",
-                    "details": f"Invalid JSON in body. {e.msg}",
-                }
-            }
-            return JsonResponse(
-                error_msg,
-                status=400,
-            )
-
+        body: CategoryDict = request.data
         updated_category: Category | None = category_service.update(
             category, body
         )
@@ -135,21 +96,17 @@ class CategoryDetailView(View):
                     "details": "Object could not be updated",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=400,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         response: ReturnDict = CategorySerializer(updated_category).data
 
-        return JsonResponse(
-            response, status=200, encoder=DjangoJSONEncoder, safe=False
-        )
+        return Response(response, status=status.HTTP_200_OK)
 
     @csrf_exempt
-    def delete(
-        self, request: HttpRequest, *args, **kwargs
-    ) -> JsonResponse | HttpResponse:
+    def delete(self, request: Request, *args, **kwargs) -> Response:
         category: Category | None = category_service.get_by_id(
             kwargs["cat_id"]
         )
@@ -160,19 +117,19 @@ class CategoryDetailView(View):
                     "details": "Object not found",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=404,
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         category.delete()
 
-        return HttpResponse(status=204)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class CategoryItemListView(View):
+class CategoryItemListView(APIView):
     @csrf_exempt
-    def put(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    def put(self, request: Request, *args, **kwargs) -> Response:
         category: Category | None = category_service.get_by_id(
             kwargs["cat_id"]
         )
@@ -184,9 +141,9 @@ class CategoryItemListView(View):
                     "details": "Object not found",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=404,
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         if item in category.items.all():
@@ -196,19 +153,19 @@ class CategoryItemListView(View):
                     "details": "Item already in category",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=400,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         category.items.add(item)
 
         response: ReturnDict = CategorySerializer(category).data
 
-        return JsonResponse(response, encoder=DjangoJSONEncoder, safe=False)
+        return Response(response, status=status.HTTP_200_OK)
 
     @csrf_exempt
-    def delete(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    def delete(self, request: Request, *args, **kwargs) -> Response:
         category: Category | None = category_service.get_by_id(
             kwargs["cat_id"]
         )
@@ -220,9 +177,9 @@ class CategoryItemListView(View):
                     "details": "Object not found",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=404,
+                status=status.HTTP_404_NOT_FOUND,
             )
 
         if item not in category.items.all():
@@ -232,13 +189,13 @@ class CategoryItemListView(View):
                     "details": "Item not in category",
                 }
             }
-            return JsonResponse(
+            return Response(
                 error_msg,
-                status=400,
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         category.items.remove(item)
 
         response: ReturnDict = CategorySerializer(category).data
 
-        return JsonResponse(response, encoder=DjangoJSONEncoder, safe=False)
+        return Response(response, status=status.HTTP_200_OK)

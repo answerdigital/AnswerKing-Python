@@ -272,7 +272,7 @@ class CategoryTests(TestCase):
             "name": "New Name",
             "items": [new_item],
         }
-        expected_id: IDType = {f"id": self.test_cat_1.id}
+        expected_id: IDType = {"id": self.test_cat_1.id}
         expected: CategoryType = {**post_data, **expected_id}
 
         expected["items"] = [
@@ -321,7 +321,7 @@ class CategoryTests(TestCase):
         ).json()
 
         post_data: NewCategoryType = {"name": "New Name", "items": []}
-        expected_id: IDType = {f"id": self.test_cat_1.id}
+        expected_id: IDType = {"id": self.test_cat_1.id}
         expected: CategoryType = {**post_data, **expected_id}
         expected["items"] = [
             {
