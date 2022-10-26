@@ -21,7 +21,6 @@ class ItemSerializer(serializers.ModelSerializer):
         max_length=50,
         allow_blank=False,
         validators=[RegexValidator("^[a-zA-Z !]+$")],
-        trim_whitespace=True,
     )
     price = serializers.DecimalField(
         max_digits=19,
@@ -37,7 +36,6 @@ class ItemSerializer(serializers.ModelSerializer):
                 "^[a-zA-Z .!,#]+$",
             )
         ],
-        trim_whitespace=True,
     )
     stock = serializers.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)]
@@ -63,7 +61,6 @@ class CategorySerializer(serializers.ModelSerializer):
         max_length=50,
         allow_blank=False,
         validators=[RegexValidator("^[a-zA-Z !]+$")],
-        trim_whitespace=True,
     )
     items = ItemSerializer(many=True)
 
@@ -95,7 +92,6 @@ class OrderSerializer(serializers.ModelSerializer):
         max_length=200,
         allow_blank=False,
         validators=[RegexValidator("^[a-zA-Z0-9 ,-]+$")],
-        trim_whitespace=True,
     )
 
     def validate_address(self, value: str) -> str:
@@ -129,7 +125,6 @@ class ClientOrderSerializer(serializers.ModelSerializer):
         max_length=200,
         allow_blank=False,
         validators=[RegexValidator("^[a-zA-Z0-9 ,-]+$")],
-        trim_whitespace=True,
     )
 
     def validate_address(self, value: str) -> str:
@@ -145,7 +140,6 @@ class ClientOrderInfoUpdateSerializer(serializers.ModelSerializer):
         max_length=200,
         allow_blank=False,
         validators=[RegexValidator("^[a-zA-Z0-9 ,-]+$")],
-        trim_whitespace=True,
         required=False,
     )
 

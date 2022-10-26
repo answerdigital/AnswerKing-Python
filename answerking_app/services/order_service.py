@@ -1,4 +1,4 @@
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 
 from django.db import DataError
 from django.db.models import QuerySet
@@ -13,7 +13,6 @@ from answerking_app.services.service_types.OrderTypes import (
     OrderCreateDict,
     OrderUpdateDict,
     QuantityUpdateDict,
-    StatusUpdateDict,
 )
 
 

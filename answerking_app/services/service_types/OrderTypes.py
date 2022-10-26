@@ -18,7 +18,3 @@ class OrderUpdateDict(TypedDict):
 
 class QuantityUpdateDict(TypedDict):
     quantity: int
-
-
-class StatusUpdateDict(TypedDict):
-    status: str
