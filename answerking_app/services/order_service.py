@@ -5,9 +5,8 @@ from django.db.models import QuerySet
 
 from answerking_app.models.models import Item, Order, Status
 from answerking_app.models.serializers import (
-    ClientOrderInfoUpdateSerializer,
-    ClientOrderSerializer,
-    ClientQuantityUpdateSerializer,
+    OrderLineSerializer,
+    OrderSerializer,
 )
 from answerking_app.services.service_types.OrderTypes import (
     OrderCreateDict,
@@ -34,9 +33,14 @@ def get_by_id(order_id: str) -> Order | None:
 
 
 def create(body: OrderCreateDict) -> Order | None:
-    serialized_order = ClientOrderSerializer(data=body)
+    serialized_order = OrderSerializer(data=body)
     if not serialized_order.is_valid():
+        print(serialized_order.error_messages)
         return None
+
+    if not serialized_order.data.get("address", None):
+        return None
+
     status, _ = Status.objects.get_or_create(status="Pending")
 
     created_order: Order = Order(
@@ -79,7 +83,7 @@ def create(body: OrderCreateDict) -> Order | None:
 
 
 def update(order: Order, body: OrderUpdateDict) -> Order | None:
-    serialized_info = ClientOrderInfoUpdateSerializer(data=body)
+    serialized_info = OrderSerializer(data=body, partial=True)
     if not serialized_info.is_valid():
         return None
 
@@ -103,7 +107,7 @@ def update(order: Order, body: OrderUpdateDict) -> Order | None:
 def add_item(
     order: Order, item: Item, body: QuantityUpdateDict
 ) -> Order | None:
-    serialized_body = ClientQuantityUpdateSerializer(data=body)
+    serialized_body = OrderLineSerializer(data=body)
     if not serialized_body.is_valid():
         return None
     quantity: int = serialized_body.data["quantity"]

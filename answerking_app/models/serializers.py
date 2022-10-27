@@ -6,6 +6,7 @@ from django.core.validators import (
     RegexValidator,
 )
 from rest_framework import serializers
+from typing_extensions import Required
 
 from answerking_app.models.models import Category, Item, Order, OrderLine
 
@@ -73,11 +74,11 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class OrderLineSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source="item.id")
-    name = serializers.ReadOnlyField(source="item.name")
-    price = serializers.ReadOnlyField(source="item.price")
+    id = serializers.IntegerField(source="item.id", required=False)
+    name = serializers.ReadOnlyField(source="item.name", required=False)
+    price = serializers.ReadOnlyField(source="item.price", required=False)
     quantity = serializers.IntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)]
+        validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
     )
 
     class Meta:
@@ -86,56 +87,10 @@ class OrderLineSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    status = serializers.CharField(source="status.status")
-    order_items = OrderLineSerializer(source="orderline_set", many=True)
-    address = serializers.CharField(
-        max_length=200,
-        allow_blank=False,
-        validators=[RegexValidator("^[a-zA-Z0-9 ,-]+$")],
+    status = serializers.CharField(source="status.status", required=False)
+    order_items = OrderLineSerializer(
+        source="orderline_set", many=True, required=False
     )
-
-    def validate_address(self, value: str) -> str:
-        return compress_white_spaces(value)
-
-    class Meta:
-        model = Order
-        fields = (
-            "id",
-            "address",
-            "status",
-            "order_items",
-            "total",
-        )
-
-
-class ClientOrderLineSerializer(ItemSerializer):
-    id = serializers.IntegerField()
-    quantity = serializers.IntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)]
-    )
-
-    class Meta:
-        model = OrderLine
-        fields = ("id", "quantity")
-
-
-class ClientOrderSerializer(serializers.ModelSerializer):
-    order_items = ClientOrderLineSerializer(many=True, required=False)
-    address = serializers.CharField(
-        max_length=200,
-        allow_blank=False,
-        validators=[RegexValidator("^[a-zA-Z0-9 ,-]+$")],
-    )
-
-    def validate_address(self, value: str) -> str:
-        return compress_white_spaces(value)
-
-    class Meta:
-        model = Order
-        fields = ("order_items", "address")
-
-
-class ClientOrderInfoUpdateSerializer(serializers.ModelSerializer):
     address = serializers.CharField(
         max_length=200,
         allow_blank=False,
@@ -143,23 +98,9 @@ class ClientOrderInfoUpdateSerializer(serializers.ModelSerializer):
         required=False,
     )
 
-    status = serializers.CharField(
-        max_length=50,
-        allow_blank=False,
-        validators=[RegexValidator("^[a-zA-Z !]+$")],
-        required=False,
-    )
+    def validate_address(self, value: str) -> str:
+        return compress_white_spaces(value)
 
     class Meta:
-        model = OrderLine
-        fields = ("address", "status")
-
-
-class ClientQuantityUpdateSerializer(serializers.ModelSerializer):
-    quantity = serializers.IntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)]
-    )
-
-    class Meta:
-        model = OrderLine
-        fields = ("quantity",)
+        model = Order
+        fields = "__all__"
