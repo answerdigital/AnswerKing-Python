@@ -1,10 +1,7 @@
 import re
 
-from django.core.validators import (
-    MaxValueValidator,
-    MinValueValidator,
-    RegexValidator,
-)
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    RegexValidator)
 from rest_framework import serializers
 from typing_extensions import Required
 
@@ -18,6 +15,7 @@ def compress_white_spaces(value: str) -> str:
 
 
 class ItemSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,
@@ -63,7 +61,7 @@ class CategorySerializer(serializers.ModelSerializer):
         allow_blank=False,
         validators=[RegexValidator("^[a-zA-Z !]+$")],
     )
-    items = ItemSerializer(many=True)
+    items = ItemSerializer(many=True, required=False)
 
     class Meta:
         model = Category
