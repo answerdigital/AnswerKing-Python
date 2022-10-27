@@ -23,7 +23,7 @@ class ItemSerializer(serializers.ModelSerializer):
         validators=[RegexValidator("^[a-zA-Z !]+$")],
     )
     price = serializers.DecimalField(
-        max_digits=19,
+        max_digits=18,
         decimal_places=2,
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
     )
