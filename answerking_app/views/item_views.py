@@ -1,14 +1,13 @@
 from django.db.models import QuerySet
-from rest_framework.utils.serializer_helpers import ReturnDict
-from rest_framework.response import Response
-from rest_framework.request import Request
 from rest_framework import status
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.utils.serializer_helpers import ReturnDict
 from rest_framework.views import APIView, csrf_exempt
 
 from answerking_app.models.models import Item
+from answerking_app.models.serializers import ItemSerializer
 from answerking_app.services import item_service
-from answerking_app.models.validation.serializers import ItemSerializer
-from answerking_app.services.service_types.ItemTypes import ItemDict
 from answerking_app.views.ErrorType import ErrorMessage
 
 
@@ -28,8 +27,7 @@ class ItemListView(APIView):
     @csrf_exempt
     def post(self, request: Request, *args, **kwargs) -> Response:
 
-        body: ItemDict = request.data
-        created_item: Item | None = item_service.create(body)
+        created_item: Item | None = item_service.create(request.data)
         if not created_item:
             error_msg: ErrorMessage = {
                 "error": {
@@ -82,8 +80,7 @@ class ItemDetailView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        body: ItemDict = request.data
-        updated_item: Item | None = item_service.update(item, body)
+        updated_item: Item | None = item_service.update(item, request.data)
         if not updated_item:
             error_msg: ErrorMessage = {
                 "error": {

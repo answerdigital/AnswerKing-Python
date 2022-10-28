@@ -4,29 +4,20 @@ from django.db import models
 
 
 class Item(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     price = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
     description = models.CharField(max_length=200, blank=True, null=True)
-    stock = models.IntegerField(default=0)
-    calories = models.IntegerField(default=0)
-
-    def __str__(self) -> str:
-        return self.name
+    stock = models.IntegerField()
+    calories = models.IntegerField()
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     items = models.ManyToManyField(Item)
-
-    def __str__(self) -> str:
-        return self.name
 
 
 class Status(models.Model):
     status = models.CharField(max_length=50)
-
-    def __str__(self) -> str:
-        return self.status
 
 
 class Order(models.Model):
@@ -34,9 +25,6 @@ class Order(models.Model):
     address = models.CharField(max_length=200)
     total = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
     order_items = models.ManyToManyField(Item, through="OrderLine")
-
-    def __str__(self) -> str:
-        return self.address
 
     def calculate_total(self):
         total = Decimal(0.00)
@@ -53,7 +41,7 @@ class Order(models.Model):
 class OrderLine(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=0)
+    quantity = models.IntegerField()
     sub_total = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.00
     )

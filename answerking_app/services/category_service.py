@@ -1,11 +1,11 @@
+from django.db import IntegrityError
 from django.db.models import QuerySet
 
 from answerking_app.models.models import Category, Item
-from answerking_app.models.validation.serializers import (
+from answerking_app.models.serializers import (
     CategorySerializer,
     ItemSerializer,
 )
-
 from answerking_app.services.service_types.CategoryTypes import CategoryDict
 from answerking_app.services.service_types.ItemTypes import ItemWithIDDict
 
@@ -32,15 +32,14 @@ def create(body: CategoryDict) -> Category | None:
     if not serialized_cat.is_valid():
         return None
 
-    cat_name: str = serialized_cat.data["name"]
-    existing: bool = Category.objects.filter(name=cat_name).exists()
-    if existing:
+    category: Category = Category(name=serialized_cat.data["name"])
+    try:
+        category.save()
+    except IntegrityError:
+        # duplicated key name
         return None
 
-    category: Category = Category(name=cat_name)
-    category.save()
-
-    return update_item_list(category, body["items"])
+    return update_item_list(category, serialized_cat.data.get("items", []))
 
 
 def update(category: Category, body: CategoryDict) -> Category | None:
@@ -48,31 +47,26 @@ def update(category: Category, body: CategoryDict) -> Category | None:
     if not serialized_cat.is_valid():
         return None
 
-    try:
-        existing: Category = Category.objects.get(
-            name=serialized_cat.data["name"]
-        )
-        if not category == existing:
-            return None
-    except Category.DoesNotExist:
-        pass
-
     category.name = serialized_cat.data["name"]
-    category.save()
+    try:
+        category.save()
+    except IntegrityError:
+        # duplicated key name
+        return None
 
-    return update_item_list(category, body["items"])
+    return update_item_list(category, serialized_cat.data.get("items", []))
 
 
 def update_item_list(
     category: Category, items: list[ItemWithIDDict]
 ) -> Category | None:
-    if items:
-        for i in items:
-            try:
-                serialized_item: ItemSerializer = ItemSerializer(data=i)
-                if not serialized_item.is_valid():
-                    return None
-                category.items.add(Item.objects.get(pk=i["id"]))
-            except Item.DoesNotExist:
-                pass
+    for item in items:
+        try:
+            serialized_item: ItemSerializer = ItemSerializer(data=item)
+            print(item)
+            if not serialized_item.is_valid():
+                return None
+            category.items.add(Item.objects.get(pk=serialized_item.data["id"]))
+        except Item.DoesNotExist:
+            pass
     return category

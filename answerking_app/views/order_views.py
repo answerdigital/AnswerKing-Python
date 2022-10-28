@@ -1,17 +1,13 @@
 from django.db.models import QuerySet
-from rest_framework.utils.serializer_helpers import ReturnDict
+from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.utils.serializer_helpers import ReturnDict
 from rest_framework.views import APIView, csrf_exempt
 
-from answerking_app.models.models import Order, Item
-from answerking_app.services import order_service, item_service
-from answerking_app.models.validation.serializers import OrderSerializer
-from answerking_app.services.service_types.OrderTypes import (
-    OrderCreateDict,
-    OrderUpdateDict,
-)
+from answerking_app.models.models import Item, Order
+from answerking_app.models.serializers import OrderSerializer
+from answerking_app.services import item_service, order_service
 from answerking_app.views.ErrorType import ErrorMessage
 
 
@@ -29,8 +25,7 @@ class OrderListView(APIView):
     @csrf_exempt
     def post(self, request: Request, *args, **kwargs) -> Response:
 
-        body: OrderCreateDict = request.data
-        created_order: Order | None = order_service.create(body)
+        created_order: Order | None = order_service.create(request.data)
         if not created_order:
             error_msg: ErrorMessage = {
                 "error": {
@@ -84,8 +79,7 @@ class OrderDetailView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        body: OrderUpdateDict = request.data
-        updated_order: Order | None = order_service.update(order, body)
+        updated_order: Order | None = order_service.update(order, request.data)
         if not updated_order:
             error_msg: ErrorMessage = {
                 "error": {
@@ -138,23 +132,7 @@ class OrderItemListView(APIView):
                 error_msg,
                 status=status.HTTP_404_NOT_FOUND,
             )
-
-        try:
-            body: dict = request.data
-            quantity: int = body["quantity"]
-        except KeyError as e:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Failed data validation",
-                    "details": f"'quantity' not found in json body.",
-                }
-            }
-            return Response(
-                error_msg,
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        order: Order | None = order_service.add_item(order, item, quantity)
+        order: Order | None = order_service.add_item(order, item, request.data)
         if not order:
             error_msg: ErrorMessage = {
                 "error": {

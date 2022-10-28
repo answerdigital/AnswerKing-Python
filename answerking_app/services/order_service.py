@@ -1,21 +1,17 @@
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 
-from django.db.models import QuerySet
-from django.core.exceptions import ValidationError
 from django.db import DataError
+from django.db.models import QuerySet
 
-from answerking_app.models.models import Order, Item, Status
-
-from answerking_app.models.validation.validators import (
-    validate_positive_number,
-    validate_price,
-    validate_address_string,
+from answerking_app.models.models import Item, Order, Status
+from answerking_app.models.serializers import (
+    OrderLineSerializer,
+    OrderSerializer,
 )
-
 from answerking_app.services.service_types.OrderTypes import (
     OrderCreateDict,
-    OrderItems,
     OrderUpdateDict,
+    QuantityUpdateDict,
 )
 
 
@@ -37,48 +33,49 @@ def get_by_id(order_id: str) -> Order | None:
 
 
 def create(body: OrderCreateDict) -> Order | None:
-    try:
-        address: str = validate_address_string(body["address"])
-    except (KeyError, ValidationError):
+    serialized_order = OrderSerializer(data=body)
+    if not serialized_order.is_valid():
+        print(serialized_order.error_messages)
+        return None
+
+    if not serialized_order.data.get("address", None):
         return None
 
     status, _ = Status.objects.get_or_create(status="Pending")
 
-    created_order: Order = Order(address=address, status=status, total=0.00)
+    created_order: Order = Order(
+        address=serialized_order.data["address"], status=status, total=0.00
+    )
     created_order.save()
 
     try:
-        order_items: list[OrderItems] = body["order_items"]
-        if not order_items:
+        if not serialized_order.data["order_items"]:
             return created_order
     except KeyError:
         return created_order
 
-    for oi in order_items:
+    for oi in serialized_order.data["order_items"]:
         try:
-            try:
-                item: Item = Item.objects.get(pk=oi["id"])
-                quantity: int = int(oi["quantity"])
-                price: Decimal = item.price
-                stock: int = item.stock
-                sub_total: Decimal = Decimal(quantity * price)
-            except (KeyError, InvalidOperation, ValueError):
-                created_order.delete()
-                return None
-
-            if quantity > stock:
-                created_order.delete()
-                return None
-
-            created_order.order_items.add(
-                item,
-                through_defaults={
-                    "quantity": quantity,
-                    "sub_total": sub_total,
-                },
-            )
+            item: Item = Item.objects.get(pk=oi["id"])
         except Item.DoesNotExist:
-            pass
+            created_order.delete()
+            return None
+
+        quantity: int = int(oi["quantity"])
+        price: Decimal = item.price
+        stock: int = item.stock
+        sub_total: Decimal = Decimal(quantity * price)
+        if quantity > stock:
+            created_order.delete()
+            return None
+
+        created_order.order_items.add(
+            item,
+            through_defaults={
+                "quantity": quantity,
+                "sub_total": sub_total,
+            },
+        )
 
     created_order.calculate_total()
 
@@ -86,45 +83,44 @@ def create(body: OrderCreateDict) -> Order | None:
 
 
 def update(order: Order, body: OrderUpdateDict) -> Order | None:
-    try:
-        address: str = validate_address_string(body["address"])
-        order.address = address
-    except ValidationError:
+    serialized_info = OrderSerializer(data=body, partial=True)
+    if not serialized_info.is_valid():
         return None
-    except KeyError:
-        pass
 
-    try:
-        updated_status: str = body["status"]
-        status: Status = Status.objects.get(status=updated_status)
-        order.status = status
-    except Status.DoesNotExist:
-        return None
-    except KeyError:
-        pass
+    address: str | None = serialized_info.data.get("address", None)
+    status: str | None = serialized_info.data.get("status", None)
 
-    order.save()
+    if address:
+        order.address = serialized_info.data["address"]
+        order.save()
+
+    if status:
+        try:
+            status_db: Status = Status.objects.get(status=status)
+            order.status = status_db
+        except Status.DoesNotExist:
+            return None
 
     return order
 
 
-def add_item(order: Order, item: Item, quantity: int) -> Order | None:
-    try:
-        quantity = validate_positive_number(quantity)
-        if quantity == 0:
-            return remove_item(order, item)
-
-        sub_total: Decimal = validate_price(quantity * item.price)
-    except ValidationError:
+def add_item(
+    order: Order, item: Item, body: QuantityUpdateDict
+) -> Order | None:
+    serialized_body = OrderLineSerializer(data=body)
+    if not serialized_body.is_valid():
         return None
+    quantity: int = serialized_body.data["quantity"]
 
-    if item not in order.order_items.all():
+    if quantity == 0:
+        remove_item(order, item)
+    elif item not in order.order_items.all():
         try:
             order.order_items.add(
                 item,
                 through_defaults={
                     "quantity": quantity,
-                    "sub_total": sub_total,
+                    "sub_total": item.price * quantity,
                 },
             )
         except DataError:
@@ -132,7 +128,7 @@ def add_item(order: Order, item: Item, quantity: int) -> Order | None:
     else:
         try:
             order.orderline_set.filter(item=item.id).update(
-                quantity=quantity, sub_total=sub_total
+                quantity=quantity, sub_total=quantity * item.price
             )
         except DataError:
             return None

@@ -1,8 +1,8 @@
 from django.db.models import QuerySet
+from django.db.utils import IntegrityError
 
 from answerking_app.models.models import Item, OrderLine
-from answerking_app.models.validation.serializers import ItemSerializer
-
+from answerking_app.models.serializers import ItemSerializer
 from answerking_app.services.service_types.ItemTypes import ItemDict
 
 
@@ -28,15 +28,12 @@ def create(body: ItemDict) -> Item | None:
     if not serialized_item.is_valid():
         return None
 
-    existing: bool = Item.objects.filter(
-        name=serialized_item.data["name"]
-    ).exists()
-    if existing:
-        return None
-
     item: Item = Item(**serialized_item.data)
-    item.save()
-
+    try:
+        item.save()
+    except IntegrityError:
+        # duplicated key name
+        return None
     return item
 
 
@@ -45,20 +42,17 @@ def update(item: Item, body: ItemDict) -> Item | None:
     if not serialized_item.is_valid():
         return None
 
-    try:
-        existing: Item = Item.objects.get(name=serialized_item.data["name"])
-        if not item == existing:
-            return None
-    except Item.DoesNotExist:
-        pass
-
     item.name = serialized_item.data["name"]
     item.price = serialized_item.data["price"]
     item.description = serialized_item.data["description"]
     item.stock = serialized_item.data["stock"]
     item.calories = serialized_item.data["calories"]
-    item.save()
 
+    try:
+        item.save()
+    except IntegrityError:
+        # duplicated key name
+        return None
     return item
 
 
