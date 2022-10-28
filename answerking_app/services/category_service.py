@@ -2,8 +2,10 @@ from django.db import IntegrityError
 from django.db.models import QuerySet
 
 from answerking_app.models.models import Category, Item
-from answerking_app.models.serializers import (CategorySerializer,
-                                               ItemSerializer)
+from answerking_app.models.serializers import (
+    CategorySerializer,
+    ItemSerializer,
+)
 from answerking_app.services.service_types.CategoryTypes import CategoryDict
 from answerking_app.services.service_types.ItemTypes import ItemWithIDDict
 
