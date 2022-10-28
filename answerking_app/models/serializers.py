@@ -6,7 +6,6 @@ from django.core.validators import (
     RegexValidator,
 )
 from rest_framework import serializers
-from typing_extensions import Required
 
 from answerking_app.models.models import Category, Item, Order, OrderLine
 
@@ -77,7 +76,9 @@ class CategorySerializer(serializers.ModelSerializer):
 class OrderLineSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source="item.id", required=False)
     name = serializers.ReadOnlyField(source="item.name", required=False)
-    price = serializers.ReadOnlyField(source="item.price", required=False)
+    price = serializers.DecimalField(
+        max_digits=18, decimal_places=2, source="item.price", required=False
+    )
     quantity = serializers.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
     )

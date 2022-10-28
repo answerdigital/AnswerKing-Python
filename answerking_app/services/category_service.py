@@ -63,7 +63,6 @@ def update_item_list(
     for item in items:
         try:
             serialized_item: ItemSerializer = ItemSerializer(data=item)
-            print(item)
             if not serialized_item.is_valid():
                 return None
             category.items.add(Item.objects.get(pk=serialized_item.data["id"]))

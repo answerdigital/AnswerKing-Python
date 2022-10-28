@@ -56,7 +56,3 @@ class OrderType(IDType, NewOrderType, NewStatusType, TypedDict):
 
 class OrderItemQtyType(TypedDict):
     quantity: int
-
-
-class OrderIncorrectItemQtyType(TypedDict):
-    quantity: Any

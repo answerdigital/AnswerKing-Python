@@ -4,7 +4,6 @@ from answerking_app.views.ErrorType import ErrorMessage
 from answerking_app.tests.API_types import (
     OrderType,
     OrderItemQtyType,
-    OrderIncorrectItemQtyType,
 )
 
 client = Client()
@@ -157,7 +156,7 @@ class OrderLineTests(TestCase):
                 "details": "Failed to add item to order",
             }
         }
-        post_data: OrderIncorrectItemQtyType = {"quantity": "f"}
+        post_data: OrderItemQtyType = {"quantity": "f"}     # type: ignore
 
         # Act
         response = client.put(
@@ -179,7 +178,7 @@ class OrderLineTests(TestCase):
                 "details": "Failed to add item to order",
             }
         }
-        post_data: OrderIncorrectItemQtyType = {"quantity": -1}
+        post_data: OrderItemQtyType = {"quantity": -1}      # type: ignore
 
         # Act
         response = client.put(
