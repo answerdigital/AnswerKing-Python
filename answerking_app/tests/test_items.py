@@ -1,4 +1,6 @@
 from django.test import TestCase, Client
+from rest_framework.exceptions import ParseError
+
 from answerking_app.models.models import Item
 
 from django.db.models.query import QuerySet
@@ -137,12 +139,7 @@ class ItemTests(TestCase):
     def test_post_invalid_json_returns_bad_request(self):
         # Arrange
         invalid_json_data: str = '{"invalid": }'
-        expected_json_error: ErrorMessage = {
-            "error": {
-                "message": "Failed data validation",
-                "details": "Invalid JSON in body. Expecting value",
-            }
-        }
+        expected_json_error: str = "JSON parse error -"
 
         # Act
         response = client.post(
@@ -151,7 +148,8 @@ class ItemTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_json_error, actual)
+        self.assertRaises(ParseError)
+        self.assertIn(expected_json_error, actual["detail"])
         self.assertEqual(response.status_code, 400)
 
     def test_post_invalid_name_returns_bad_request(self):
@@ -386,12 +384,7 @@ class ItemTests(TestCase):
     def test_put_invalid_json_returns_bad_request(self):
         # Arrange
         invalid_json_data: str = '{"invalid": }'
-        expected_json_error: ErrorMessage = {
-            "error": {
-                "message": "Failed data validation",
-                "details": "Invalid JSON in body. Expecting value",
-            }
-        }
+        expected_json_error: str = "JSON parse error -"
 
         # Act
         response = client.put(
@@ -402,7 +395,8 @@ class ItemTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_json_error, actual)
+        self.assertRaises(ParseError)
+        self.assertIn(expected_json_error, actual["detail"])
         self.assertEqual(response.status_code, 400)
 
     def test_put_invalid_details_returns_bad_request(self):

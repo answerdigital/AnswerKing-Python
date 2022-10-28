@@ -1,5 +1,8 @@
 from django.db.models import QuerySet
 from django.test import TestCase, Client
+from rest_framework.exceptions import ParseError
+from rest_framework.parsers import JSONParser
+
 from answerking_app.models.models import Item, Order, Status, OrderLine
 from answerking_app.tests.API_types import (
     OrderType,
@@ -76,7 +79,8 @@ class OrderTests(TestCase):
         response = client.get("/api/orders")
 
         # Assert
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.data, [])
+        self.assertEqual(response.status_code, 200)
 
     def test_get_all_with_orders_returns_ok(self):
         # Arrange
@@ -275,12 +279,7 @@ class OrderTests(TestCase):
     def test_post_invalid_json_returns_bad_request(self):
         # Arrange
         invalid_json_data: str = '{"invalid": }'
-        expected_json_error: ErrorMessage = {
-            "error": {
-                "message": "Failed data validation",
-                "details": "Invalid JSON in body. Expecting value",
-            }
-        }
+        expected_json_error: str = "JSON parse error -"
 
         # Act
         response = client.post(
@@ -289,7 +288,8 @@ class OrderTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_json_error, actual)
+        self.assertRaises(ParseError)
+        self.assertIn(expected_json_error, actual["detail"])
         self.assertEqual(response.status_code, 400)
 
     def test_post_invalid_details_returns_bad_request(self):
