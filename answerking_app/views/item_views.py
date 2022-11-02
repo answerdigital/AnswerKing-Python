@@ -1,128 +1,47 @@
 from django.db.models import QuerySet
-from rest_framework import status
+from rest_framework import mixins, generics
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.utils.serializer_helpers import ReturnDict
-from rest_framework.views import APIView, csrf_exempt
+from rest_framework.views import csrf_exempt
 
+from answerking_app.utils.mixins.GenericMixins import CreateMixin, UpdateMixin
+from answerking_app.utils.mixins.ItemMixins import DestroyItemMixin
 from answerking_app.models.models import Item
 from answerking_app.models.serializers import ItemSerializer
-from answerking_app.services import item_service
-from answerking_app.views.ErrorType import ErrorMessage
 
 
-class ItemListView(APIView):
+class ItemListView(
+    mixins.ListModelMixin, CreateMixin, generics.GenericAPIView
+):
+
+    queryset: QuerySet = Item.objects.all()
+    serializer_class: ItemSerializer = ItemSerializer
+
     @csrf_exempt
     def get(self, request: Request, *args, **kwargs) -> Response:
-        items: QuerySet[Item] = item_service.get_all()
-        response: list[ReturnDict] = []
-
-        if items:
-            response: list[ReturnDict] = [
-                ItemSerializer(item).data for item in items
-            ]
-
-        return Response(response, status=status.HTTP_200_OK)
+        return self.list(request, *args, **kwargs)
 
     @csrf_exempt
     def post(self, request: Request, *args, **kwargs) -> Response:
-
-        created_item: Item | None = item_service.create(request.data)
-        if not created_item:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Request failed",
-                    "details": "Object could not be created",
-                }
-            }
-            return Response(
-                error_msg,
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        response: ReturnDict = ItemSerializer(created_item).data
-
-        return Response(response, status=status.HTTP_200_OK)
+        return self.create(request, *args, **kwargs)
 
 
-class ItemDetailView(APIView):
-    @csrf_exempt
+class ItemDetailView(
+    mixins.RetrieveModelMixin,
+    UpdateMixin,
+    DestroyItemMixin,
+    generics.GenericAPIView,
+):
+    queryset: QuerySet = Item.objects.all()
+    serializer_class: ItemSerializer = ItemSerializer
+
     def get(self, request: Request, *args, **kwargs) -> Response:
-        item: Item | None = item_service.get_by_id(kwargs["item_id"])
-        if not item:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Request failed",
-                    "details": "Object not found",
-                }
-            }
-            return Response(
-                error_msg,
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        response: ReturnDict = ItemSerializer(item).data
-
-        return Response(response, status=status.HTTP_200_OK)
+        return self.retrieve(request, *args, **kwargs)
 
     @csrf_exempt
     def put(self, request: Request, *args, **kwargs) -> Response:
-        item: Item | None = item_service.get_by_id(kwargs["item_id"])
-        if not item:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Request failed",
-                    "details": "Object not found",
-                }
-            }
-            return Response(
-                error_msg,
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        updated_item: Item | None = item_service.update(item, request.data)
-        if not updated_item:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Request failed",
-                    "details": "Object could not be updated",
-                }
-            }
-            return Response(
-                error_msg,
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        response: ReturnDict = ItemSerializer(updated_item).data
-
-        return Response(response, status=status.HTTP_200_OK)
+        return self.update(request, *args, **kwargs)
 
     @csrf_exempt
     def delete(self, request: Request, *args, **kwargs) -> Response:
-        item: Item | None = item_service.get_by_id(kwargs["item_id"])
-        if not item:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Request failed",
-                    "details": "Object not found",
-                }
-            }
-            return Response(
-                error_msg,
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        deleted: bool = item_service.delete(item)
-        if not deleted:
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Request failed",
-                    "details": "Item exists in an order",
-                }
-            }
-            return Response(
-                error_msg,
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return self.destroy(request, *args, **kwargs)

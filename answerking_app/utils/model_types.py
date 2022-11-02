@@ -17,9 +17,16 @@ class ItemType(IDType, NewItemType):
     pass
 
 
-class NewCategoryType(TypedDict):
+class NewCategoryName(TypedDict):
     name: str
+
+
+class NewCategoryItems(TypedDict):
     items: list[ItemType]
+
+
+class NewCategoryType(NewCategoryName, NewCategoryItems):
+    pass
 
 
 class CategoryType(IDType, NewCategoryType):
@@ -56,3 +63,11 @@ class OrderType(IDType, NewOrderType, NewStatusType, TypedDict):
 
 class OrderItemQtyType(TypedDict):
     quantity: int
+
+
+class DetailError(TypedDict):
+    detail: str
+
+
+class QuantityError(TypedDict):
+    quantity: list

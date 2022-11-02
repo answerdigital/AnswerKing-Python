@@ -1,13 +1,22 @@
 import re
+from typing import OrderedDict
 
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
     RegexValidator,
 )
+from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
 
-from answerking_app.models.models import Category, Item, Order, OrderLine
+from answerking_app.models.models import (
+    Category,
+    Item,
+    Order,
+    OrderLine,
+    Status,
+)
+from answerking_app.utils.model_types import ItemType
 
 MAXNUMBERSIZE = 2147483647
 
@@ -57,7 +66,7 @@ class ItemSerializer(serializers.ModelSerializer):
         return compress_white_spaces(value)
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(WritableNestedModelSerializer):
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,
@@ -99,6 +108,32 @@ class OrderSerializer(serializers.ModelSerializer):
         validators=[RegexValidator("^[a-zA-Z0-9 ,-]+$")],
         required=False,
     )
+
+    def create(self, validated_data: dict) -> Order:
+        status: Status
+        status, _ = Status.objects.get_or_create(status="Pending")
+        address: str = validated_data["address"]
+        order: Order = Order.objects.create(
+            address=address, status=status, total=0.00
+        )
+        if "orderline_set" in validated_data:
+            order_items_data: list[OrderedDict] = validated_data.pop(
+                "orderline_set"
+            )
+            for order_item in order_items_data:
+                item_data: ItemType = order_item.pop("item")
+                item: Item = Item.objects.get(pk=item_data["id"])
+                OrderLine.objects.create(order=order, item=item, **order_item)
+        order.calculate_total()
+        return order
+
+    def update(self, instance: Order, validated_data: dict) -> Order:
+        status_data: dict = validated_data.pop("status", None)
+        if status_data:
+            instance.status = Status.objects.get(status=status_data["status"])
+        instance.address = validated_data.get("address", instance.address)
+        instance.save()
+        return instance
 
     def validate_address(self, value: str) -> str:
         return compress_white_spaces(value)

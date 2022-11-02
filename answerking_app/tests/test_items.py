@@ -1,11 +1,14 @@
-from django.test import TestCase, Client
+from django.db.models.query import QuerySet
+from django.test import Client, TestCase, TransactionTestCase
 from rest_framework.exceptions import ParseError
 
 from answerking_app.models.models import Item
-
-from django.db.models.query import QuerySet
-from answerking_app.views.ErrorType import ErrorMessage
-from answerking_app.tests.API_types import NewItemType, ItemType, IDType
+from answerking_app.utils.model_types import (
+    DetailError,
+    IDType,
+    ItemType,
+    NewItemType,
+)
 
 client = Client()
 
@@ -93,12 +96,7 @@ class ItemTests(TestCase):
 
     def test_get_id_invalid_returns_not_found(self):
         # Arrange
-        expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
-        }
+        expected: DetailError = {"detail": "/api/items/f not found"}
 
         # Act
         response = client.get("/api/items/f")
@@ -134,12 +132,14 @@ class ItemTests(TestCase):
         self.assertNotIn(actual, old_list)
         self.assertIn(created_item, updated_list)
         self.assertEqual(expected, actual)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
 
     def test_post_invalid_json_returns_bad_request(self):
         # Arrange
         invalid_json_data: str = '{"invalid": }'
-        expected_json_error: str = "JSON parse error -"
+        expected_json_error: DetailError = {
+            "detail": "JSON parse error - Expecting value: line 1 column 13 (char 12)"
+        }
 
         # Act
         response = client.post(
@@ -149,7 +149,7 @@ class ItemTests(TestCase):
 
         # Assert
         self.assertRaises(ParseError)
-        self.assertIn(expected_json_error, actual["detail"])
+        self.assertEqual(expected_json_error, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_post_invalid_name_returns_bad_request(self):
@@ -161,11 +161,8 @@ class ItemTests(TestCase):
             "stock": 100,
             "calories": 100,
         }
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object could not be created",
-            }
+        expected_failure_error: dict[str, list[str]] = {
+            "name": ["Enter a valid value."]
         }
 
         # Act
@@ -187,11 +184,8 @@ class ItemTests(TestCase):
             "stock": 100,
             "calories": 100,
         }
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object could not be created",
-            }
+        expected_failure_error: dict[str, list[str]] = {
+            "price": ["A valid number is required."]
         }
 
         # Act
@@ -213,11 +207,8 @@ class ItemTests(TestCase):
             "stock": 100,
             "calories": 100,
         }
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object could not be created",
-            }
+        expected_failure_error: dict[str, list[str]] = {
+            "description": ["Enter a valid value."]
         }
 
         # Act
@@ -239,11 +230,8 @@ class ItemTests(TestCase):
             "stock": "f100",  # type: ignore
             "calories": 100,
         }
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object could not be created",
-            }
+        expected_failure_error: dict[str, list[str]] = {
+            "stock": ["A valid integer is required."]
         }
 
         # Act
@@ -265,11 +253,8 @@ class ItemTests(TestCase):
             "stock": -100,
             "calories": 100,
         }
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object could not be created",
-            }
+        expected_failure_error: dict[str, list[str]] = {
+            "stock": ["Ensure this value is greater than or equal to 0."]
         }
 
         # Act
@@ -291,11 +276,8 @@ class ItemTests(TestCase):
             "stock": 100,
             "calories": "100f",  # type: ignore
         }
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object could not be created",
-            }
+        expected_failure_error: dict[str, list[str]] = {
+            "calories": ["A valid integer is required."]
         }
 
         # Act
@@ -317,11 +299,8 @@ class ItemTests(TestCase):
             "stock": 100,
             "calories": -100,
         }
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object could not be created",
-            }
+        expected_failure_error: dict[str, list[str]] = {
+            "calories": ["Ensure this value is greater than or equal to 0."]
         }
 
         # Act
@@ -366,12 +345,7 @@ class ItemTests(TestCase):
 
     def test_put_invalid_id_returns_bad_request(self):
         # Arrange
-        expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
-        }
+        expected: DetailError = {"detail": "/api/items/f not found"}
 
         # Act
         response = client.get("/api/items/f")
@@ -384,7 +358,9 @@ class ItemTests(TestCase):
     def test_put_invalid_json_returns_bad_request(self):
         # Arrange
         invalid_json_data: str = '{"invalid": }'
-        expected_json_error: str = "JSON parse error -"
+        expected_json_error: DetailError = {
+            "detail": "JSON parse error - Expecting value: line 1 column 13 (char 12)"
+        }
 
         # Act
         response = client.put(
@@ -396,7 +372,7 @@ class ItemTests(TestCase):
 
         # Assert
         self.assertRaises(ParseError)
-        self.assertIn(expected_json_error, actual["detail"])
+        self.assertEqual(expected_json_error, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_put_invalid_details_returns_bad_request(self):
@@ -408,11 +384,9 @@ class ItemTests(TestCase):
             "stock": 100,
             "calories": 100,
         }
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object could not be updated",
-            }
+        expected_failure_error: dict[str, list[str]] = {
+            "description": ["Enter a valid value."],
+            "name": ["Enter a valid value."],
         }
 
         # Act
@@ -441,12 +415,7 @@ class ItemTests(TestCase):
 
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
-        expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
-        }
+        expected: DetailError = {"detail": "/api/items/f not found"}
 
         # Act
         response = client.delete("/api/items/f")
@@ -455,3 +424,83 @@ class ItemTests(TestCase):
         # Assert
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
+
+
+class ItemTestsDB(TransactionTestCase):
+    def setUp(self):
+        self.test_item_1: Item = Item.objects.create(
+            name="Burger",
+            price=1.20,
+            description="desc",
+            stock=100,
+            calories=100,
+        )
+        self.test_item_2: Item = Item.objects.create(
+            name="Coke",
+            price=1.50,
+            description="desc",
+            stock=100,
+            calories=100,
+        )
+
+    def tearDown(self):
+        Item.objects.all().delete()
+
+    def test_post_duplicated_name_returns_400(self):
+        # Arrange
+        post_data: NewItemType = {
+            "name": "Whopper",
+            "price": "1.50",
+            "description": "desc",
+            "stock": 100,
+            "calories": 100,
+        }
+        client.post("/api/items", post_data, content_type="application/json")
+
+        # Act
+        response = client.post(
+            "/api/items", post_data, content_type="application/json"
+        )
+
+        expected: DetailError = {"detail": "This name already exists"}
+        actual = response.json()
+
+        # Assert
+        self.assertEqual(expected, actual)
+        self.assertEqual(response.status_code, 400)
+
+    def test_put_duplicated_name_returns_404(self):
+        # Arrange
+        old_item = client.get(f"/api/items/{self.test_item_1.id}").json()
+        post_data: NewItemType = {
+            "name": "New Burger",
+            "price": "1.75",
+            "description": "new desc",
+            "stock": 0,
+            "calories": 200,
+        }
+
+        post_data_different_name: NewItemType = {
+            **post_data,
+            "name": "Different Name",
+        }
+
+        client.post("/api/items", post_data, content_type="application/json")
+        client.post(
+            "/api/items",
+            post_data_different_name,
+            content_type="application/json",
+        )
+
+        # Act
+        response = client.put(
+            f"/api/items/{self.test_item_1.id + 1}",
+            post_data,
+            content_type="application/json",
+        )
+        actual = response.json()
+        expected: DetailError = {"detail": "This name already exists"}
+
+        # Assert
+        self.assertEqual(expected, actual)
+        self.assertEqual(response.status_code, 400)

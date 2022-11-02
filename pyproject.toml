@@ -13,6 +13,8 @@ djangorestframework = "^3.14.0"
 django-environ = "^0.9.0"
 mysqlclient = "^2.1.1"
 django-cors-headers = "^3.13.0"
+drf-writable-nested = "^0.7.0"
+django-json-404-middleware = "^0.0.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.10.0"
