@@ -1,18 +1,18 @@
 from django.db.models import QuerySet
 from django.test import TestCase, Client
 from rest_framework.exceptions import ParseError
-from rest_framework.parsers import JSONParser
 
 from answerking_app.models.models import Item, Order, Status, OrderLine
-from answerking_app.tests.API_types import (
+from answerking_app.utils.model_types import (
     OrderType,
     NewOrderAddressType,
     OrderItemType,
     NewOrderType,
     UpdateOrderType,
     NewStatusType,
+    DetailError,
 )
-from answerking_app.views.ErrorType import ErrorMessage
+from answerking_app.utils.ErrorType import ErrorMessage
 
 client = Client()
 
@@ -159,12 +159,7 @@ class OrderTests(TestCase):
 
     def test_get_id_invalid_returns_not_found(self):
         # Arrange
-        expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
-        }
+        expected: DetailError = {"detail": "/api/orders/f not found"}
 
         # Act
         response = client.get("/api/orders/f")
@@ -202,7 +197,7 @@ class OrderTests(TestCase):
         self.assertIn(created_order, updated_list)
         self.assertEqual(len(created_order_items), 0)
         self.assertEqual(expected, actual)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
 
     def test_post_valid_with_empty_items_returns_ok(self):
         # Arrange
@@ -234,7 +229,7 @@ class OrderTests(TestCase):
         self.assertIn(created_order, updated_list)
         self.assertEqual(len(created_order_items), 0)
         self.assertEqual(expected, actual)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
 
     def test_post_valid_with_items_returns_ok(self):
         # Arrange
@@ -274,7 +269,7 @@ class OrderTests(TestCase):
         self.assertIn(created_order, updated_list)
         self.assertIn(order_item, created_order_items)
         self.assertEqual(expected, actual)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
 
     def test_post_invalid_json_returns_bad_request(self):
         # Arrange
@@ -295,11 +290,8 @@ class OrderTests(TestCase):
     def test_post_invalid_details_returns_bad_request(self):
         # Arrange
         invalid_post_data: NewOrderAddressType = {"address": "test%"}
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object could not be created",
-            }
+        expected_failure_error: dict[str, list[str]] = {
+            "address": ["Enter a valid value."]
         }
 
         # Act
@@ -318,11 +310,8 @@ class OrderTests(TestCase):
             "address": "test",
             "order_items": [{"values": "invalid"}],  # type: ignore
         }
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object could not be created",
-            }
+        expected_failure_error: dict[str, list[dict[str, list[str]]]] = {
+            "order_items": [{"quantity": ["This field is required."]}]
         }
 
         # Act
@@ -472,11 +461,8 @@ class OrderTests(TestCase):
     def test_put_invalid_address_returns_bad_request(self):
         # Arrange
         invalid_post_data: NewOrderAddressType = {"address": "test&"}
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object could not be updated",
-            }
+        expected_failure_error: dict[str, list[str]] = {
+            "address": ["Enter a valid value."]
         }
 
         # Act
@@ -530,12 +516,7 @@ class OrderTests(TestCase):
 
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
-        expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
-        }
+        expected: DetailError = {"detail": "/api/orders/f not found"}
 
         # Act
         response = client.delete("/api/orders/f")

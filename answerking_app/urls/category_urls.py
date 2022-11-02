@@ -11,12 +11,12 @@ urlpatterns: list[partial] = [
         name="category_list",
     ),
     path(
-        "categories/<cat_id>",
+        "categories/<int:pk>",
         category_views.CategoryDetailView.as_view(),
         name="category_detail",
     ),
     path(
-        "categories/<cat_id>/items/<item_id>",
+        "categories/<int:cat_id>/items/<int:item_id>",
         category_views.CategoryItemListView.as_view(),
         name="category_item_list",
     ),

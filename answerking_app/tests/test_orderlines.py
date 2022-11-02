@@ -1,9 +1,11 @@
-from django.test import TestCase, Client
+from django.test import Client, TestCase
+
 from answerking_app.models.models import Item, Order, Status
-from answerking_app.views.ErrorType import ErrorMessage
-from answerking_app.tests.API_types import (
-    OrderType,
+from answerking_app.utils.ErrorType import ErrorMessage
+from answerking_app.utils.model_types import (
+    DetailError,
     OrderItemQtyType,
+    OrderType,
 )
 
 client = Client()
@@ -150,13 +152,10 @@ class OrderLineTests(TestCase):
 
     def test_update_existing_orderline_invalid_returns_bad_request(self):
         # Arrange
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Resource update failure",
-                "details": "Failed to add item to order",
-            }
+        expected_failure_error: dict[str, list[str]] = {
+            "quantity": ["A valid integer is required."]
         }
-        post_data: OrderItemQtyType = {"quantity": "f"}     # type: ignore
+        post_data: OrderItemQtyType = {"quantity": "f"}  # type: ignore
 
         # Act
         response = client.put(
@@ -172,13 +171,10 @@ class OrderLineTests(TestCase):
 
     def test_update_existing_orderline_negative_returns_bad_request(self):
         # Arrange
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Resource update failure",
-                "details": "Failed to add item to order",
-            }
+        expected_failure_error: dict[str, list[str]] = {
+            "quantity": ["Ensure this value is greater than or equal to 0."]
         }
-        post_data: OrderItemQtyType = {"quantity": -1}      # type: ignore
+        post_data: OrderItemQtyType = {"quantity": -1}  # type: ignore
 
         # Act
         response = client.put(
@@ -194,12 +190,7 @@ class OrderLineTests(TestCase):
 
     def test_nonexistant_orderid_returns_not_found(self):
         # Arrange
-        expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
-        }
+        expected: DetailError = {"detail": "Not found."}
 
         # Act
         response = client.put(
@@ -215,12 +206,7 @@ class OrderLineTests(TestCase):
 
     def test_nonexistant_itemid_returns_not_found(self):
         # Arrange
-        expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
-        }
+        expected: DetailError = {"detail": "Not found."}
 
         # Act
         response = client.put(
@@ -236,11 +222,8 @@ class OrderLineTests(TestCase):
 
     def test_invalid_orderid_returns_not_found(self):
         # Arrange
-        expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
+        expected: DetailError = {
+            "detail": f"/api/orders/f/orderline/{self.test_item_2.id} not found"
         }
 
         # Act
@@ -257,11 +240,8 @@ class OrderLineTests(TestCase):
 
     def test_invalid_itemid_returns_not_found(self):
         # Arrange
-        expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object not found",
-            }
+        expected: DetailError = {
+            "detail": "/api/orders/6/orderline/f not found"
         }
 
         # Act
@@ -317,12 +297,7 @@ class OrderLineTests(TestCase):
 
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
-        expected: ErrorMessage = {
-            "error": {
-                "details": "Object not found",
-                "message": "Request failed",
-            }
-        }
+        expected: DetailError = {"detail": "Not found."}
 
         # Act
         response = client.delete(
@@ -336,11 +311,8 @@ class OrderLineTests(TestCase):
 
     def test_delete_item_when_in_order_returns_bad_request(self):
         # Arrange
-        expected: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Item exists in an order",
-            }
+        expected: DetailError = {
+            "detail": "Cannot delete, item is in an order."
         }
 
         # Act
