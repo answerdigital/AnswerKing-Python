@@ -1,4 +1,4 @@
-name: Django CI
+name: CI
 
 on:
   push:
@@ -13,15 +13,38 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
         python-version: '3.10'
+        
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install poetry
         poetry update
+        
+    - name: Set up .env file
+      run: |
+        DBNAME="AnswerkingDBTest"
+        DBUSER="root"
+        DBPWD=`openssl rand -base64 9`
+        DBHOST="127.0.0.1"
+        DBPORT="3306"
+        DBSECRET=`openssl rand -base64 32` 
+        echo -e "DATABASE_NAME=$DBNAME\nDATABASE_USER=$DBUSER\nDATABASE_PASS=$DBPWD\nDATABASE_HOST=$DBHOST\nDATABASE_PORT=$DBPORT\nSECRET_KEY=$DBSECRET" > answerking/.env
+
+    - name: Shutdown Ubuntu MySQL (SUDO)
+      run: sudo service mysql stop
+        
+    - name: Set up MySQL
+      uses: mirromutth/mysql-action@v1.1
+      with: 
+        host port: 3306
+        mysql database: 'AnswerKingBDTest'
+        mysql root password: ${{ DBPWD }} 
+        
     - name: Run Tests
       run: |
         poetry run python manage.py test
