@@ -16,11 +16,12 @@ django-cors-headers = "^3.13.0"
 drf-writable-nested = "^0.7.0"
 django-json-404-middleware = "^0.0.1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
-pyright = "^1.1.275"
+pyright = "^1.1.278"
 coverage = "^6.5.0"
 pycodestyle = "^2.9.1"
+drf-yasg = "^1.21.4"
 
 [build-system]
 requires = ["poetry-core"]
