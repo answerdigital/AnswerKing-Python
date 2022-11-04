@@ -7,9 +7,17 @@ on:
     branches: [ "develop" ]
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: UnsafePassword098
+          MYSQL_DATABASE: mysql
+          ports: ['3306:3306']
 
     steps:
     - uses: actions/checkout@v3
@@ -25,34 +33,23 @@ jobs:
         pip install poetry
         poetry update
         
-    - name: Set up .env file
-      run: |
-        DBNAME="AnswerkingDBTest"
-        DBUSER="root"
-        DBPWD="UnsafePassword098"
-        DBHOST="127.0.0.1"
-        DBPORT="3306"
-        DBSECRET=`openssl rand -base64 32`
-        echo -e "DATABASE_NAME=$DBNAME\nDATABASE_USER=$DBUSER\nDATABASE_PASS=$DBPWD\nDATABASE_HOST=$DBHOST\nDATABASE_PORT=$DBPORT\nSECRET_KEY=$DBSECRET" > answerking/.env
-
-    - name: Shutdown Ubuntu MySQL (SUDO)
-      run: sudo service mysql stop
+    - name: Run Migrations
+      run: poetry run python manage.py migrate
+      env:
+        DBENGINE: django.db.backends.mysql
+        DBNAME: answerking_app
+        DBUSER: root
+        DBPASSWORD: UnsafePassword098
+        DBHOST: 127.0.0.1
+        DBPORT: 3306
         
-    - name: Set up MySQL
-      uses: mirromutth/mysql-action@v1.1
-      with: 
-        host port: 3306
-        mysql database: 'AnswerKingBDTest'
-        mysql root password: "UnsafePassword098"
-  
-  
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-    
-    steps:
-    - uses: actions/checkout@v3
-    
     - name: Run Tests     
       run: |
         poetry run python manage.py test
+      env:
+        DBENGINE: django.db.backends.mysql
+        DBNAME: answerking_app
+        DBUSER: root
+        DBPASSWORD: UnsafePassword098
+        DBHOST: 127.0.0.1
+        DBPORT: 3306
