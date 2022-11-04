@@ -42,6 +42,7 @@ jobs:
         DBPASSWORD: UnsafePassword098
         DBHOST: 127.0.0.1
         DBPORT: 3306
+        SECRET_KEY: django-insecure-x977=v5a2q-e%_5$b9ge@jzk%s_nhk2l8_use&h@*m$w33dopr
         
     - name: Run Tests     
       run: |
@@ -53,3 +54,4 @@ jobs:
         DBPASSWORD: UnsafePassword098
         DBHOST: 127.0.0.1
         DBPORT: 3306
+        SECRET_KEY: django-insecure-x977=v5a2q-e%_5$b9ge@jzk%s_nhk2l8_use&h@*m$w33dopr
