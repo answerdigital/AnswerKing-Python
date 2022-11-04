@@ -17,7 +17,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: UnsafePassword098
           MYSQL_DATABASE: mysql
-          ports: ['3306:3306']
+        ports: ['3306:3306']
 
     services:
       mysql:
