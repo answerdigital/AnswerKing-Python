@@ -2,9 +2,7 @@
 Django base settings for answerking project.
 """
 import os
-
 from pathlib import Path
-from corsheaders.defaults import default_headers, default_methods
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,6 +33,7 @@ INSTALLED_APPS = [
     "answerking_app.apps.AnswerkingAppConfig",
     "rest_framework",
     "corsheaders",
+    "drf_problems",
 ]
 
 MIDDLEWARE = [
@@ -72,7 +71,8 @@ WSGI_APPLICATION = "answerking.wsgi.application"
 REST_FRAMEWORK = {
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
-    ]
+    ],
+    "EXCEPTION_HANDLER": "drf_problems.exceptions.exception_handler",
 }
 
 # Database
@@ -142,9 +142,3 @@ SECURE_PROXY_SSL_HEADER = None
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
-
-SECURE_HSTS_SECONDS = None
-SECURE_HSTS_INCLUDE_SUBDOMAINS = False
-SECURE_FRAME_DENY = False
-SECURE_CONTENT_TYPE_NOSNIFF = False
-SECURE_BROWSER_XSS_FILTER = False

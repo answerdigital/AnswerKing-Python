@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = []
 readme = "README.md"
-packages = [{include = "answerking_python"}]
+packages = [{ include = "answerking_python" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -15,6 +15,7 @@ django-cors-headers = "^3.13.0"
 drf-writable-nested = "^0.7.0"
 django-json-404-middleware = "^0.0.1"
 python-dotenv = "^0.21.0"
+drf-problems = "^1.0.5"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
