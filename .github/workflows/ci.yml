@@ -53,8 +53,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Run Tests
-      uses: Set up my SQL
-      
+    - name: Run Tests     
       run: |
         poetry run python manage.py test
