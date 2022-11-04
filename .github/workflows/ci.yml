@@ -36,22 +36,20 @@ jobs:
     - name: Run Migrations
       run: poetry run python manage.py migrate
       env:
-        DBENGINE: django.db.backends.mysql
-        DBNAME: answerking_app
-        DBUSER: root
-        DBPASSWORD: UnsafePassword098
-        DBHOST: 127.0.0.1
-        DBPORT: 3306
+        DATABASE_NAME: answerking_app
+        DATABASE_USER: root
+        DATABASE_PASS: UnsafePassword098
+        DATABASE_HOST: 127.0.0.1
+        DATABASE_PORT: 3306
         SECRET_KEY: django-insecure-x977=v5a2q-e%_5$b9ge@jzk%s_nhk2l8_use&h@*m$w33dopr
         
     - name: Run Tests     
       run: |
         poetry run python manage.py test
       env:
-        DBENGINE: django.db.backends.mysql
-        DBNAME: answerking_app
-        DBUSER: root
-        DBPASSWORD: UnsafePassword098
-        DBHOST: 127.0.0.1
-        DBPORT: 3306
+        DATABASE_NAME: answerking_app
+        DATABASE_USER: root
+        DATABASE_PASS: UnsafePassword098
+        DATABASE_HOST: 127.0.0.1
+        DATABASE_PORT: 3306
         SECRET_KEY: django-insecure-x977=v5a2q-e%_5$b9ge@jzk%s_nhk2l8_use&h@*m$w33dopr
