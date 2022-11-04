@@ -46,6 +46,9 @@ jobs:
     - name: Run Tests     
       run: |
         poetry run python manage.py test
+        poetry run black . --line-length=79
+        poetry run pycodestyle . --ignore=E501
+        poetry run pyright
       env:
         DATABASE_NAME: answerking_app
         DATABASE_USER: root
