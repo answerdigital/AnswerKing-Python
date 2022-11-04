@@ -15,9 +15,17 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_ROOT_PASSWORD: UnsafePassword098
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DATABASE_PASS }}
           MYSQL_DATABASE: answerking_app
         ports: ['3306:3306']
+        
+    env:
+        DATABASE_NAME: answerking_app
+        DATABASE_USER: ${{ secrets.DATABASE_USER }}
+        DATABASE_PASS: ${{ secrets.DATABASE_PASS }}
+        DATABASE_HOST: 127.0.0.1
+        DATABASE_PORT: 3306
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
     steps:
     - uses: actions/checkout@v3
@@ -35,13 +43,6 @@ jobs:
         
     - name: Run Migrations
       run: poetry run python manage.py migrate
-      env:
-        DATABASE_NAME: answerking_app
-        DATABASE_USER: root
-        DATABASE_PASS: UnsafePassword098
-        DATABASE_HOST: 127.0.0.1
-        DATABASE_PORT: 3306
-        SECRET_KEY: django-insecure-x977=v5a2q-e%_5$b9ge@jzk%s_nhk2l8_use&h@*m$w33dopr
         
     - name: Run Tests     
       run: |
@@ -49,10 +50,3 @@ jobs:
         poetry run black . --line-length=79 --check
         poetry run pycodestyle . --ignore=E501
         poetry run pyright
-      env:
-        DATABASE_NAME: answerking_app
-        DATABASE_USER: root
-        DATABASE_PASS: UnsafePassword098
-        DATABASE_HOST: 127.0.0.1
-        DATABASE_PORT: 3306
-        SECRET_KEY: django-insecure-x977=v5a2q-e%_5$b9ge@jzk%s_nhk2l8_use&h@*m$w33dopr
