@@ -46,7 +46,7 @@ jobs:
     - name: Run Tests     
       run: |
         poetry run python manage.py test
-        poetry run black . --line-length=79
+        poetry run black . --line-length=79 --check
         poetry run pycodestyle . --ignore=E501
         poetry run pyright
       env:
