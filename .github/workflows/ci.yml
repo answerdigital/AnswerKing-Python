@@ -29,7 +29,7 @@ jobs:
       run: |
         DBNAME="AnswerkingDBTest"
         DBUSER="root"
-        DBPWD=`openssl rand -base64 9`
+        DBPWD="UnsafePassword098"
         DBHOST="127.0.0.1"
         DBPORT="3306"
         DBSECRET=`openssl rand -base64 32` 
@@ -43,7 +43,7 @@ jobs:
       with: 
         host port: 3306
         mysql database: 'AnswerKingBDTest'
-        mysql root password: ${{ DBPWD }} 
+        mysql root password: "UnsafePassword098" 
         
     - name: Run Tests
       run: |
