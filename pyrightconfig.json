@@ -1,0 +1,14 @@
+{
+  "exclude": [
+    "*/migrations/*",
+    "*answerking/*",
+    "**/__pycache__",
+    "manage.py"
+  ],
+  "stubPath": "",
+  "executionEnvironments": [
+    {
+      "root": "answerking_app"
+    }
+  ]
+}
