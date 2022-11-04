@@ -9,3 +9,5 @@ INSTALLED_APPS += (
     "coverage",
     "drf_yasg",
 )
+
+MIDDLEWARE.remove("django.middleware.csrf.CsrfViewMiddleware")
