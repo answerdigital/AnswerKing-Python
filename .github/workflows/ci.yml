@@ -16,7 +16,7 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_ROOT_PASSWORD: UnsafePassword098
-          MYSQL_DATABASE: mysql
+          MYSQL_DATABASE: answerking_app
         ports: ['3306:3306']
 
     steps:
