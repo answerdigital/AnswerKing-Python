@@ -10,6 +10,14 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: UnsafePassword098
+          MYSQL_DATABASE: mysql
+          ports: ['3306:3306']
 
     services:
       mysql:
