@@ -291,7 +291,7 @@ class OrderTests(TestCase):
         # Arrange
         invalid_post_data: NewOrderAddressType = {"address": "test%"}
         expected_failure_error: dict[str, list[str]] = {
-            "address": ["Enter a valid value."]
+            "address": ["This should fail."]
         }
 
         # Act
