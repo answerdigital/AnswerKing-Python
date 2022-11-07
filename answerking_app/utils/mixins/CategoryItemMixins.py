@@ -7,6 +7,7 @@ from rest_framework.utils.serializer_helpers import ReturnDict
 from answerking_app.models.models import Category, Item
 from answerking_app.models.serializers import CategorySerializer
 from answerking_app.utils.ErrorType import ErrorMessage
+from answerking_app.utils.mixins.ApiExceptions import Http400BadRequest
 
 
 class CategoryItemUpdateMixin:
@@ -18,16 +19,7 @@ class CategoryItemUpdateMixin:
         item: Item = get_object_or_404(Item, pk=item_id)
 
         if item in category.items.all():
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Resource update failure",
-                    "details": "Item already in category",
-                }
-            }
-            return Response(
-                error_msg,
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise Http400BadRequest
 
         category.items.add(item)
         response: ReturnDict = CategorySerializer(category).data

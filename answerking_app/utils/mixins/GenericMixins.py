@@ -36,4 +36,4 @@ def handle_IntegrityError(exc: IntegrityError) -> NoReturn:
     if exc.args[0] == DUP_ENTRY:
         raise Http400BadRequest
     else:
-        return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        raise ServiceUnavailable

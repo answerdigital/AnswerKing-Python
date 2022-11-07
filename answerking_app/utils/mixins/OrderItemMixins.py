@@ -1,16 +1,13 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from answerking_app.models.models import Order, Item
-from answerking_app.models.serializers import (
-    OrderSerializer,
-    OrderLineSerializer,
-)
-from answerking_app.utils.ErrorType import ErrorMessage
-
-from django.shortcuts import get_object_or_404
+from answerking_app.models.models import Item, Order
+from answerking_app.models.serializers import (OrderLineSerializer,
+                                               OrderSerializer)
+from answerking_app.utils.mixins.ApiExceptions import Http400BadRequest
 
 
 class OrderItemUpdateMixin:
@@ -59,16 +56,7 @@ class OrderItemRemoveMixin:
         item: Item = get_object_or_404(Item, pk=item_id)
 
         if item not in order.order_items.all():
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Resource update failure",
-                    "details": "Item not in order",
-                }
-            }
-            return Response(
-                error_msg,
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise Http400BadRequest
 
         updated_order: Order | None = self.remove_item(order, item)
 

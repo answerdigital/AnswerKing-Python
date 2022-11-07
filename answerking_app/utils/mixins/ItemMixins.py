@@ -3,7 +3,8 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from answerking_app.models.models import OrderLine, Item
+from answerking_app.models.models import Item, OrderLine
+from answerking_app.utils.mixins.ApiExceptions import Http400BadRequest
 from answerking_app.utils.model_types import OrderItemType
 
 
@@ -14,10 +15,7 @@ class DestroyItemMixin(GenericAPIView):
             item=instance.id
         )
         if existing_orderitems:
-            return Response(
-                {"detail": "Cannot delete, item is in an order."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise Http400BadRequest
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
