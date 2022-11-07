@@ -13,9 +13,9 @@ djangorestframework = "^3.14.0"
 mysqlclient = "^2.1.1"
 django-cors-headers = "^3.13.0"
 drf-writable-nested = "^0.7.0"
-django-json-404-middleware = "^0.0.1"
+django-json-404-middleware = { git = "https://github.com/Axeltherabbit/django-json-404-middleware" }
 python-dotenv = "^0.21.0"
-drf-problems = "^1.0.5"
+drf-problems = { git = "https://github.com/Axeltherabbit/drf-problems" }
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
