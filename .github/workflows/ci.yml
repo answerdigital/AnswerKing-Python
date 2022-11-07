@@ -52,7 +52,7 @@ jobs:
       run: poetry run black . --line-length=79 --check
 
     - name: Run Pycodestyle Test
-      run: poetry run pycodestyle . 
+      run: poetry run pycodestyle . --ignore=E501
 
     - name: Run Pyright Test
       run: poetry run pyright
