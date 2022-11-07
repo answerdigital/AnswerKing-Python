@@ -1,12 +1,14 @@
 import re
 from typing import OrderedDict
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
     RegexValidator,
 )
-from rest_framework import serializers
+from rest_framework import serializers, status
+from rest_framework.response import Response
 
 from answerking_app.models.models import (
     Category,
@@ -73,15 +75,17 @@ class CategorySerializer(serializers.ModelSerializer):
     )
     items = ItemSerializer(many=True, required=False)
 
-    def create(self, validated_data: dict) -> Category:
+    def create(self, validated_data: dict) -> Category | Response:
         name: str = validated_data["name"]
-        category: Category = Category.objects.create(name=name)
-
+        items = []
         if "items" in validated_data:
             items_data: list[OrderedDict] = validated_data["items"]
             for item_in_request in items_data:
                 item: Item = Item.objects.get(pk=item_in_request["id"])
-                category.items.add(item)
+                items.append(item)
+        category: Category = Category.objects.create(name=name)
+        category.items.add(*items)
+
         return category
 
     class Meta:

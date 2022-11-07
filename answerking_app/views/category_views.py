@@ -7,14 +7,14 @@ from rest_framework.views import csrf_exempt
 
 from answerking_app.utils.mixins.CategoryItemMixins import (
     CategoryItemUpdateMixin,
-    CategoryItemRemoveMixin, CategoryUpdateMixin,
+    CategoryItemRemoveMixin,
 )
 from answerking_app.models.models import Category
 
 from answerking_app.models.serializers import (
     CategorySerializer,
 )
-from answerking_app.utils.mixins.GenericMixins import CreateMixin
+from answerking_app.utils.mixins.GenericMixins import CreateMixin, UpdateMixin
 
 
 class CategoryListView(
@@ -34,7 +34,7 @@ class CategoryListView(
 
 class CategoryDetailView(
     mixins.RetrieveModelMixin,
-    CategoryUpdateMixin,
+    UpdateMixin,
     mixins.DestroyModelMixin,
     generics.GenericAPIView
 ):
@@ -46,7 +46,7 @@ class CategoryDetailView(
 
     @csrf_exempt
     def put(self, request: Request, pk: int, *args, **kwargs) -> Response:
-        return self.category_check_and_update(request, pk, *args, **kwargs)
+        return self.update(request, pk, *args, **kwargs)
 
     @csrf_exempt
     def delete(self, request: Request, *args, **kwargs) -> Response:
