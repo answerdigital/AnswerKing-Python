@@ -1,9 +1,13 @@
-from MySQLdb.constants.ER import DUP_ENTRY
+from typing import NoReturn
+
 from django.db import IntegrityError
+from MySQLdb.constants.ER import DUP_ENTRY
 from rest_framework import status
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
+
+from answerking_app.utils.mixins.ApiExceptions import Http400BadRequest
 
 
 class CreateMixin(CreateModelMixin):
@@ -11,7 +15,7 @@ class CreateMixin(CreateModelMixin):
         try:
             return super().create(request, *args, **kwargs)
         except IntegrityError as exc:
-            return duplicate_check(exc)
+            handle_IntegrityError(exc)
 
 
 class UpdateMixin(UpdateModelMixin):
@@ -19,7 +23,7 @@ class UpdateMixin(UpdateModelMixin):
         try:
             return super().update(request, *args, **kwargs)
         except IntegrityError as exc:
-            return duplicate_check(exc)
+            return handle_IntegrityError(exc)
 
 
 class RetireMixin(UpdateModelMixin):
@@ -28,11 +32,8 @@ class RetireMixin(UpdateModelMixin):
         return super().partial_update(request, *args, **kwargs)
 
 
-def duplicate_check(exc: IntegrityError) -> Response:
+def handle_IntegrityError(exc: IntegrityError) -> NoReturn:
     if exc.args[0] == DUP_ENTRY:
-        return Response(
-            {"detail": "This name already exists"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+        raise Http400BadRequest
     else:
         return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)

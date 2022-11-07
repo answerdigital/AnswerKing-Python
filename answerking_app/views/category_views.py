@@ -1,27 +1,23 @@
 from django.db.models import QuerySet
-
-from rest_framework import mixins, generics
+from drf_problems.mixins import AllowPermissionWithExceptionViewMixin
+from rest_framework import generics, mixins
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from answerking_app.utils.mixins.CategoryItemMixins import (
-    CategoryItemUpdateMixin,
-    CategoryItemRemoveMixin,
-)
 from answerking_app.models.models import Category
-
-from answerking_app.models.serializers import (
-    CategorySerializer,
-)
-from answerking_app.utils.mixins.GenericMixins import (
-    CreateMixin,
-    UpdateMixin,
-    RetireMixin,
-)
+from answerking_app.models.serializers import CategorySerializer
+from answerking_app.utils.mixins.CategoryItemMixins import (
+    CategoryItemRemoveMixin, CategoryItemUpdateMixin)
+from answerking_app.utils.mixins.GenericMixins import (CreateMixin,
+                                                       RetireMixin,
+                                                       UpdateMixin)
 
 
 class CategoryListView(
-    mixins.ListModelMixin, CreateMixin, generics.GenericAPIView
+    mixins.ListModelMixin,
+    CreateMixin,
+    generics.GenericAPIView,
+    AllowPermissionWithExceptionViewMixin,
 ):
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
@@ -39,6 +35,7 @@ class CategoryDetailView(
     RetireMixin,
     mixins.DestroyModelMixin,
     generics.GenericAPIView,
+    AllowPermissionWithExceptionViewMixin,
 ):
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
@@ -54,7 +51,10 @@ class CategoryDetailView(
 
 
 class CategoryItemListView(
-    CategoryItemUpdateMixin, CategoryItemRemoveMixin, generics.GenericAPIView
+    CategoryItemUpdateMixin,
+    CategoryItemRemoveMixin,
+    generics.GenericAPIView,
+    AllowPermissionWithExceptionViewMixin,
 ):
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer

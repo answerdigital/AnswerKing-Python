@@ -1,14 +1,12 @@
-from django.db import IntegrityError
+from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from answerking_app.models.models import Category, Item
 from answerking_app.models.serializers import CategorySerializer
 from answerking_app.utils.ErrorType import ErrorMessage
-
-from django.shortcuts import get_object_or_404
 
 
 class CategoryItemUpdateMixin:

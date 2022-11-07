@@ -45,7 +45,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_json_404_middleware.JSON404Middleware",
+    "answerking.middlewares.json404.JSON404Middleware"
+    # "django_json_404_middleware.JSON404Middleware",
 ]
 
 ROOT_URLCONF = "answerking.urls"
@@ -107,6 +108,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# JSON404 middleware
+JSON404_DATA_FUNCTION = json404_response
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 

@@ -1,16 +1,14 @@
 from django.db.models import QuerySet
-from rest_framework import mixins, generics
+from rest_framework import generics, mixins
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from answerking_app.utils.mixins.GenericMixins import (
-    CreateMixin,
-    UpdateMixin,
-    RetireMixin,
-)
-from answerking_app.utils.mixins.ItemMixins import DestroyItemMixin
 from answerking_app.models.models import Item
 from answerking_app.models.serializers import ItemSerializer
+from answerking_app.utils.mixins.GenericMixins import (CreateMixin,
+                                                       RetireMixin,
+                                                       UpdateMixin)
+from answerking_app.utils.mixins.ItemMixins import DestroyItemMixin
 
 
 class ItemListView(
