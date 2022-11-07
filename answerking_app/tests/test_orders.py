@@ -289,7 +289,9 @@ class OrderTests(TestCase):
 
     def test_post_invalid_details_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewOrderAddressType = {"address": "test%"}
+        invalid_post_data: NewOrderAddressType = {
+            "address": "test%"
+        }
         expected_failure_error: dict[str, list[str]] = {
             "address": ["Enter a valid value."]
         }
