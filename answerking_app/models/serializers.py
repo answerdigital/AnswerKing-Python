@@ -6,7 +6,6 @@ from django.core.validators import (
     MinValueValidator,
     RegexValidator,
 )
-from drf_writable_nested.serializers import WritableNestedModelSerializer
 from rest_framework import serializers
 
 from answerking_app.models.models import (
@@ -66,13 +65,24 @@ class ItemSerializer(serializers.ModelSerializer):
         return compress_white_spaces(value)
 
 
-class CategorySerializer(WritableNestedModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,
         validators=[RegexValidator("^[a-zA-Z !]+$")],
     )
     items = ItemSerializer(many=True, required=False)
+
+    def create(self, validated_data: dict) -> Category:
+        name: str = validated_data["name"]
+        category: Category = Category.objects.create(name=name)
+
+        if "items" in validated_data:
+            items_data: list[OrderedDict] = validated_data["items"]
+            for item_in_request in items_data:
+                item: Item = Item.objects.get(pk=item_in_request["id"])
+                category.items.add(item)
+        return category
 
     class Meta:
         model = Category

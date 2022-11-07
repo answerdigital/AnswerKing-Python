@@ -3,6 +3,7 @@ from django.test import Client, TestCase, TransactionTestCase
 from rest_framework.exceptions import ParseError
 
 from answerking_app.models.models import Category, Item
+from answerking_app.utils.ErrorType import ErrorMessage
 from answerking_app.utils.model_types import (
     CategoryType,
     DetailError,
@@ -368,6 +369,51 @@ class CategoryTests(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
+    def test_put_add_duplicated_item_in_body_to_category_return_no_change(self):
+        # Arrange
+        old_category = client.get(
+            f"/api/categories/{self.test_cat_1.id}"
+        ).json()
+        item: Item = Item.objects.filter(pk=self.test_item_1.id)
+        post_data: CategoryType = {
+            "id": self.test_cat_1.id,
+            "name": "Burgers",
+            "items": [
+                {
+                    "id": self.test_item_1.id,
+                    "name": self.test_item_1.name,
+                    "price": f"{self.test_item_1.price:.2f}",
+                    "description": self.test_item_1.description,
+                    "stock": self.test_item_1.stock,
+                    "calories": self.test_item_1.calories,
+                }
+            ]
+        }
+        # Act
+        response = client.put(f"/api/categories/{self.test_cat_1.id}", post_data, content_type="application/json")
+        actual = response.json()
+        # Assert
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(actual, old_category)
+
+    def test_put_add_duplicated_item_in_url_to_category_return_400(self):
+        # Arrange
+        old_category = client.get(
+            f"/api/categories/{self.test_cat_1.id}"
+        ).json()
+        # Act
+        response = client.put(f"/api/categories/{self.test_cat_1.id}/items/{self.test_item_1.id}", content_type="application/json")
+        actual = response.json()
+        error_msg: ErrorMessage = [{
+            "error": {
+                "message": "Resource update failure",
+                "details": "Item already in category",
+            }}]
+        # Assert
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(actual, error_msg)
+
+
 
 class CategoryTestsDB(TransactionTestCase):
     def setUp(self):
@@ -422,23 +468,12 @@ class CategoryTestsDB(TransactionTestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
-    def test_put_duplicated_name_returns_404(self):
+    def test_put_duplicated_name_returns_400(self):
         # Arrange
-        old_item = client.get(f"/api/items/{self.test_item_1.id}").json()
         post_data: NewCategoryType = {"name": "Vegan", "items": []}
-
-        post_data_different_name: NewCategoryType = {
-            **post_data,
-            "name": "Different Name",
-        }
 
         client.post(
             "/api/categories", post_data, content_type="application/json"
-        )
-        client.post(
-            "/api/categories",
-            post_data_different_name,
-            content_type="application/json",
         )
 
         # Act
@@ -453,3 +488,5 @@ class CategoryTestsDB(TransactionTestCase):
         # Assert
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
+
+
