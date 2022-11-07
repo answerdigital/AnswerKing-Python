@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404
 
 class CategoryItemUpdateMixin:
     def update(
-        self, request: Request, cat_id: str, item_id: int, *args, **kwargs
+        self, request: Request, cat_id: int, item_id: int, *args, **kwargs
     ) -> Response:
 
         category: Category = get_object_or_404(Category, pk=cat_id)
