@@ -2,15 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "main", "develop" ]
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "main", "develop" ]
 
 jobs:
   test:
 
     runs-on: ubuntu-latest
-    
+
     services:
       mysql:
         image: mysql:5.7
@@ -18,7 +18,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: ${{ secrets.DATABASE_PASS }}
           MYSQL_DATABASE: answerking_app
         ports: ['3306:3306']
-        
+
     env:
         DATABASE_NAME: answerking_app
         DATABASE_USER: ${{ secrets.DATABASE_USER }}
@@ -29,22 +29,22 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
         python-version: '3.10'
-        
+
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install poetry
         poetry update
-        
+
     - name: Run Migrations
       run: poetry run python manage.py migrate
-        
-    - name: Run Tests     
+
+    - name: Run Tests
       run: |
         poetry run python manage.py test
         poetry run black . --line-length=79 --check
