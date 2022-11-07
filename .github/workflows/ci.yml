@@ -26,6 +26,7 @@ jobs:
         DATABASE_HOST: 127.0.0.1
         DATABASE_PORT: 3306
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        DJANGO_SETTINGS_MODULE: answerking.settings.development
 
     services:
       mysql:
