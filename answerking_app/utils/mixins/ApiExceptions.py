@@ -1,3 +1,5 @@
+import uuid
+
 from rest_framework.exceptions import APIException
 
 
@@ -8,7 +10,7 @@ class HttpErrorResponse(APIException):
         detail: str | None = None,
         title: str | None = None,
         instance: str | None = None,
-        extensions: dict | None = None,
+        extensions: dict = {},
     ):
         super().__init__()
         self.status_code = status
@@ -18,5 +20,4 @@ class HttpErrorResponse(APIException):
             self.title = title
         if instance:
             self.instance = instance
-        if extensions:
-            self.extensions = extensions
+        self.extensions = extensions | {"traceId": uuid.uuid4()}

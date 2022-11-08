@@ -10,6 +10,8 @@ from answerking_app.utils.mixins.CategoryItemMixins import (
     CategoryItemRemoveMixin, CategoryItemUpdateMixin)
 from answerking_app.utils.mixins.IntegrityHandlerMixins import (
     CreateIntegrityHandlerMixin, UpdateIntegrityHandlerMixin)
+from answerking_app.utils.mixins.NotFoundDetailMixins import (
+    GetNotFoundDetailMixin, UpdateNotFoundDetailMixin)
 from answerking_app.utils.mixins.RetireMixin import RetireMixin
 from answerking_app.utils.mixins.SerializeErrorDetailRFCMixins import (
     CreateErrorDetailMixin, UpdateErrorDetailMixin)
@@ -33,8 +35,9 @@ class CategoryListView(
 
 
 class CategoryDetailView(
-    mixins.RetrieveModelMixin,
     RetireMixin,
+    GetNotFoundDetailMixin,
+    UpdateNotFoundDetailMixin,
     UpdateIntegrityHandlerMixin,
     UpdateErrorDetailMixin,
     mixins.DestroyModelMixin,

@@ -9,6 +9,8 @@ from rest_framework.response import Response
 from answerking_app.models.models import Order
 from answerking_app.models.serializers import OrderSerializer
 from answerking_app.utils.ErrorType import ErrorMessage
+from answerking_app.utils.mixins.NotFoundDetailMixins import (
+    GetNotFoundDetailMixin, UpdateNotFoundDetailMixin)
 from answerking_app.utils.mixins.OrderItemMixins import (OrderItemRemoveMixin,
                                                          OrderItemUpdateMixin)
 from answerking_app.utils.mixins.SerializeErrorDetailRFCMixins import (
@@ -32,7 +34,8 @@ class OrderListView(
 
 
 class OrderDetailView(
-    mixins.RetrieveModelMixin,
+    GetNotFoundDetailMixin,
+    UpdateNotFoundDetailMixin,
     UpdateErrorDetailMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
@@ -54,7 +57,10 @@ class OrderDetailView(
 
 
 class OrderItemListView(
-    OrderItemUpdateMixin, OrderItemRemoveMixin, generics.GenericAPIView
+    UpdateNotFoundDetailMixin,
+    OrderItemUpdateMixin,
+    OrderItemRemoveMixin,
+    generics.GenericAPIView,
 ):
     serializer_class: OrderSerializer = OrderSerializer
 
