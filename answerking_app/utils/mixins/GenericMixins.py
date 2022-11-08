@@ -27,6 +27,15 @@ class UpdateMixin(UpdateModelMixin):
             return item_exists_check(err)
 
 
+class RetireMixin(UpdateModelMixin):
+    def retire(self, request: Request, *args, **kwargs) -> Response:
+        try:
+            request.data['retired'] = True
+            return super().partial_update(request, *args, **kwargs)
+        except ObjectDoesNotExist as err:
+            return item_exists_check(err)
+
+
 def duplicate_check(exc: IntegrityError) -> Response:
     if exc.args[0] == DUP_ENTRY:
         return Response(
