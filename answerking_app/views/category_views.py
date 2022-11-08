@@ -41,12 +41,15 @@ class CategoryDetailView(
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
 
+    @csrf_exempt
     def get(self, request: Request, *args, **kwargs) -> Response:
         return self.retrieve(request, *args, **kwargs)
 
-    def put(self, request: Request, pk: int, *args, **kwargs) -> Response:
-        return self.update(request, pk, *args, **kwargs)
+    @csrf_exempt
+    def put(self, request: Request, *args, **kwargs) -> Response:
+        return self.update(request, *args, **kwargs)
 
+    @csrf_exempt
     def delete(self, request: Request, *args, **kwargs) -> Response:
         return self.destroy(request, *args, **kwargs)
 
@@ -57,11 +60,13 @@ class CategoryItemListView(
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
 
+    @csrf_exempt
     def put(
         self, request: Request, cat_id: int, item_id: int, *args, **kwargs
     ) -> Response:
         return self.update(request, cat_id, item_id, *args, **kwargs)
 
+    @csrf_exempt
     def delete(
         self, request: Request, cat_id: int, item_id: int, *args, **kwargs
     ) -> Response:
