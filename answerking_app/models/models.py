@@ -9,11 +9,13 @@ class Item(models.Model):
     description = models.CharField(max_length=200, blank=True, null=True)
     stock = models.IntegerField()
     calories = models.IntegerField()
+    retired = models.BooleanField(default=False, null=False)
 
 
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
     items = models.ManyToManyField(Item)
+    retired = models.BooleanField(default=False, null=False)
 
 
 class Status(models.Model):
