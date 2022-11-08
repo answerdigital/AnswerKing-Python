@@ -8,14 +8,14 @@ from answerking_app.models.models import Category
 from answerking_app.models.serializers import CategorySerializer
 from answerking_app.utils.mixins.CategoryItemMixins import (
     CategoryItemRemoveMixin, CategoryItemUpdateMixin)
-from answerking_app.utils.mixins.GenericMixins import (CreateMixin,
-                                                       RetireMixin,
-                                                       UpdateMixin)
+from answerking_app.utils.mixins.IntegrityHandlerMixins import (
+    CreateIntegrityHandlerMixin, UpdateIntegrityHandlerMixin)
+from answerking_app.utils.mixins.RetireMixin import RetireMixin
 
 
 class CategoryListView(
     mixins.ListModelMixin,
-    CreateMixin,
+    CreateIntegrityHandlerMixin,
     generics.GenericAPIView,
     AllowPermissionWithExceptionViewMixin,
 ):
@@ -31,8 +31,12 @@ class CategoryListView(
 
 class CategoryDetailView(
     mixins.RetrieveModelMixin,
+<<<<<<< HEAD
     UpdateMixin,
     RetireMixin,
+=======
+    UpdateIntegrityHandlerMixin,
+>>>>>>> Renamed integrityHandlerMixin
     mixins.DestroyModelMixin,
     generics.GenericAPIView,
     AllowPermissionWithExceptionViewMixin,
