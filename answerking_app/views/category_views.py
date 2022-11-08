@@ -36,7 +36,7 @@ class CategoryDetailView(
     mixins.RetrieveModelMixin,
     UpdateMixin,
     mixins.DestroyModelMixin,
-    generics.GenericAPIView
+    generics.GenericAPIView,
 ):
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
@@ -63,7 +63,7 @@ class CategoryItemListView(
     def put(
         self, request: Request, cat_id: int, item_id: int, *args, **kwargs
     ) -> Response:
-        return self.update_single_item(request, cat_id, item_id, *args, **kwargs)
+        return self.update(request, cat_id, item_id, *args, **kwargs)
 
     @csrf_exempt
     def delete(

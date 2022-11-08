@@ -245,7 +245,7 @@ class CategoryTests(TestCase):
         self.assertEqual(expected_failure_error, actual)
         self.assertEqual(response.status_code, 400)
 
-    def test_put_valid_without_items_returns_ok(self):
+    def test_put_valid_without_items_returns_no_items(self):
         # Arrange
         old_category = client.get(
             f"/api/categories/{self.test_cat_1.id}"
@@ -256,24 +256,7 @@ class CategoryTests(TestCase):
         expected: CategoryType = {
             **post_data,
             **expected_id,
-            "items": [
-                {
-                    "id": self.test_item_1.id,
-                    "name": self.test_item_1.name,
-                    "price": f"{self.test_item_1.price:.2f}",
-                    "description": self.test_item_1.description,
-                    "stock": self.test_item_1.stock,
-                    "calories": self.test_item_1.calories,
-                },
-                {
-                    "id": self.test_item_2.id,
-                    "name": self.test_item_2.name,
-                    "price": f"{self.test_item_2.price:.2f}",
-                    "description": self.test_item_2.description,
-                    "stock": self.test_item_2.stock,
-                    "calories": self.test_item_2.calories,
-                },
-            ],
+            "items": [],
         }
 
         # Act
@@ -325,7 +308,7 @@ class CategoryTests(TestCase):
         self.assertIn(expected_json_error, actual["detail"])
         self.assertEqual(response.status_code, 400)
 
-    def test_put_invalid_details_returns_bad_request(self):
+    def test_put_invalid_name_returns_bad_request(self):
         # Arrange
         invalid_post_data: NewCategoryType = {
             "name": "New Name*",
@@ -344,6 +327,76 @@ class CategoryTests(TestCase):
         # Assert
         self.assertEqual(expected_failure_error, actual)
         self.assertEqual(response.status_code, 400)
+
+    def test_put_invalid_item_returns_bad_request(self):
+        # Arrange
+        item = {
+            "id": self.test_item_3.id + 500,
+            "name": self.test_item_1.name,
+            "price": f"{self.test_item_1.price:.2f}",
+            "description": self.test_item_1.description,
+            "stock": self.test_item_1.stock,
+            "calories": self.test_item_1.calories,
+        }
+        invalid_post_data: NewCategoryType = {
+            "name": "New Name",
+            "items": [item],
+        }
+        expected_failure_error: dict = {"detail": "This item does not exist"}
+
+        # Act
+        response = client.put(
+            f"/api/categories/{self.test_cat_1.id}",
+            invalid_post_data,
+            content_type="application/json",
+        )
+        actual = response.json()
+
+        # Assert
+        self.assertEqual(expected_failure_error, actual)
+        self.assertEqual(response.status_code, 400)
+
+    def test_put_wrong_item_except_id_returns_correct_item_details(self):
+        # Arrange
+        item_with_wrong_info: ItemType = {
+            "id": self.test_item_1.id,
+            "name": "Rubbish name",
+            "price": "100",
+            "description": "new text new text",
+            "stock": 666,
+            "calories": 666,
+        }
+        invalid_post_data: NewCategoryType = {
+            "name": "Burgers",
+            "items": [item_with_wrong_info],
+        }
+        expected: NewCategoryType = {
+            "id": self.test_cat_1.id,
+            "name": self.test_cat_1.name,
+            "items": [
+                {
+                    "id": self.test_item_1.id,
+                    "name": self.test_item_1.name,
+                    "price": f"{self.test_item_1.price:.2f}",
+                    "description": self.test_item_1.description,
+                    "stock": self.test_item_1.stock,
+                    "calories": self.test_item_1.calories,
+                }
+            ],
+        }
+
+        # Act
+        response = client.put(
+            f"/api/categories/{self.test_cat_1.id}",
+            invalid_post_data,
+            content_type="application/json",
+        )
+        actual = response.json()
+
+        # Assert
+        self.assertEqual(expected, actual)
+        self.assertNotEqual(invalid_post_data, actual)
+        self.assertEqual(response.status_code, 200)
 
     def test_delete_valid_returns_ok(self):
         # Arrange
@@ -369,50 +422,55 @@ class CategoryTests(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
-    def test_put_add_duplicated_item_in_body_to_category_return_no_change(self):
+    def test_put_add_duplicated_item_in_body_to_category_return_one(self):
         # Arrange
-        old_category = client.get(
-            f"/api/categories/{self.test_cat_1.id}"
-        ).json()
-        item: Item = Item.objects.filter(pk=self.test_item_1.id)
+        item = {
+            "id": self.test_item_1.id,
+            "name": self.test_item_1.name,
+            "price": f"{self.test_item_1.price:.2f}",
+            "description": self.test_item_1.description,
+            "stock": self.test_item_1.stock,
+            "calories": self.test_item_1.calories,
+        }
         post_data: CategoryType = {
             "id": self.test_cat_1.id,
             "name": "Burgers",
-            "items": [
-                {
-                    "id": self.test_item_1.id,
-                    "name": self.test_item_1.name,
-                    "price": f"{self.test_item_1.price:.2f}",
-                    "description": self.test_item_1.description,
-                    "stock": self.test_item_1.stock,
-                    "calories": self.test_item_1.calories,
-                }
-            ]
+            "items": [item, item],
+        }
+        expected: CategoryType = {
+            "id": self.test_cat_1.id,
+            "name": "Burgers",
+            "items": [item],
         }
         # Act
-        response = client.put(f"/api/categories/{self.test_cat_1.id}", post_data, content_type="application/json")
+        response = client.put(
+            f"/api/categories/{self.test_cat_1.id}",
+            post_data,
+            content_type="application/json",
+        )
         actual = response.json()
         # Assert
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(actual, old_category)
+        self.assertEqual(actual, expected)
+        self.assertNotEqual(actual, post_data)
 
     def test_put_add_duplicated_item_in_url_to_category_return_400(self):
         # Arrange
-        old_category = client.get(
-            f"/api/categories/{self.test_cat_1.id}"
-        ).json()
         # Act
-        response = client.put(f"/api/categories/{self.test_cat_1.id}/items/{self.test_item_1.id}", content_type="application/json")
+        response = client.put(
+            f"/api/categories/{self.test_cat_1.id}/items/{self.test_item_1.id}",
+            content_type="application/json",
+        )
         actual = response.json()
-        error_msg: ErrorMessage = [{
+        error_msg: ErrorMessage = {
             "error": {
                 "message": "Resource update failure",
                 "details": "Item already in category",
-            }}]
+            }
+        }
         # Assert
         self.assertEqual(response.status_code, 400)
         self.assertEqual(actual, error_msg)
-
 
 
 class CategoryTestsDB(TransactionTestCase):
@@ -488,5 +546,3 @@ class CategoryTestsDB(TransactionTestCase):
         # Assert
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
-
-

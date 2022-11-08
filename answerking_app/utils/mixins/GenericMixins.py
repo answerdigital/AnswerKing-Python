@@ -23,6 +23,8 @@ class UpdateMixin(UpdateModelMixin):
             return super().update(request, *args, **kwargs)
         except IntegrityError as exc:
             return duplicate_check(exc)
+        except ObjectDoesNotExist as err:
+            return item_exists_check(err)
 
 
 def duplicate_check(exc: IntegrityError) -> Response:
@@ -36,7 +38,7 @@ def duplicate_check(exc: IntegrityError) -> Response:
 
 
 def item_exists_check(err) -> Response:
-    if err.args[0] == 'Item matching query does not exist.':
+    if err.args[0] == "Item matching query does not exist.":
         return Response(
             {"detail": "This item does not exist"},
             status=status.HTTP_400_BAD_REQUEST,
