@@ -89,7 +89,7 @@ class CategorySerializer(serializers.ModelSerializer):
         return category
 
     def items_check(self, validated_data: dict) -> list[Item]:
-        items: list = []
+        items: list[Item] = []
         if "items" in validated_data:
             items_data: list[OrderedDict] = validated_data["items"]
             for item_in_request in items_data:
