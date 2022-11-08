@@ -331,7 +331,7 @@ class CategoryTests(TestCase):
     def test_put_invalid_item_returns_bad_request(self):
         # Arrange
         item: ItemType = {
-            "id": self.test_item_3.id + 500,
+            "id": -1,
             "name": self.test_item_1.name,
             "price": f"{self.test_item_1.price:.2f}",
             "description": self.test_item_1.description,
@@ -455,7 +455,6 @@ class CategoryTests(TestCase):
         self.assertNotEqual(actual, post_data)
 
     def test_put_add_duplicated_item_in_url_to_category_return_400(self):
-        # Arrange
         # Act
         response = client.put(
             f"/api/categories/{self.test_cat_1.id}/items/{self.test_item_1.id}",
