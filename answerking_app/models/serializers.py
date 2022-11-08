@@ -81,7 +81,7 @@ class CategorySerializer(serializers.ModelSerializer):
         category.items.add(*items)
         return category
 
-    def update(self, category: Category, validated_data: dict):
+    def update(self, category: Category, validated_data: dict) -> Category:
         items = self.items_check(validated_data)
         category.name = validated_data["name"]
         category.items.set(objs=items)
