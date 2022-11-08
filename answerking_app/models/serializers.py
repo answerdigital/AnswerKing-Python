@@ -1,5 +1,5 @@
 import re
-from typing import OrderedDict, List
+from typing import OrderedDict
 
 from django.core.validators import (
     MaxValueValidator,
@@ -88,7 +88,7 @@ class CategorySerializer(serializers.ModelSerializer):
         category.save()
         return category
 
-    def items_check(self, validated_data) -> List[Item]:
+    def items_check(self, validated_data: dict) -> list[Item]:
         items = []
         if "items" in validated_data:
             items_data: list[OrderedDict] = validated_data["items"]
