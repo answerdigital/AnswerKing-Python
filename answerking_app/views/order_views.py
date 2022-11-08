@@ -71,7 +71,9 @@ class OrderItemListView(
     def put(
         self, request: Request, order_id: int, item_id: int, *args, **kwargs
     ) -> Response:
-        return self.update(request, order_id, item_id, *args, **kwargs)
+        return self.update(
+            request, order_id=order_id, item_id=item_id, *args, **kwargs
+        )
 
     def delete(
         self, request: Request, order_id: int, item_id: int, *args, **kwargs
