@@ -330,7 +330,7 @@ class CategoryTests(TestCase):
 
     def test_put_invalid_item_returns_bad_request(self):
         # Arrange
-        item = {
+        item: ItemType = {
             "id": self.test_item_3.id + 500,
             "name": self.test_item_1.name,
             "price": f"{self.test_item_1.price:.2f}",
@@ -370,7 +370,7 @@ class CategoryTests(TestCase):
             "name": "Burgers",
             "items": [item_with_wrong_info],
         }
-        expected: NewCategoryType = {
+        expected: CategoryType = {
             "id": self.test_cat_1.id,
             "name": self.test_cat_1.name,
             "items": [
@@ -424,7 +424,7 @@ class CategoryTests(TestCase):
 
     def test_put_add_duplicated_item_in_body_to_category_return_one(self):
         # Arrange
-        item = {
+        item: ItemType = {
             "id": self.test_item_1.id,
             "name": self.test_item_1.name,
             "price": f"{self.test_item_1.price:.2f}",
