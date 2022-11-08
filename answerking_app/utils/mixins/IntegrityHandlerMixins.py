@@ -28,6 +28,9 @@ class UpdateMixin(UpdateModelMixin):
 
 def handle_IntegrityError(exc: IntegrityError) -> NoReturn:
     if exc.args[0] == DUP_ENTRY:
-        raise HttpErrorResponse(status=status.HTTP_400_BAD_REQUEST)
+        raise HttpErrorResponse(
+            status=status.HTTP_400_BAD_REQUEST,
+            detail="This name already exists",
+        )
     else:
         raise HttpErrorResponse(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
