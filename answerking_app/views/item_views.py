@@ -9,10 +9,15 @@ from answerking_app.utils.mixins.IntegrityHandlerMixins import (
     CreateIntegrityHandlerMixin, UpdateIntegrityHandlerMixin)
 from answerking_app.utils.mixins.ItemMixins import DestroyItemMixin
 from answerking_app.utils.mixins.RetireMixin import RetireMixin
+from answerking_app.utils.mixins.SerializeErrorDetailRFCMixins import (
+    CreateErrorDetailMixin, UpdateErrorDetailMixin)
 
 
 class ItemListView(
-    mixins.ListModelMixin, CreateIntegrityHandlerMixin, generics.GenericAPIView
+    mixins.ListModelMixin,
+    CreateErrorDetailMixin,
+    CreateIntegrityHandlerMixin,
+    generics.GenericAPIView,
 ):
 
     queryset: QuerySet = Item.objects.all()
@@ -27,12 +32,9 @@ class ItemListView(
 
 class ItemDetailView(
     mixins.RetrieveModelMixin,
-<<<<<<< HEAD
-    UpdateMixin,
     RetireMixin,
-=======
     UpdateIntegrityHandlerMixin,
->>>>>>> Renamed integrityHandlerMixin
+    UpdateErrorDetailMixin,
     DestroyItemMixin,
     generics.GenericAPIView,
 ):

@@ -13,7 +13,7 @@ class HttpErrorResponse(APIException):
         super().__init__()
         self.status_code = status
         if detail:
-            self.default_detail = detail
+            self.detail = detail
         if title:
             self.title = title
         if instance:

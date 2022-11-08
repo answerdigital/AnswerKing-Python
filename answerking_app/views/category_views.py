@@ -11,11 +11,14 @@ from answerking_app.utils.mixins.CategoryItemMixins import (
 from answerking_app.utils.mixins.IntegrityHandlerMixins import (
     CreateIntegrityHandlerMixin, UpdateIntegrityHandlerMixin)
 from answerking_app.utils.mixins.RetireMixin import RetireMixin
+from answerking_app.utils.mixins.SerializeErrorDetailRFCMixins import (
+    CreateErrorDetailMixin, UpdateErrorDetailMixin)
 
 
 class CategoryListView(
     mixins.ListModelMixin,
     CreateIntegrityHandlerMixin,
+    CreateErrorDetailMixin,
     generics.GenericAPIView,
     AllowPermissionWithExceptionViewMixin,
 ):
@@ -31,12 +34,9 @@ class CategoryListView(
 
 class CategoryDetailView(
     mixins.RetrieveModelMixin,
-<<<<<<< HEAD
-    UpdateMixin,
     RetireMixin,
-=======
     UpdateIntegrityHandlerMixin,
->>>>>>> Renamed integrityHandlerMixin
+    UpdateErrorDetailMixin,
     mixins.DestroyModelMixin,
     generics.GenericAPIView,
     AllowPermissionWithExceptionViewMixin,
