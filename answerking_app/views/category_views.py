@@ -23,7 +23,6 @@ class CategoryListView(
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
 
-    @csrf_exempt
     def get(self, request: Request, *args, **kwargs) -> Response:
         return self.list(request, *args, **kwargs)
 
