@@ -7,7 +7,7 @@ from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from answerking_app.utils.mixins.ApiExceptions import Http400BadRequest
+from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
 
 
 class CreateMixin(CreateModelMixin):
@@ -34,6 +34,6 @@ class RetireMixin(UpdateModelMixin):
 
 def handle_IntegrityError(exc: IntegrityError) -> NoReturn:
     if exc.args[0] == DUP_ENTRY:
-        raise Http400BadRequest
+        raise HttpErrorResponse(status=status.HTTP_400_BAD_REQUEST)
     else:
-        raise ServiceUnavailable
+        raise HttpErrorResponse(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -7,7 +7,7 @@ from rest_framework.utils.serializer_helpers import ReturnDict
 from answerking_app.models.models import Item, Order
 from answerking_app.models.serializers import (OrderLineSerializer,
                                                OrderSerializer)
-from answerking_app.utils.mixins.ApiExceptions import Http400BadRequest
+from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
 
 
 class OrderItemUpdateMixin:
@@ -56,7 +56,7 @@ class OrderItemRemoveMixin:
         item: Item = get_object_or_404(Item, pk=item_id)
 
         if item not in order.order_items.all():
-            raise Http400BadRequest
+            raise HttpErrorResponse(status=status.HTTP_400_BAD_REQUEST)
 
         updated_order: Order | None = self.remove_item(order, item)
 

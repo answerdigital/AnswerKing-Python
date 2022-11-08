@@ -6,8 +6,7 @@ from rest_framework.utils.serializer_helpers import ReturnDict
 
 from answerking_app.models.models import Category, Item
 from answerking_app.models.serializers import CategorySerializer
-from answerking_app.utils.ErrorType import ErrorMessage
-from answerking_app.utils.mixins.ApiExceptions import Http400BadRequest
+from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
 
 
 class CategoryItemUpdateMixin:
@@ -19,7 +18,7 @@ class CategoryItemUpdateMixin:
         item: Item = get_object_or_404(Item, pk=item_id)
 
         if item in category.items.all():
-            raise Http400BadRequest
+            raise HttpErrorResponse(status=status.HTTP_400_BAD_REQUEST)
 
         category.items.add(item)
         response: ReturnDict = CategorySerializer(category).data
