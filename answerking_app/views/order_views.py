@@ -38,7 +38,6 @@ class OrderDetailView(
     UpdateNotFoundDetailMixin,
     UpdateErrorDetailMixin,
     mixins.DestroyModelMixin,
-    mixins.UpdateModelMixin,
     generics.GenericAPIView,
 ):
 
@@ -57,12 +56,16 @@ class OrderDetailView(
 
 
 class OrderItemListView(
+    GetNotFoundDetailMixin,
+    UpdateErrorDetailMixin,
     UpdateNotFoundDetailMixin,
     OrderItemUpdateMixin,
     OrderItemRemoveMixin,
     generics.GenericAPIView,
 ):
     serializer_class: OrderSerializer = OrderSerializer
+    serializer_class: OrderSerializer = OrderSerializer
+    lookup_url_kwarg: Literal["order_id"] = "order_id"
 
     def put(
         self, request: Request, order_id: int, item_id: int, *args, **kwargs

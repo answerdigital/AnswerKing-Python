@@ -2,11 +2,7 @@ from django.test import Client, TestCase
 
 from answerking_app.models.models import Item, Order, Status
 from answerking_app.utils.ErrorType import ErrorMessage
-from answerking_app.utils.model_types import (
-    DetailError,
-    OrderItemQtyType,
-    OrderType,
-)
+from answerking_app.utils.model_types import DetailError, OrderType
 
 client = Client()
 
@@ -82,7 +78,7 @@ class OrderLineTests(TestCase):
             ],
             "total": "6.50",
         }
-        post_data: OrderItemQtyType = {"quantity": 1}
+        post_data: OrderType = {"quantity": 1}
 
         # Act
         response = client.put(
@@ -113,7 +109,7 @@ class OrderLineTests(TestCase):
             ],
             "total": "2.50",
         }
-        post_data: OrderItemQtyType = {"quantity": 1}
+        post_data: OrderType = {"quantity": 1}
 
         # Act
         response = client.put(
@@ -136,7 +132,7 @@ class OrderLineTests(TestCase):
             "order_items": [],
             "total": "0.00",
         }
-        post_data: OrderItemQtyType = {"quantity": 0}
+        post_data: OrderType = {"quantity": 0}
 
         # Act
         response = client.put(
@@ -152,10 +148,15 @@ class OrderLineTests(TestCase):
 
     def test_update_existing_orderline_invalid_returns_bad_request(self):
         # Arrange
-        expected_failure_error: dict[str, list[str]] = {
-            "quantity": ["A valid integer is required."]
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {"quantity": ["A valid integer is required."]},
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
-        post_data: OrderItemQtyType = {"quantity": "f"}  # type: ignore
+
+        post_data: OrderType = {"quantity": "f"}  # type: ignore
 
         # Act
         response = client.put(
@@ -166,15 +167,24 @@ class OrderLineTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_update_existing_orderline_negative_returns_bad_request(self):
         # Arrange
-        expected_failure_error: dict[str, list[str]] = {
-            "quantity": ["Ensure this value is greater than or equal to 0."]
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {
+                "quantity": [
+                    "Ensure this value is greater than or equal to 0."
+                ]
+            },
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
-        post_data: OrderItemQtyType = {"quantity": -1}  # type: ignore
+        post_data: OrderType = {"quantity": -1}  # type: ignore
 
         # Act
         response = client.put(
@@ -185,12 +195,18 @@ class OrderLineTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_nonexistant_orderid_returns_not_found(self):
         # Arrange
-        expected: DetailError = {"detail": "Not found."}
+        expected: DetailError = {
+            "detail": "Not Found",
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/error/",
+        }
 
         # Act
         response = client.put(
@@ -201,12 +217,18 @@ class OrderLineTests(TestCase):
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
     def test_nonexistant_itemid_returns_not_found(self):
         # Arrange
-        expected: DetailError = {"detail": "Not found."}
+        expected: DetailError = {
+            "detail": "Not Found",
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/error/",
+        }
 
         # Act
         response = client.put(
@@ -217,13 +239,17 @@ class OrderLineTests(TestCase):
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
     def test_invalid_orderid_returns_not_found(self):
         # Arrange
         expected: DetailError = {
-            "detail": f"/api/orders/f/orderline/{self.test_item_2.id} not found"
+            "detail": "Not Found",
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/not_found/",
         }
 
         # Act
@@ -235,13 +261,17 @@ class OrderLineTests(TestCase):
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
     def test_invalid_itemid_returns_not_found(self):
         # Arrange
         expected: DetailError = {
-            "detail": f"/api/orders/{self.test_order_1.id}/orderline/f not found"
+            "detail": "Not Found",
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/not_found/",
         }
 
         # Act
@@ -253,6 +283,7 @@ class OrderLineTests(TestCase):
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
@@ -278,11 +309,11 @@ class OrderLineTests(TestCase):
 
     def test_delete_nonexistant_id_returns_not_found(self):
         # Arrange
-        expected: ErrorMessage = {
-            "error": {
-                "message": "Resource update failure",
-                "details": "Item not in order",
-            }
+        expected: DetailError = {
+            "detail": "A server error occurred.",
+            "status": 404,
+            "title": "A server error occurred.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -292,5 +323,43 @@ class OrderLineTests(TestCase):
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_invalid_id_returns_not_found(self):
+        # Arrange
+        expected: DetailError = {
+            "detail": "Not found.",
+            "status": 404,
+            "title": "Not found.",
+            "type": "http://testserver/problems/not_found/",
+        }
+
+        # Act
+        response = client.delete(
+            f"/api/orders/{self.test_order_1.id}/orderline/100000"
+        )
+        actual = response.json()
+
+        # Assert
+        self.assertEqual(expected, actual)
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_item_when_in_order_returns_bad_request(self):
+        # Arrange
+        expected: DetailError = {
+            "detail": "A server error occurred.",
+            "status": 400,
+            "title": "A server error occurred.",
+            "type": "http://testserver/problems/error/",
+        }
+
+        # Act
+        response = client.delete(f"/api/items/{self.test_item_1.id}")
+        actual = response.json()
+
+        # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)

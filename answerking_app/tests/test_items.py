@@ -3,12 +3,7 @@ from django.test import Client, TestCase, TransactionTestCase
 from rest_framework.exceptions import ParseError
 
 from answerking_app.models.models import Item
-from answerking_app.utils.model_types import (
-    DetailError,
-    IDType,
-    ItemType,
-    NewItemType,
-)
+from answerking_app.utils.model_types import DetailError, ItemType
 
 client = Client()
 
@@ -97,30 +92,40 @@ class ItemTests(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 200)
 
-    def test_get_id_invalid_returns_not_found(self):
+    def test_get_invalid_id_returns_not_found(self):
         # Arrange
-        expected: DetailError = {"detail": "/api/items/f not found"}
+        expected: DetailError = {
+            "detail": "Not Found",
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/not_found/",
+        }
 
         # Act
         response = client.get("/api/items/f")
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
     def test_post_valid_returns_ok(self):
         # Arrange
         old_list = client.get("/api/items").json()
-        post_data: NewItemType = {
+        post_data: ItemType = {
             "name": "Whopper",
             "price": "1.50",
             "description": "desc",
             "stock": 100,
             "calories": 100,
         }
-        expected_id: IDType = {"id": self.test_item_2.id + 1}
-        expected: ItemType = {**expected_id, **post_data, "retired": False}
+
+        expected: ItemType = {
+            "id": self.test_item_2.id + 1,
+            **post_data,
+            "retired": False,
+        }
 
         # Act
         response = client.post(
@@ -140,8 +145,12 @@ class ItemTests(TestCase):
     def test_post_invalid_json_returns_bad_request(self):
         # Arrange
         invalid_json_data: str = '{"invalid": }'
-        expected_json_error: DetailError = {
-            "detail": "JSON parse error - Expecting value: line 1 column 13 (char 12)"
+        expected: DetailError = {
+            "detail": "Parsing JSON Error",
+            "errors": "JSON parse error - Expecting value: line 1 column 13 (char 12)",
+            "status": 400,
+            "title": "Invalid input json.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -151,21 +160,25 @@ class ItemTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertRaises(ParseError)
-        self.assertEqual(expected_json_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_post_invalid_name_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewItemType = {
+        invalid_post_data: ItemType = {
             "name": "Bad data£",
             "price": "1.50",
             "description": "desc",
             "stock": 100,
             "calories": 100,
         }
-        expected_failure_error: dict[str, list[str]] = {
-            "name": ["Enter a valid value."]
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {"name": ["Enter a valid value."]},
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -175,20 +188,25 @@ class ItemTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_post_invalid_price_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewItemType = {
+        invalid_post_data: ItemType = {
             "name": "Bad data",
             "price": "1.50f",
             "description": "desc",
             "stock": 100,
             "calories": 100,
         }
-        expected_failure_error: dict[str, list[str]] = {
-            "price": ["A valid number is required."]
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {"price": ["A valid number is required."]},
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -198,20 +216,25 @@ class ItemTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_post_invalid_description_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewItemType = {
+        invalid_post_data: ItemType = {
             "name": "Bad data",
             "price": "1.50",
             "description": "desc&",
             "stock": 100,
             "calories": 100,
         }
-        expected_failure_error: dict[str, list[str]] = {
-            "description": ["Enter a valid value."]
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {"description": ["Enter a valid value."]},
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -221,20 +244,25 @@ class ItemTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_post_invalid_stock_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewItemType = {
+        invalid_post_data: ItemType = {
             "name": "Bad data",
             "price": "1.50",
             "description": "desc",
             "stock": "f100",  # type: ignore
             "calories": 100,
         }
-        expected_failure_error: dict[str, list[str]] = {
-            "stock": ["A valid integer is required."]
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {"stock": ["A valid integer is required."]},
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -244,20 +272,27 @@ class ItemTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_post_negative_stock_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewItemType = {
+        invalid_post_data: ItemType = {
             "name": "Bad data",
             "price": "1.50",
             "description": "desc",
             "stock": -100,
             "calories": 100,
         }
-        expected_failure_error: dict[str, list[str]] = {
-            "stock": ["Ensure this value is greater than or equal to 0."]
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {
+                "stock": ["Ensure this value is greater than or equal to 0."]
+            },
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -267,20 +302,25 @@ class ItemTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_post_invalid_calories_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewItemType = {
+        invalid_post_data: ItemType = {
             "name": "Bad data",
             "price": "1.50",
             "description": "desc",
             "stock": 100,
             "calories": "100f",  # type: ignore
         }
-        expected_failure_error: dict[str, list[str]] = {
-            "calories": ["A valid integer is required."]
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {"calories": ["A valid integer is required."]},
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -290,20 +330,29 @@ class ItemTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_post_negative_calories_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewItemType = {
+        invalid_post_data: ItemType = {
             "name": "Bad data",
             "price": "1.50",
             "description": "desc",
             "stock": 100,
             "calories": -100,
         }
-        expected_failure_error: dict[str, list[str]] = {
-            "calories": ["Ensure this value is greater than or equal to 0."]
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {
+                "calories": [
+                    "Ensure this value is greater than or equal to 0."
+                ]
+            },
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -313,21 +362,25 @@ class ItemTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_put_valid_returns_ok(self):
         # Arrange
         old_item = client.get(f"/api/items/{self.test_item_1.id}").json()
-        post_data: NewItemType = {
+        post_data: ItemType = {
             "name": "New Burger",
             "price": "1.75",
             "description": "new desc",
             "stock": 0,
             "calories": 200,
         }
-        expected_id: IDType = {"id": self.test_item_1.id}
-        expected: ItemType = {**expected_id, **post_data, "retired": False}
+        expected: ItemType = {
+            "id": self.test_item_1.id,
+            **post_data,
+            "retired": False,
+        }
 
         # Act
         response = client.put(
@@ -346,23 +399,15 @@ class ItemTests(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 200)
 
-    def test_put_invalid_id_returns_bad_request(self):
-        # Arrange
-        expected: DetailError = {"detail": "/api/items/f not found"}
-
-        # Act
-        response = client.get("/api/items/f")
-        actual = response.json()
-
-        # Assert
-        self.assertEqual(expected, actual)
-        self.assertEqual(response.status_code, 404)
-
     def test_put_invalid_json_returns_bad_request(self):
         # Arrange
         invalid_json_data: str = '{"invalid": }'
-        expected_json_error: DetailError = {
-            "detail": "JSON parse error - Expecting value: line 1 column 13 (char 12)"
+        expected: DetailError = {
+            "detail": "Parsing JSON Error",
+            "errors": "JSON parse error - Expecting value: line 1 column 13 (char 12)",
+            "status": 400,
+            "title": "Invalid input json.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -374,22 +419,28 @@ class ItemTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertRaises(ParseError)
-        self.assertEqual(expected_json_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_put_invalid_details_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewItemType = {
+        invalid_post_data: ItemType = {
             "name": "Bad data£",
             "price": "1.50",
             "description": "*",
             "stock": 100,
             "calories": 100,
         }
-        expected_failure_error: dict[str, list[str]] = {
-            "description": ["Enter a valid value."],
-            "name": ["Enter a valid value."],
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {
+                "description": ["Enter a valid value."],
+                "name": ["Enter a valid value."],
+            },
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -401,7 +452,8 @@ class ItemTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_delete_valid_returns_retired_true(self):
@@ -430,13 +482,19 @@ class ItemTests(TestCase):
 
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
-        expected: DetailError = {"detail": "/api/items/f not found"}
+        expected: DetailError = {
+            "detail": "Not Found",
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/not_found/",
+        }
 
         # Act
         response = client.delete("/api/items/f")
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
@@ -463,7 +521,7 @@ class ItemTestsDB(TransactionTestCase):
 
     def test_post_duplicated_name_returns_400(self):
         # Arrange
-        post_data: NewItemType = {
+        post_data: ItemType = {
             "name": "Whopper",
             "price": "1.50",
             "description": "desc",
@@ -477,17 +535,24 @@ class ItemTestsDB(TransactionTestCase):
             "/api/items", post_data, content_type="application/json"
         )
 
-        expected: DetailError = {"detail": "This name already exists"}
+        expected: DetailError = {
+            "detail": "This name already exists",
+            "status": 400,
+            "title": "A server error occurred.",
+            "type": "http://testserver/problems/error/",
+        }
+
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
-    def test_put_duplicated_name_returns_404(self):
+    def test_put_duplicated_name_returns_400(self):
         # Arrange
         old_item = client.get(f"/api/items/{self.test_item_1.id}").json()
-        post_data: NewItemType = {
+        post_data: ItemType = {
             "name": "New Burger",
             "price": "1.75",
             "description": "new desc",
@@ -495,7 +560,7 @@ class ItemTestsDB(TransactionTestCase):
             "calories": 200,
         }
 
-        post_data_different_name: NewItemType = {
+        post_data_different_name: ItemType = {
             **post_data,
             "name": "Different Name",
         }
@@ -514,8 +579,14 @@ class ItemTestsDB(TransactionTestCase):
             content_type="application/json",
         )
         actual = response.json()
-        expected: DetailError = {"detail": "This name already exists"}
+        expected: DetailError = {
+            "detail": "This name already exists",
+            "status": 400,
+            "title": "A server error occurred.",
+            "type": "http://testserver/problems/error/",
+        }
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
