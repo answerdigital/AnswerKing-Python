@@ -41,7 +41,7 @@ jobs:
         cache: 'poetry'
 
     - name: Install Dependencies
-      run: poetry install
+      run: poetry update
 
     - name: Run Migrations
       run: |
