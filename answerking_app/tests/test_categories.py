@@ -352,7 +352,7 @@ class CategoryTests(TestCase):
             "name": "New Name",
             "items": [item],
         }
-        expected_failure_error: dict = {"detail": "This item does not exist"}
+        expected_failure_error: dict = {"detail": "Not found."}
 
         # Act
         response = client.put(
@@ -364,7 +364,7 @@ class CategoryTests(TestCase):
 
         # Assert
         self.assertEqual(expected_failure_error, actual)
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
 
     def test_put_wrong_item_except_id_returns_correct_item_details(self):
         # Arrange
