@@ -3,7 +3,11 @@ from rest_framework import mixins, generics
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from answerking_app.utils.mixins.GenericMixins import CreateMixin, UpdateMixin, RetireMixin
+from answerking_app.utils.mixins.GenericMixins import (
+    CreateMixin,
+    UpdateMixin,
+    RetireMixin,
+)
 from answerking_app.utils.mixins.ItemMixins import DestroyItemMixin
 from answerking_app.models.models import Item
 from answerking_app.models.serializers import ItemSerializer
@@ -25,7 +29,8 @@ class ItemListView(
 
 class ItemDetailView(
     mixins.RetrieveModelMixin,
-    UpdateMixin, RetireMixin,
+    UpdateMixin,
+    RetireMixin,
     DestroyItemMixin,
     generics.GenericAPIView,
 ):

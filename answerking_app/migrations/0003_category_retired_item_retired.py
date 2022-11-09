@@ -6,7 +6,10 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("answerking_app", "0002_alter_category_name_alter_item_calories_and_more"),
+        (
+            "answerking_app",
+            "0002_alter_category_name_alter_item_calories_and_more",
+        ),
     ]
 
     operations = [

@@ -13,7 +13,11 @@ from answerking_app.models.models import Category
 from answerking_app.models.serializers import (
     CategorySerializer,
 )
-from answerking_app.utils.mixins.GenericMixins import CreateMixin, UpdateMixin, RetireMixin
+from answerking_app.utils.mixins.GenericMixins import (
+    CreateMixin,
+    UpdateMixin,
+    RetireMixin,
+)
 
 
 class CategoryListView(
@@ -31,7 +35,8 @@ class CategoryListView(
 
 class CategoryDetailView(
     mixins.RetrieveModelMixin,
-    UpdateMixin, RetireMixin,
+    UpdateMixin,
+    RetireMixin,
     mixins.DestroyModelMixin,
     generics.GenericAPIView,
 ):

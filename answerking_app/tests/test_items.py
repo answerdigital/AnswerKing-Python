@@ -56,7 +56,7 @@ class ItemTests(TestCase):
                 "description": self.test_item_1.description,
                 "stock": self.test_item_1.stock,
                 "calories": self.test_item_1.calories,
-                "retired": False
+                "retired": False,
             },
             {
                 "id": self.test_item_2.id,
@@ -65,7 +65,7 @@ class ItemTests(TestCase):
                 "description": self.test_item_2.description,
                 "stock": self.test_item_2.stock,
                 "calories": self.test_item_2.calories,
-                "retired": False
+                "retired": False,
             },
         ]
 
@@ -86,7 +86,7 @@ class ItemTests(TestCase):
             "description": self.test_item_1.description,
             "stock": self.test_item_1.stock,
             "calories": self.test_item_1.calories,
-            "retired": False
+            "retired": False,
         }
 
         # Act
@@ -414,7 +414,7 @@ class ItemTests(TestCase):
             "description": self.test_item_1.description,
             "stock": self.test_item_1.stock,
             "calories": self.test_item_1.calories,
-            "retired": True
+            "retired": True,
         }
 
         # Act

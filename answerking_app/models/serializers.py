@@ -84,12 +84,12 @@ class CategorySerializer(serializers.ModelSerializer):
         return category
 
     def update(self, category: Category, validated_data: dict) -> Category:
-        if 'name' in validated_data:
+        if "name" in validated_data:
             items: list[Item] = self.items_check(validated_data)
             category.name = validated_data["name"]
             category.items.set(objs=items)
-        if 'retired' in validated_data:
-            category.retired = validated_data['retired']
+        if "retired" in validated_data:
+            category.retired = validated_data["retired"]
         category.save()
         return category
 
