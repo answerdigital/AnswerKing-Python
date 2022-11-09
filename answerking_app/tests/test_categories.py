@@ -78,6 +78,7 @@ class CategoryTests(TestCase):
                         "description": self.test_item_1.description,
                         "stock": self.test_item_1.stock,
                         "calories": self.test_item_1.calories,
+                        "retired": False
                     },
                     {
                         "id": self.test_item_2.id,
@@ -86,13 +87,16 @@ class CategoryTests(TestCase):
                         "description": self.test_item_2.description,
                         "stock": self.test_item_2.stock,
                         "calories": self.test_item_2.calories,
+                        "retired": False
                     },
                 ],
+                "retired": False
             },
             {
                 "id": self.test_cat_2.id,
                 "name": self.test_cat_2.name,
                 "items": [],
+                "retired": False
             },
         ]
 
@@ -117,6 +121,7 @@ class CategoryTests(TestCase):
                     "description": self.test_item_1.description,
                     "stock": self.test_item_1.stock,
                     "calories": self.test_item_1.calories,
+                    "retired": False
                 },
                 {
                     "id": self.test_item_2.id,
@@ -125,8 +130,10 @@ class CategoryTests(TestCase):
                     "description": self.test_item_2.description,
                     "stock": self.test_item_2.stock,
                     "calories": self.test_item_2.calories,
+                    "retired": False
                 },
             ],
+            "retired": False
         }
 
         # Act
@@ -160,11 +167,12 @@ class CategoryTests(TestCase):
             "description": self.test_item_3.description,
             "stock": self.test_item_3.stock,
             "calories": self.test_item_3.calories,
+            "retired": False
         }
         post_data: NewCategoryType = {"name": "Vegetarian", "items": [item]}
 
         expected_id: IDType = {"id": self.test_cat_2.id + 1}
-        expected: CategoryType = {**post_data, **expected_id}
+        expected: CategoryType = {**post_data, **expected_id, "retired": False}
 
         # Act
         response = client.post(
@@ -190,7 +198,7 @@ class CategoryTests(TestCase):
         old_list = client.get("/api/categories").json()
         post_data: NewCategoryType = {"name": "Gluten Free", "items": []}
         expected_id: IDType = {"id": self.test_cat_2.id + 1}
-        expected: CategoryType = {**post_data, **expected_id}
+        expected: CategoryType = {**post_data, **expected_id, "retired": False}
 
         # Act
         response = client.post(
@@ -257,6 +265,7 @@ class CategoryTests(TestCase):
             **post_data,
             **expected_id,
             "items": [],
+            "retired": False
         }
 
         # Act
@@ -337,6 +346,7 @@ class CategoryTests(TestCase):
             "description": self.test_item_1.description,
             "stock": self.test_item_1.stock,
             "calories": self.test_item_1.calories,
+            "retired": False
         }
         invalid_post_data: NewCategoryType = {
             "name": "New Name",
@@ -365,6 +375,7 @@ class CategoryTests(TestCase):
             "description": "new text new text",
             "stock": 666,
             "calories": 666,
+            "retired": False
         }
         invalid_post_data: NewCategoryType = {
             "name": "Burgers",
@@ -381,8 +392,10 @@ class CategoryTests(TestCase):
                     "description": self.test_item_1.description,
                     "stock": self.test_item_1.stock,
                     "calories": self.test_item_1.calories,
+                    "retired": False
                 }
             ],
+            "retired": False
         }
 
         # Act
@@ -407,7 +420,7 @@ class CategoryTests(TestCase):
         categories: QuerySet[Category] = Category.objects.all()
 
         # Assert
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
         self.assertNotIn(category, categories)
 
     def test_delete_invalid_id_returns_not_found(self):
@@ -431,16 +444,19 @@ class CategoryTests(TestCase):
             "description": self.test_item_1.description,
             "stock": self.test_item_1.stock,
             "calories": self.test_item_1.calories,
+            "retired": False
         }
         post_data: CategoryType = {
             "id": self.test_cat_1.id,
             "name": "Burgers",
             "items": [item, item],
+            "retired": False
         }
         expected: CategoryType = {
             "id": self.test_cat_1.id,
             "name": "Burgers",
             "items": [item],
+            "retired": False
         }
         # Act
         response = client.put(

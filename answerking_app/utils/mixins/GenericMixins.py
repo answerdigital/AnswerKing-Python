@@ -30,7 +30,7 @@ class UpdateMixin(UpdateModelMixin):
 class RetireMixin(UpdateModelMixin):
     def retire(self, request: Request, *args, **kwargs) -> Response:
         try:
-            request.data['retired']: bool = True
+            request.data['retired'] = True
             return super().partial_update(request, *args, **kwargs)
         except ObjectDoesNotExist as err:
             return item_exists_check(err)

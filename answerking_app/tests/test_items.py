@@ -56,6 +56,7 @@ class ItemTests(TestCase):
                 "description": self.test_item_1.description,
                 "stock": self.test_item_1.stock,
                 "calories": self.test_item_1.calories,
+                "retired": False
             },
             {
                 "id": self.test_item_2.id,
@@ -64,6 +65,7 @@ class ItemTests(TestCase):
                 "description": self.test_item_2.description,
                 "stock": self.test_item_2.stock,
                 "calories": self.test_item_2.calories,
+                "retired": False
             },
         ]
 
@@ -84,6 +86,7 @@ class ItemTests(TestCase):
             "description": self.test_item_1.description,
             "stock": self.test_item_1.stock,
             "calories": self.test_item_1.calories,
+            "retired": False
         }
 
         # Act
@@ -117,7 +120,7 @@ class ItemTests(TestCase):
             "calories": 100,
         }
         expected_id: IDType = {"id": self.test_item_2.id + 1}
-        expected: ItemType = {**expected_id, **post_data}
+        expected: ItemType = {**expected_id, **post_data, "retired": False}
 
         # Act
         response = client.post(
@@ -324,7 +327,7 @@ class ItemTests(TestCase):
             "calories": 200,
         }
         expected_id: IDType = {"id": self.test_item_1.id}
-        expected: ItemType = {**expected_id, **post_data}
+        expected: ItemType = {**expected_id, **post_data, "retired": False}
 
         # Act
         response = client.put(
@@ -401,17 +404,29 @@ class ItemTests(TestCase):
         self.assertEqual(expected_failure_error, actual)
         self.assertEqual(response.status_code, 400)
 
-    def test_delete_valid_returns_ok(self):
+    def test_delete_valid_returns_retired_true(self):
         # Arrange
-        item: QuerySet[Item] = Item.objects.filter(pk=self.test_item_1.id)
+        old_item: QuerySet[Item] = Item.objects.filter(pk=self.test_item_1.id)
+        expected: ItemType = {
+            "id": self.test_item_1.id,
+            "name": self.test_item_1.name,
+            "price": f"{self.test_item_1.price:.2f}",
+            "description": self.test_item_1.description,
+            "stock": self.test_item_1.stock,
+            "calories": self.test_item_1.calories,
+            "retired": True
+        }
 
         # Act
         response = client.delete(f"/api/items/{self.test_item_1.id}")
         items: QuerySet[Item] = Item.objects.all()
+        actual = response.json()
 
         # Assert
-        self.assertEqual(response.status_code, 204)
-        self.assertNotIn(item, items)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(old_item, items)
+        self.assertNotEqual(old_item, expected)
+        self.assertEqual(actual, expected)
 
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange

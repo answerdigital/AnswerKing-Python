@@ -241,7 +241,7 @@ class OrderLineTests(TestCase):
     def test_invalid_itemid_returns_not_found(self):
         # Arrange
         expected: DetailError = {
-            "detail": "/api/orders/6/orderline/f not found"
+            "detail": f"/api/orders/{self.test_order_1.id}/orderline/f not found"
         }
 
         # Act
@@ -289,34 +289,6 @@ class OrderLineTests(TestCase):
         response = client.delete(
             f"/api/orders/{self.test_order_1.id}/orderline/{self.test_item_3.id}"
         )
-        actual = response.json()
-
-        # Assert
-        self.assertEqual(expected, actual)
-        self.assertEqual(response.status_code, 400)
-
-    def test_delete_invalid_id_returns_not_found(self):
-        # Arrange
-        expected: DetailError = {"detail": "Not found."}
-
-        # Act
-        response = client.delete(
-            f"/api/orders/{self.test_order_1.id}/orderline/100000"
-        )
-        actual = response.json()
-
-        # Assert
-        self.assertEqual(expected, actual)
-        self.assertEqual(response.status_code, 404)
-
-    def test_delete_item_when_in_order_returns_bad_request(self):
-        # Arrange
-        expected: DetailError = {
-            "detail": "Cannot delete, item is in an order."
-        }
-
-        # Act
-        response = client.delete(f"/api/items/{self.test_item_1.id}")
         actual = response.json()
 
         # Assert

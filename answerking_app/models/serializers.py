@@ -53,7 +53,7 @@ class ItemSerializer(serializers.ModelSerializer):
         validators=[MinValueValidator(0)],
         allow_null=True,
     )
-    retired = serializers.BooleanField()
+    retired = serializers.BooleanField(required=False)
 
     class Meta:
         model = Item
@@ -73,7 +73,7 @@ class CategorySerializer(serializers.ModelSerializer):
         validators=[RegexValidator("^[a-zA-Z !]+$")],
     )
     items = ItemSerializer(many=True, required=False)
-    retired = serializers.BooleanField()
+    retired = serializers.BooleanField(required=False)
 
     def create(self, validated_data: dict) -> Category:
         items: list[Item] = self.items_check(validated_data)
