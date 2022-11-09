@@ -31,6 +31,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Install poetry
+      run: pipx install poetry
+
     - name: Set up Python 3.10
       uses: actions/setup-python@v4
       with:
@@ -38,7 +41,7 @@ jobs:
         cache: 'poetry'
 
     - name: Install Dependencies
-      run: poetry install -r poetry.lock
+      run: poetry install
 
     - name: Run Migrations
       run: |
