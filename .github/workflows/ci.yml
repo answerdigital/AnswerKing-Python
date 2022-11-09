@@ -43,7 +43,9 @@ jobs:
         poetry update
 
     - name: Run Migrations
-      run: poetry run python manage.py migrate
+      run: |
+        poetry run python manage.py makemigrations
+        poetry run python manage.py migrate
 
     - name: Run Unit Tests
       run: poetry run python manage.py test
