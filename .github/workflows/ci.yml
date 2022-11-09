@@ -28,23 +28,6 @@ jobs:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         DJANGO_SETTINGS_MODULE: answerking.settings.development
 
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.DATABASE_PASS }}
-          MYSQL_DATABASE: answerking_app
-        ports: ['3306:3306']
-
-    env:
-        DATABASE_NAME: answerking_app
-        DATABASE_USER: ${{ secrets.DATABASE_USER }}
-        DATABASE_PASS: ${{ secrets.DATABASE_PASS }}
-        DATABASE_HOST: 127.0.0.1
-        DATABASE_PORT: 3306
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        DJANGO_SETTINGS_MODULE: answerking.settings.development
-
     steps:
     - uses: actions/checkout@v3
 
