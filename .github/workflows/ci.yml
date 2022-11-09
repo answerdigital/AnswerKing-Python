@@ -45,7 +45,7 @@ jobs:
       - name: Run Migrations
         run: poetry run python manage.py migrate
 
-  unit test:
+  unit_test:
     needs: build
 
     runs-on: ubuntu-latest
