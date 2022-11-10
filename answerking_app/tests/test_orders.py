@@ -319,7 +319,7 @@ class OrderTests(TestCase):
         # Arrange
         invalid_post_data: OrderType = {
             "address": "test",
-            "order_items": [{"values": "invalid"}],  # type: ignore
+            "order_items": [{"values": "invalid"}],  # type: ignore[reportGeneralTypeIssues]
         }
         expected: DetailError = {
             "detail": "Validation Error",

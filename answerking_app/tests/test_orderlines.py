@@ -159,7 +159,7 @@ class OrderLineTests(TestCase):
             "type": "http://testserver/problems/error/",
         }
 
-        post_data: OrderType = {"quantity": "f"}  # type: ignore
+        post_data: OrderItemType = {"quantity": "f"}  # type: ignore[reportGeneralTypeIssues]
 
         # Act
         response = client.put(
@@ -187,7 +187,7 @@ class OrderLineTests(TestCase):
             "title": "Invalid input.",
             "type": "http://testserver/problems/error/",
         }
-        post_data: OrderType = {"quantity": -1}  # type: ignore
+        post_data: OrderItemType = {"quantity": -1}
 
         # Act
         response = client.put(

@@ -254,7 +254,7 @@ class ItemTests(TestCase):
             "name": "Bad data",
             "price": "1.50",
             "description": "desc",
-            "stock": "f100",  # type: ignore
+            "stock": "f100",  # type: ignore[reportGeneralTypeIssues]
             "calories": 100,
         }
         expected: DetailError = {
@@ -313,7 +313,7 @@ class ItemTests(TestCase):
             "price": "1.50",
             "description": "desc",
             "stock": 100,
-            "calories": "100f",  # type: ignore
+            "calories": "100f",  # type: ignore[reportGeneralTypeIssues]
         }
         expected: DetailError = {
             "detail": "Validation Error",
