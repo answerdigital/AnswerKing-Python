@@ -1,5 +1,4 @@
 from django.db.models import QuerySet
-from drf_problems.mixins import AllowPermissionWithExceptionViewMixin
 from rest_framework import generics, mixins
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -30,7 +29,6 @@ class CategoryListView(
     CreateIntegrityHandlerMixin,
     CreateErrorDetailMixin,
     generics.GenericAPIView,
-    AllowPermissionWithExceptionViewMixin,
 ):
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
@@ -50,7 +48,6 @@ class CategoryDetailView(
     UpdateErrorDetailMixin,
     mixins.DestroyModelMixin,
     generics.GenericAPIView,
-    AllowPermissionWithExceptionViewMixin,
 ):
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
@@ -69,7 +66,6 @@ class CategoryItemListView(
     CategoryItemUpdateMixin,
     CategoryItemRemoveMixin,
     generics.GenericAPIView,
-    AllowPermissionWithExceptionViewMixin,
 ):
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
