@@ -248,6 +248,37 @@ class ItemTests(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
+    def test_post_invalid_stock_and_price_returns_bad_request(self):
+        # Arrange
+        invalid_post_data: ItemType = {
+            "name": "Bad data",
+            "price": "1.50asd",  # type: ignore[reportGeneralTypeIssues]
+            "description": "desc",
+            "stock": "f100",  # type: ignore[reportGeneralTypeIssues]
+            "calories": 100,
+        }
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {
+                "stock": ["A valid integer is required."],
+                "price": ["A valid number is required."],
+            },
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
+        }
+
+        # Act
+        response = client.post(
+            "/api/items", invalid_post_data, content_type="application/json"
+        )
+        actual = response.json()
+
+        # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
+        self.assertEqual(response.status_code, 400)
+
     def test_post_invalid_stock_returns_bad_request(self):
         # Arrange
         invalid_post_data: ItemType = {
