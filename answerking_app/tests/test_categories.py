@@ -2,8 +2,11 @@ from django.db.models.query import QuerySet
 from django.test import Client, TestCase, TransactionTestCase
 
 from answerking_app.models.models import Category, Item
-from answerking_app.utils.model_types import (CategoryType, DetailError,
-                                              ItemType)
+from answerking_app.utils.model_types import (
+    CategoryType,
+    DetailError,
+    ItemType,
+)
 
 client = Client()
 

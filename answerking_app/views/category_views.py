@@ -7,14 +7,22 @@ from rest_framework.response import Response
 from answerking_app.models.models import Category
 from answerking_app.models.serializers import CategorySerializer
 from answerking_app.utils.mixins.CategoryItemMixins import (
-    CategoryItemRemoveMixin, CategoryItemUpdateMixin)
+    CategoryItemRemoveMixin,
+    CategoryItemUpdateMixin,
+)
 from answerking_app.utils.mixins.IntegrityHandlerMixins import (
-    CreateIntegrityHandlerMixin, UpdateIntegrityHandlerMixin)
+    CreateIntegrityHandlerMixin,
+    UpdateIntegrityHandlerMixin,
+)
 from answerking_app.utils.mixins.NotFoundDetailMixins import (
-    GetNotFoundDetailMixin, UpdateNotFoundDetailMixin)
+    GetNotFoundDetailMixin,
+    UpdateNotFoundDetailMixin,
+)
 from answerking_app.utils.mixins.RetireMixin import RetireMixin
 from answerking_app.utils.mixins.SerializeErrorDetailRFCMixins import (
-    CreateErrorDetailMixin, UpdateErrorDetailMixin)
+    CreateErrorDetailMixin,
+    UpdateErrorDetailMixin,
+)
 
 
 class CategoryListView(

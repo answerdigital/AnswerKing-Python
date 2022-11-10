@@ -1,8 +1,11 @@
 from django.test import Client, TestCase
 
 from answerking_app.models.models import Item, Order, Status
-from answerking_app.utils.model_types import (DetailError, OrderItemType,
-                                              OrderType)
+from answerking_app.utils.model_types import (
+    DetailError,
+    OrderItemType,
+    OrderType,
+)
 
 client = Client()
 

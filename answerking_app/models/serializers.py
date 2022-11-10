@@ -1,13 +1,21 @@
 import re
 from typing import OrderedDict
 
-from django.core.validators import (MaxValueValidator, MinValueValidator,
-                                    RegexValidator)
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+    RegexValidator,
+)
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
-from answerking_app.models.models import (Category, Item, Order, OrderLine,
-                                          Status)
+from answerking_app.models.models import (
+    Category,
+    Item,
+    Order,
+    OrderLine,
+    Status,
+)
 from answerking_app.utils.model_types import ItemType
 
 MAXNUMBERSIZE = 2147483647

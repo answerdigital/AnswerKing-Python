@@ -1,7 +1,9 @@
 from typing import Any
 
 from typing_extensions import (  # for Python <3.11 with (Not)Required
-    NotRequired, TypedDict)
+    NotRequired,
+    TypedDict,
+)
 
 
 class ItemType(TypedDict):
