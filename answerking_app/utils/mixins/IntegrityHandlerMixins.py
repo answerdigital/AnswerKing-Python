@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
 
 
-class CreateMixin(CreateModelMixin):
+class CreateIntegrityHandlerMixin(CreateModelMixin):
     def create(self, request: Request, *args, **kwargs) -> Response:
         try:
             return super().create(request, *args, **kwargs)
@@ -18,7 +18,7 @@ class CreateMixin(CreateModelMixin):
             handle_IntegrityError(exc)
 
 
-class UpdateMixin(UpdateModelMixin):
+class UpdateIntegrityHandlerMixin(UpdateModelMixin):
     def update(self, request: Request, *args, **kwargs) -> Response:
         try:
             return super().update(request, *args, **kwargs)
