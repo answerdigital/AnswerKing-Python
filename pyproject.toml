@@ -16,6 +16,7 @@ drf-writable-nested = "^0.7.0"
 django-json-404-middleware = { git = "https://github.com/Axeltherabbit/django-json-404-middleware" }
 python-dotenv = "^0.21.0"
 drf-problems = { git = "https://github.com/Axeltherabbit/drf-problems" }
+typing-extensions = "^4.4.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
