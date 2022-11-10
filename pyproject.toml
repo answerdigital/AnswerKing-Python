@@ -26,3 +26,8 @@ drf-yasg = "^1.21.4"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+force-exclude='''
+*/migrations/*
+'''
