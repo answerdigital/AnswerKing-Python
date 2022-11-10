@@ -1,9 +1,7 @@
 from django.db.models import QuerySet
 from django.test import Client, TestCase
-from rest_framework.exceptions import ParseError
 
 from answerking_app.models.models import Item, Order, OrderLine, Status
-from answerking_app.utils.ErrorType import ErrorMessage
 from answerking_app.utils.model_types import (
     DetailError,
     OrderItemType,
