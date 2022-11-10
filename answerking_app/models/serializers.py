@@ -7,6 +7,7 @@ from django.core.validators import (
     RegexValidator,
 )
 from rest_framework import serializers
+from rest_framework.generics import get_object_or_404
 
 from answerking_app.models.models import (
     Category,
@@ -53,6 +54,7 @@ class ItemSerializer(serializers.ModelSerializer):
         validators=[MinValueValidator(0)],
         allow_null=True,
     )
+    retired = serializers.BooleanField(required=False)
 
     class Meta:
         model = Item
@@ -72,6 +74,7 @@ class CategorySerializer(serializers.ModelSerializer):
         validators=[RegexValidator("^[a-zA-Z !]+$")],
     )
     items = ItemSerializer(many=True, required=False)
+    retired = serializers.BooleanField(required=False)
 
     def create(self, validated_data: dict) -> Category:
         items: list[Item] = self.items_check(validated_data)
@@ -82,9 +85,12 @@ class CategorySerializer(serializers.ModelSerializer):
         return category
 
     def update(self, category: Category, validated_data: dict) -> Category:
-        items: list[Item] = self.items_check(validated_data)
-        category.name = validated_data["name"]
-        category.items.set(objs=items)
+        if "name" in validated_data:
+            items: list[Item] = self.items_check(validated_data)
+            category.name = validated_data["name"]
+            category.items.set(objs=items)
+        if "retired" in validated_data:
+            category.retired = validated_data["retired"]
         category.save()
         return category
 
@@ -93,13 +99,13 @@ class CategorySerializer(serializers.ModelSerializer):
         if "items" in validated_data:
             items_data: list[OrderedDict] = validated_data["items"]
             for item_in_request in items_data:
-                item: Item = Item.objects.get(pk=item_in_request["id"])
+                item: Item = get_object_or_404(Item, pk=item_in_request["id"])
                 items.append(item)
         return items
 
     class Meta:
         model = Category
-        fields = ("id", "name", "items")
+        fields = ("id", "name", "items", "retired")
 
     def validate_name(self, value: str) -> str:
         return compress_white_spaces(value)
@@ -145,7 +151,9 @@ class OrderSerializer(serializers.ModelSerializer):
             )
             for order_item in order_items_data:
                 item_data: ItemType = order_item.pop("item")
-                item: Item = Item.objects.get(pk=item_data["id"])
+                item: Item = get_object_or_404(Item, pk=item_data["id"])
+                if item.retired:
+                    continue
                 OrderLine.objects.create(order=order, item=item, **order_item)
         order.calculate_total()
         return order

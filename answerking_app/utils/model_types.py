@@ -14,7 +14,7 @@ class NewItemType(TypedDict):
 
 
 class ItemType(IDType, NewItemType):
-    pass
+    retired: bool
 
 
 class NewCategoryName(TypedDict):
@@ -30,7 +30,7 @@ class NewCategoryType(NewCategoryName, NewCategoryItems):
 
 
 class CategoryType(IDType, NewCategoryType):
-    pass
+    retired: bool
 
 
 class OrderItemType(TypedDict):
