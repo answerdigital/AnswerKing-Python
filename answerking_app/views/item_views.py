@@ -11,8 +11,9 @@ from answerking_app.utils.mixins.ItemMixins import DestroyItemMixin
 from answerking_app.utils.mixins.NotFoundDetailMixins import (
     GetNotFoundDetailMixin, UpdateNotFoundDetailMixin)
 from answerking_app.utils.mixins.RetireMixin import RetireMixin
-from answerking_app.utils.mixins.SerializeErrorDetailRFCMixins import (
-    CreateErrorDetailMixin, UpdateErrorDetailMixin)
+
+    UpdateErrorDetailMixin,
+)
 
 
 class ItemListView(

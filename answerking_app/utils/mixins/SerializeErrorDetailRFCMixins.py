@@ -1,3 +1,4 @@
+from rest_framework import status
 from rest_framework.exceptions import ParseError
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.request import Request
@@ -10,18 +11,20 @@ from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
 def ValidationErrorDetailed(exc: ValidationError | ParseError):
     if isinstance(exc, ValidationError):
         return HttpErrorResponse(
-            status=400,
+            status=status.HTTP_404_NOT_FOUND,
             detail="Validation Error",
             title="Invalid input.",
             extensions={"errors": exc.detail},
         )
     elif isinstance(exc, ParseError):
         return HttpErrorResponse(
-            status=400,
+            status=status.HTTP_404_NOT_FOUND,
             detail="Parsing JSON Error",
             title="Invalid input json.",
             extensions={"errors": exc.detail},
         )
+    else:
+        return HttpErrorResponse(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class CreateErrorDetailMixin(CreateModelMixin):

@@ -10,11 +10,17 @@ from answerking_app.models.models import Order
 from answerking_app.models.serializers import OrderSerializer
 from answerking_app.utils.ErrorType import ErrorMessage
 from answerking_app.utils.mixins.NotFoundDetailMixins import (
-    GetNotFoundDetailMixin, UpdateNotFoundDetailMixin)
-from answerking_app.utils.mixins.OrderItemMixins import (OrderItemRemoveMixin,
-                                                         OrderItemUpdateMixin)
+    GetNotFoundDetailMixin,
+    UpdateNotFoundDetailMixin,
+)
+from answerking_app.utils.mixins.OrderItemMixins import (
+    OrderItemRemoveMixin,
+    OrderItemUpdateMixin,
+)
 from answerking_app.utils.mixins.SerializeErrorDetailRFCMixins import (
-    CreateErrorDetailMixin, UpdateErrorDetailMixin)
+    CreateErrorDetailMixin,
+    UpdateErrorDetailMixin,
+)
 
 
 class OrderListView(

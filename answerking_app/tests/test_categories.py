@@ -52,7 +52,6 @@ class CategoryTests(TestCase):
         actual = response.json()
 
         # Assert
-        # Assert
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 200)
 

@@ -4,8 +4,11 @@ from rest_framework.exceptions import ParseError
 
 from answerking_app.models.models import Item, Order, OrderLine, Status
 from answerking_app.utils.ErrorType import ErrorMessage
-from answerking_app.utils.model_types import (DetailError, OrderItemType,
-                                              OrderType)
+from answerking_app.utils.model_types import (
+    DetailError,
+    OrderItemType,
+    OrderType,
+)
 
 client = Client()
 
@@ -202,7 +205,7 @@ class OrderTests(TestCase):
         # Arrange
         old_list = client.get("/api/orders").json()
 
-        post_data: NewOrderType = {
+        post_data: OrderType = {
             "address": "test street 123",
             "order_items": [],
         }

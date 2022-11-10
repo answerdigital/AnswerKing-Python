@@ -1,21 +1,13 @@
 import re
 from typing import OrderedDict
 
-from django.core.validators import (
-    MaxValueValidator,
-    MinValueValidator,
-    RegexValidator,
-)
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    RegexValidator)
 from rest_framework import serializers
 from rest_framework.generics import get_object_or_404
 
-from answerking_app.models.models import (
-    Category,
-    Item,
-    Order,
-    OrderLine,
-    Status,
-)
+from answerking_app.models.models import (Category, Item, Order, OrderLine,
+                                          Status)
 from answerking_app.utils.model_types import ItemType
 
 MAXNUMBERSIZE = 2147483647
@@ -151,7 +143,7 @@ class OrderSerializer(serializers.ModelSerializer):
             )
             for order_item in order_items_data:
                 item_data: ItemType = order_item.pop("item")
-                item: Item = get_object_or_404(Item, pk=item_data["id"])
+                item: Item = get_object_or_404(Item, pk=item_data["id"])  # type: ignore[reportTypedDictNotRequiredAccess]
                 if item.retired:
                     continue
                 OrderLine.objects.create(order=order, item=item, **order_item)

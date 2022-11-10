@@ -18,11 +18,11 @@ class CategoryType(TypedDict):
     id: NotRequired[int]
     name: NotRequired[str]
     retired: NotRequired[bool]
-    items: "NotRequired[list[ItemType]]"
+    items: NotRequired["list[ItemType]"]
 
 
 class OrderItemType(TypedDict):
-    id: int
+    id: NotRequired[int]
     name: NotRequired[str]
     price: NotRequired[str]
     quantity: int
@@ -30,8 +30,9 @@ class OrderItemType(TypedDict):
 
 
 class OrderType(TypedDict):
+    id: NotRequired[int]
     address: NotRequired[str]
-    order_items: "NotRequired[list[OrderItemType]]"
+    order_items: NotRequired["list[OrderItemType]"]
     status: NotRequired[str]
     total: NotRequired[str]
 
@@ -41,6 +42,6 @@ class DetailError(TypedDict):
     type: str
     title: str
     instance: NotRequired[str]
-    errors: "NotRequired[str | list[Any] | dict[Any, Any]]"
+    errors: NotRequired["str | list[Any] | dict[Any, Any]"]
     status: NotRequired[int]
     traceID: NotRequired[str]

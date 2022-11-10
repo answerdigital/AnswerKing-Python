@@ -1,8 +1,11 @@
 from django.test import Client, TestCase
 
 from answerking_app.models.models import Item, Order, Status
-from answerking_app.utils.ErrorType import ErrorMessage
-from answerking_app.utils.model_types import DetailError, OrderType
+from answerking_app.utils.model_types import (
+    DetailError,
+    OrderItemType,
+    OrderType,
+)
 
 client = Client()
 
@@ -78,7 +81,7 @@ class OrderLineTests(TestCase):
             ],
             "total": "6.50",
         }
-        post_data: OrderType = {"quantity": 1}
+        post_data: OrderItemType = {"quantity": 1}
 
         # Act
         response = client.put(
@@ -109,7 +112,7 @@ class OrderLineTests(TestCase):
             ],
             "total": "2.50",
         }
-        post_data: OrderType = {"quantity": 1}
+        post_data: OrderItemType = {"quantity": 1}
 
         # Act
         response = client.put(
@@ -132,7 +135,7 @@ class OrderLineTests(TestCase):
             "order_items": [],
             "total": "0.00",
         }
-        post_data: OrderType = {"quantity": 0}
+        post_data: OrderItemType = {"quantity": 0}
 
         # Act
         response = client.put(
