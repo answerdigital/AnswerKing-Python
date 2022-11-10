@@ -70,7 +70,6 @@ class OrderItemListView(
     generics.GenericAPIView,
 ):
     serializer_class: OrderSerializer = OrderSerializer
-    serializer_class: OrderSerializer = OrderSerializer
     lookup_url_kwarg: Literal["order_id"] = "order_id"
 
     def put(
