@@ -387,8 +387,7 @@ class CategoryTests(TestCase):
             "items": [item],
         }
         expected: DetailError = {
-            "detail": "Object was not Found",
-            "errors": ["Item matching query does not exist."],
+            "detail": "Not Found",
             "status": 404,
             "title": "Resource not found",
             "type": "http://testserver/problems/error/",

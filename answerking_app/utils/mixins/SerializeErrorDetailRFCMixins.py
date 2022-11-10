@@ -11,14 +11,14 @@ from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
 def ValidationErrorDetailed(exc: ValidationError | ParseError):
     if isinstance(exc, ValidationError):
         return HttpErrorResponse(
-            status=status.HTTP_404_NOT_FOUND,
+            status=status.HTTP_400_BAD_REQUEST,
             detail="Validation Error",
             title="Invalid input.",
             extensions={"errors": exc.detail},
         )
     elif isinstance(exc, ParseError):
         return HttpErrorResponse(
-            status=status.HTTP_404_NOT_FOUND,
+            status=status.HTTP_400_BAD_REQUEST,
             detail="Parsing JSON Error",
             title="Invalid input json.",
             extensions={"errors": exc.detail},

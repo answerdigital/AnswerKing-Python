@@ -1,11 +1,8 @@
 from django.test import Client, TestCase
 
 from answerking_app.models.models import Item, Order, Status
-from answerking_app.utils.model_types import (
-    DetailError,
-    OrderItemType,
-    OrderType,
-)
+from answerking_app.utils.model_types import (DetailError, OrderItemType,
+                                              OrderType)
 
 client = Client()
 
@@ -329,40 +326,3 @@ class OrderLineTests(TestCase):
         self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
-
-    def test_delete_invalid_id_returns_not_found(self):
-        # Arrange
-        expected: DetailError = {
-            "detail": "Not found.",
-            "status": 404,
-            "title": "Not found.",
-            "type": "http://testserver/problems/not_found/",
-        }
-
-        # Act
-        response = client.delete(
-            f"/api/orders/{self.test_order_1.id}/orderline/100000"
-        )
-        actual = response.json()
-
-        # Assert
-        self.assertEqual(expected, actual)
-        self.assertEqual(response.status_code, 404)
-
-    def test_delete_item_when_in_order_returns_bad_request(self):
-        # Arrange
-        expected: DetailError = {
-            "detail": "A server error occurred.",
-            "status": 400,
-            "title": "A server error occurred.",
-            "type": "http://testserver/problems/error/",
-        }
-
-        # Act
-        response = client.delete(f"/api/items/{self.test_item_1.id}")
-        actual = response.json()
-
-        # Assert
-        self.assertIsInstance(actual.pop("traceId"), str)
-        self.assertEqual(expected, actual)
-        self.assertEqual(response.status_code, 400)
