@@ -526,7 +526,7 @@ class CategoryTests(TestCase):
         )
         actual = response.json()
         expected: DetailError = {
-            "detail": "A server error occurred.",
+            "detail": "Item is already in the category",
             "status": 400,
             "title": "A server error occurred.",
             "type": "http://testserver/problems/error/",

@@ -18,7 +18,10 @@ class CategoryItemUpdateMixin:
         item: Item = get_object_or_404(Item, pk=item_id)
 
         if item in category.items.all():
-            raise HttpErrorResponse(status=status.HTTP_400_BAD_REQUEST)
+            raise HttpErrorResponse(
+                status=status.HTTP_400_BAD_REQUEST,
+                detail="Item is already in the category",
+            )
 
         category.items.add(item)
         response: ReturnDict = CategorySerializer(category).data
