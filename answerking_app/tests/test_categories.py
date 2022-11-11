@@ -1,16 +1,11 @@
 from django.db.models.query import QuerySet
 from django.test import Client, TestCase, TransactionTestCase
-from rest_framework.exceptions import ParseError
 
 from answerking_app.models.models import Category, Item
-from answerking_app.utils.ErrorType import ErrorMessage
 from answerking_app.utils.model_types import (
     CategoryType,
     DetailError,
-    IDType,
     ItemType,
-    NewCategoryName,
-    NewCategoryType,
 )
 
 client = Client()
@@ -60,7 +55,6 @@ class CategoryTests(TestCase):
         actual = response.json()
 
         # Assert
-        # Assert
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 200)
 
@@ -108,7 +102,7 @@ class CategoryTests(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 200)
 
-    def test_get_id_valid_returns_ok(self):
+    def test_get_valid_id_returns_ok(self):
         # Arrange
         expected: CategoryType = {
             "id": self.test_cat_1.id,
@@ -139,20 +133,25 @@ class CategoryTests(TestCase):
         # Act
         response = client.get(f"/api/categories/{self.test_cat_1.id}")
         actual = response.json()
-
         # Assert
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 200)
 
-    def test_get_id_invalid_returns_not_found(self):
+    def test_get_invalid_id_returns_not_found(self):
         # Arrange
-        expected: DetailError = {"detail": "/api/categories/f not found"}
+        expected: DetailError = {
+            "detail": "Not Found",
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/not_found/",
+        }
 
         # Act
         response = client.get("/api/categories/f")
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
@@ -169,10 +168,13 @@ class CategoryTests(TestCase):
             "calories": self.test_item_3.calories,
             "retired": False,
         }
-        post_data: NewCategoryType = {"name": "Vegetarian", "items": [item]}
+        post_data: CategoryType = {"name": "Vegetarian", "items": [item]}
 
-        expected_id: IDType = {"id": self.test_cat_2.id + 1}
-        expected: CategoryType = {**post_data, **expected_id, "retired": False}
+        expected: CategoryType = {
+            **post_data,
+            "id": self.test_cat_2.id + 1,
+            "retired": False,
+        }
 
         # Act
         response = client.post(
@@ -196,9 +198,13 @@ class CategoryTests(TestCase):
     def test_post_valid_without_items_returns_ok(self):
         # Arrange
         old_list = client.get("/api/categories").json()
-        post_data: NewCategoryType = {"name": "Gluten Free", "items": []}
-        expected_id: IDType = {"id": self.test_cat_2.id + 1}
-        expected: CategoryType = {**post_data, **expected_id, "retired": False}
+        post_data: CategoryType = {"name": "Gluten Free", "items": []}
+
+        expected: CategoryType = {
+            **post_data,
+            "id": self.test_cat_2.id + 1,
+            "retired": False,
+        }
 
         # Act
         response = client.post(
@@ -218,7 +224,13 @@ class CategoryTests(TestCase):
     def test_post_invalid_json_returns_bad_request(self):
         # Arrange
         invalid_json_data: str = '{"invalid": }'
-        expected_json_error: str = "JSON parse error -"
+        expected: DetailError = {
+            "detail": "Parsing JSON Error",
+            "errors": "JSON parse error - Expecting value: line 1 column 13 (char 12)",
+            "status": 400,
+            "title": "Invalid input json.",
+            "type": "http://testserver/problems/error/",
+        }
 
         # Act
         response = client.post(
@@ -229,17 +241,23 @@ class CategoryTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertRaises(ParseError)
-        self.assertIn(expected_json_error, actual["detail"])
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_post_invalid_details_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewCategoryType = {
+        invalid_post_data: CategoryType = {
             "name": "Vegetarian%",
             "items": [],
         }
-        expected_failure_error: dict = {"name": ["Enter a valid value."]}
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {"name": ["Enter a valid value."]},
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
+        }
 
         # Act
         response = client.post(
@@ -250,7 +268,8 @@ class CategoryTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_put_valid_without_items_returns_no_items(self):
@@ -259,15 +278,14 @@ class CategoryTests(TestCase):
             f"/api/categories/{self.test_cat_1.id}"
         ).json()
 
-        post_data: NewCategoryName = {"name": "New Name"}
-        expected_id: IDType = {"id": self.test_cat_1.id}
+        post_data: CategoryType = {"name": "New Name"}
+
         expected: CategoryType = {
             **post_data,
-            **expected_id,
+            "id": self.test_cat_1.id,
             "items": [],
             "retired": False,
         }
-
         # Act
         response = client.put(
             f"/api/categories/{self.test_cat_1.id}",
@@ -287,22 +305,34 @@ class CategoryTests(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 200)
 
-    def test_put_invalid_id_returns_bad_request(self):
+    def test_put_invalid_id_returns_not_found(self):
         # Arrange
-        expected: DetailError = {"detail": "/api/categories/f not found"}
+        expected: DetailError = {
+            "detail": "Not Found",
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/not_found/",
+        }
 
         # Act
         response = client.get("/api/categories/f")
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
     def test_put_invalid_json_returns_bad_request(self):
         # Arrange
         invalid_json_data: str = '{"invalid": }'
-        expected_json_error: str = "JSON parse error -"
+        expected: DetailError = {
+            "detail": "Parsing JSON Error",
+            "errors": "JSON parse error - Expecting value: line 1 column 13 (char 12)",
+            "status": 400,
+            "title": "Invalid input json.",
+            "type": "http://testserver/problems/error/",
+        }
 
         # Act
         response = client.put(
@@ -313,17 +343,23 @@ class CategoryTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertRaises(ParseError)
-        self.assertIn(expected_json_error, actual["detail"])
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_put_invalid_name_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewCategoryType = {
+        invalid_post_data: CategoryType = {
             "name": "New Name*",
             "items": [],
         }
-        expected_failure_error: dict = {"name": ["Enter a valid value."]}
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {"name": ["Enter a valid value."]},
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
+        }
 
         # Act
         response = client.put(
@@ -334,10 +370,11 @@ class CategoryTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
-    def test_put_invalid_item_returns_bad_request(self):
+    def test_put_not_existing_item_returns_not_found(self):
         # Arrange
         item: ItemType = {
             "id": -1,
@@ -348,11 +385,16 @@ class CategoryTests(TestCase):
             "calories": self.test_item_1.calories,
             "retired": False,
         }
-        invalid_post_data: NewCategoryType = {
+        invalid_post_data: CategoryType = {
             "name": "New Name",
             "items": [item],
         }
-        expected_failure_error: dict = {"detail": "Not found."}
+        expected: DetailError = {
+            "detail": "Not Found",
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/error/",
+        }
 
         # Act
         response = client.put(
@@ -363,7 +405,8 @@ class CategoryTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
     def test_put_wrong_item_except_id_returns_correct_item_details(self):
@@ -377,7 +420,7 @@ class CategoryTests(TestCase):
             "calories": 666,
             "retired": False,
         }
-        invalid_post_data: NewCategoryType = {
+        invalid_post_data: CategoryType = {
             "name": "Burgers",
             "items": [item_with_wrong_info],
         }
@@ -425,13 +468,18 @@ class CategoryTests(TestCase):
 
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
-        expected: DetailError = {"detail": "/api/categories/f not found"}
-
+        expected: DetailError = {
+            "detail": "Not Found",
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/not_found/",
+        }
         # Act
         response = client.delete("/api/categories/f")
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
@@ -477,15 +525,17 @@ class CategoryTests(TestCase):
             content_type="application/json",
         )
         actual = response.json()
-        error_msg: ErrorMessage = {
-            "error": {
-                "message": "Resource update failure",
-                "details": "Item already in category",
-            }
+        expected: DetailError = {
+            "detail": "Item is already in the category",
+            "status": 400,
+            "title": "A server error occurred.",
+            "type": "http://testserver/problems/error/",
         }
+
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(actual, error_msg)
+        self.assertEqual(actual, expected)
 
 
 class CategoryTestsDB(TransactionTestCase):
@@ -524,7 +574,7 @@ class CategoryTestsDB(TransactionTestCase):
 
     def test_post_duplicated_name_returns_400(self):
         # Arrange
-        post_data: NewCategoryType = {"name": "Vegan", "items": []}
+        post_data: CategoryType = {"name": "Vegan", "items": []}
         client.post(
             "/api/categories", post_data, content_type="application/json"
         )
@@ -534,16 +584,23 @@ class CategoryTestsDB(TransactionTestCase):
             "/api/categories", post_data, content_type="application/json"
         )
 
-        expected: DetailError = {"detail": "This name already exists"}
+        expected: DetailError = {
+            "detail": "This name already exists",
+            "status": 400,
+            "title": "A server error occurred.",
+            "type": "http://testserver/problems/error/",
+        }
+
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_put_duplicated_name_returns_400(self):
         # Arrange
-        post_data: NewCategoryType = {"name": "Vegan", "items": []}
+        post_data: CategoryType = {"name": "Vegan", "items": []}
 
         client.post(
             "/api/categories", post_data, content_type="application/json"
@@ -556,8 +613,14 @@ class CategoryTestsDB(TransactionTestCase):
             content_type="application/json",
         )
         actual = response.json()
-        expected: DetailError = {"detail": "This name already exists"}
+        expected: DetailError = {
+            "detail": "This name already exists",
+            "status": 400,
+            "title": "A server error occurred.",
+            "type": "http://testserver/problems/error/",
+        }
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)

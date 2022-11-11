@@ -1,18 +1,12 @@
 from django.db.models import QuerySet
-from django.test import TestCase, Client
-from rest_framework.exceptions import ParseError
+from django.test import Client, TestCase
 
-from answerking_app.models.models import Item, Order, Status, OrderLine
+from answerking_app.models.models import Item, Order, OrderLine, Status
 from answerking_app.utils.model_types import (
-    OrderType,
-    NewOrderAddressType,
-    OrderItemType,
-    NewOrderType,
-    UpdateOrderType,
-    NewStatusType,
     DetailError,
+    OrderItemType,
+    OrderType,
 )
-from answerking_app.utils.ErrorType import ErrorMessage
 
 client = Client()
 
@@ -159,13 +153,19 @@ class OrderTests(TestCase):
 
     def test_get_id_invalid_returns_not_found(self):
         # Arrange
-        expected: DetailError = {"detail": "/api/orders/f not found"}
+        expected: DetailError = {
+            "detail": "Not Found",
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/not_found/",
+        }
 
         # Act
         response = client.get("/api/orders/f")
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)
 
@@ -173,7 +173,7 @@ class OrderTests(TestCase):
         # Arrange
         old_list = client.get("/api/orders").json()
 
-        post_data: NewOrderAddressType = {"address": "test street 123"}
+        post_data: OrderType = {"address": "test street 123"}
         expected: OrderType = {
             "id": self.test_order_2.id + 1,
             "status": self.status_pending.status,
@@ -203,7 +203,7 @@ class OrderTests(TestCase):
         # Arrange
         old_list = client.get("/api/orders").json()
 
-        post_data: NewOrderType = {
+        post_data: OrderType = {
             "address": "test street 123",
             "order_items": [],
         }
@@ -242,7 +242,7 @@ class OrderTests(TestCase):
             "quantity": 1,
             "sub_total": f"{self.test_item_3.price:.2f}",
         }
-        post_data: NewOrderType = {
+        post_data: OrderType = {
             "address": "test street 123",
             "order_items": [order_item],
         }
@@ -274,7 +274,13 @@ class OrderTests(TestCase):
     def test_post_invalid_json_returns_bad_request(self):
         # Arrange
         invalid_json_data: str = '{"invalid": }'
-        expected_json_error: str = "JSON parse error -"
+        expected: DetailError = {
+            "detail": "Parsing JSON Error",
+            "errors": "JSON parse error - Expecting value: line 1 column 13 (char 12)",
+            "status": 400,
+            "title": "Invalid input json.",
+            "type": "http://testserver/problems/error/",
+        }
 
         # Act
         response = client.post(
@@ -283,15 +289,19 @@ class OrderTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertRaises(ParseError)
-        self.assertIn(expected_json_error, actual["detail"])
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_post_invalid_details_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewOrderAddressType = {"address": "test%"}
-        expected_failure_error: dict[str, list[str]] = {
-            "address": ["Enter a valid value."]
+        invalid_post_data: OrderType = {"address": "test%"}
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {"address": ["Enter a valid value."]},
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -301,17 +311,24 @@ class OrderTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_post_invalid_items_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewOrderType = {
+        invalid_post_data: OrderType = {
             "address": "test",
-            "order_items": [{"values": "invalid"}],  # type: ignore
+            "order_items": [{"values": "invalid"}],  # type: ignore[reportGeneralTypeIssues]
         }
-        expected_failure_error: dict[str, list[dict[str, list[str]]]] = {
-            "order_items": [{"quantity": ["This field is required."]}]
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {
+                "order_items": [{"quantity": ["This field is required."]}]
+            },
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -321,13 +338,14 @@ class OrderTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
     def test_put_valid_address_and_status_returns_ok(self):
         # Arrange
         old_order = client.get(f"/api/orders/{self.test_order_1.id}").json()
-        post_data: UpdateOrderType = {
+        post_data: OrderType = {
             "address": "test",
             "status": self.status_complete.status,
         }
@@ -373,7 +391,7 @@ class OrderTests(TestCase):
     def test_put_valid_address_returns_ok(self):
         # Arrange
         old_order = client.get(f"/api/orders/{self.test_order_1.id}").json()
-        post_data: NewOrderAddressType = {"address": "test"}
+        post_data: OrderType = {"address": "test"}
         expected: OrderType = {
             "id": self.test_order_1.id,
             **post_data,
@@ -417,7 +435,9 @@ class OrderTests(TestCase):
     def test_put_valid_status_returns_ok(self):
         # Arrange
         old_order = client.get(f"/api/orders/{self.test_order_1.id}").json()
-        post_data: NewStatusType = {"status": self.status_complete.status}
+        post_data: OrderType = {
+            "status": self.status_complete.status,
+        }
         expected: OrderType = {
             "id": self.test_order_1.id,
             "address": self.test_order_1.address,
@@ -460,9 +480,13 @@ class OrderTests(TestCase):
 
     def test_put_invalid_address_returns_bad_request(self):
         # Arrange
-        invalid_post_data: NewOrderAddressType = {"address": "test&"}
-        expected_failure_error: dict[str, list[str]] = {
-            "address": ["Enter a valid value."]
+        invalid_post_data: OrderType = {"address": "test&"}
+        expected: DetailError = {
+            "detail": "Validation Error",
+            "errors": {"address": ["Enter a valid value."]},
+            "status": 400,
+            "title": "Invalid input.",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -474,20 +498,22 @@ class OrderTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 400)
 
-    def test_put_invalid_status_returns_bad_request(self):
+    def test_put_invalid_status_returns_not_found(self):
         # Arrange
-        invalid_post_data: UpdateOrderType = {
+        invalid_post_data: OrderType = {
             "address": "test",
             "status": "invalid",
         }
-        expected_failure_error: ErrorMessage = {
-            "error": {
-                "message": "Request failed",
-                "details": "Object could not be updated",
-            }
+        expected: DetailError = {
+            "detail": "Object was not Found",
+            "errors": ["Status matching query does not exist."],
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/error/",
         }
 
         # Act
@@ -499,8 +525,9 @@ class OrderTests(TestCase):
         actual = response.json()
 
         # Assert
-        self.assertEqual(expected_failure_error, actual)
-        self.assertEqual(response.status_code, 400)
+        self.assertIsInstance(actual.pop("traceId"), str)
+        self.assertEqual(expected, actual)
+        self.assertEqual(response.status_code, 404)
 
     def test_delete_valid_returns_ok(self):
         # Arrange
@@ -516,12 +543,18 @@ class OrderTests(TestCase):
 
     def test_delete_invalid_id_returns_not_found(self):
         # Arrange
-        expected: DetailError = {"detail": "/api/orders/f not found"}
+        expected: DetailError = {
+            "detail": "Not Found",
+            "status": 404,
+            "title": "Resource not found",
+            "type": "http://testserver/problems/not_found/",
+        }
 
         # Act
         response = client.delete("/api/orders/f")
         actual = response.json()
 
         # Assert
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, 404)

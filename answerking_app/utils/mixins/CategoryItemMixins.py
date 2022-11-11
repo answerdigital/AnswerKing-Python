@@ -1,14 +1,12 @@
-from django.db import IntegrityError
+from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.response import Response
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from answerking_app.models.models import Category, Item
 from answerking_app.models.serializers import CategorySerializer
-from answerking_app.utils.ErrorType import ErrorMessage
-
-from django.shortcuts import get_object_or_404
+from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
 
 
 class CategoryItemUpdateMixin:
@@ -20,15 +18,9 @@ class CategoryItemUpdateMixin:
         item: Item = get_object_or_404(Item, pk=item_id)
 
         if item in category.items.all():
-            error_msg: ErrorMessage = {
-                "error": {
-                    "message": "Resource update failure",
-                    "details": "Item already in category",
-                }
-            }
-            return Response(
-                error_msg,
+            raise HttpErrorResponse(
                 status=status.HTTP_400_BAD_REQUEST,
+                detail="Item is already in the category",
             )
 
         category.items.add(item)

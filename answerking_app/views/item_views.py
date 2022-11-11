@@ -1,20 +1,31 @@
 from django.db.models import QuerySet
-from rest_framework import mixins, generics
+from rest_framework import generics, mixins
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from answerking_app.utils.mixins.GenericMixins import (
-    CreateMixin,
-    UpdateMixin,
-    RetireMixin,
-)
-from answerking_app.utils.mixins.ItemMixins import DestroyItemMixin
 from answerking_app.models.models import Item
 from answerking_app.models.serializers import ItemSerializer
+from answerking_app.utils.mixins.IntegrityHandlerMixins import (
+    CreateIntegrityHandlerMixin,
+    UpdateIntegrityHandlerMixin,
+)
+from answerking_app.utils.mixins.ItemMixins import DestroyItemMixin
+from answerking_app.utils.mixins.NotFoundDetailMixins import (
+    GetNotFoundDetailMixin,
+    UpdateNotFoundDetailMixin,
+)
+from answerking_app.utils.mixins.RetireMixin import RetireMixin
+from answerking_app.utils.mixins.SerializeErrorDetailRFCMixins import (
+    CreateErrorDetailMixin,
+    UpdateErrorDetailMixin,
+)
 
 
 class ItemListView(
-    mixins.ListModelMixin, CreateMixin, generics.GenericAPIView
+    mixins.ListModelMixin,
+    CreateErrorDetailMixin,
+    CreateIntegrityHandlerMixin,
+    generics.GenericAPIView,
 ):
 
     queryset: QuerySet = Item.objects.all()
@@ -28,9 +39,11 @@ class ItemListView(
 
 
 class ItemDetailView(
-    mixins.RetrieveModelMixin,
-    UpdateMixin,
     RetireMixin,
+    GetNotFoundDetailMixin,
+    UpdateNotFoundDetailMixin,
+    UpdateIntegrityHandlerMixin,
+    UpdateErrorDetailMixin,
     DestroyItemMixin,
     generics.GenericAPIView,
 ):

@@ -1,38 +1,36 @@
-from MySQLdb.constants.ER import DUP_ENTRY
+from typing import NoReturn
+
 from django.db import IntegrityError
+from MySQLdb.constants.ER import DUP_ENTRY
 from rest_framework import status
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
 
-class CreateMixin(CreateModelMixin):
+
+class CreateIntegrityHandlerMixin(CreateModelMixin):
     def create(self, request: Request, *args, **kwargs) -> Response:
         try:
             return super().create(request, *args, **kwargs)
         except IntegrityError as exc:
-            return duplicate_check(exc)
+            handle_IntegrityError(exc)
 
 
-class UpdateMixin(UpdateModelMixin):
+class UpdateIntegrityHandlerMixin(UpdateModelMixin):
     def update(self, request: Request, *args, **kwargs) -> Response:
         try:
             return super().update(request, *args, **kwargs)
         except IntegrityError as exc:
-            return duplicate_check(exc)
+            return handle_IntegrityError(exc)
 
 
-class RetireMixin(UpdateModelMixin):
-    def retire(self, request: Request, *args, **kwargs) -> Response:
-        request.data["retired"] = True
-        return super().partial_update(request, *args, **kwargs)
-
-
-def duplicate_check(exc: IntegrityError) -> Response:
+def handle_IntegrityError(exc: IntegrityError) -> NoReturn:
     if exc.args[0] == DUP_ENTRY:
-        return Response(
-            {"detail": "This name already exists"},
+        raise HttpErrorResponse(
             status=status.HTTP_400_BAD_REQUEST,
+            detail="This name already exists",
         )
     else:
-        return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        raise HttpErrorResponse(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

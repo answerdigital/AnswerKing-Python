@@ -2,9 +2,11 @@
 Django base settings for answerking project.
 """
 import os
-
 from pathlib import Path
+
 from corsheaders.defaults import default_headers, default_methods
+
+from answerking_app.utils.json404_middleware_config import json404_response
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,6 +37,7 @@ INSTALLED_APPS = [
     "answerking_app.apps.AnswerkingAppConfig",
     "rest_framework",
     "corsheaders",
+    "drf_problems",
 ]
 
 MIDDLEWARE = [
@@ -72,7 +75,8 @@ WSGI_APPLICATION = "answerking.wsgi.application"
 REST_FRAMEWORK = {
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
-    ]
+    ],
+    "EXCEPTION_HANDLER": "drf_problems.exceptions.exception_handler",
 }
 
 # Database
@@ -107,6 +111,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# JSON404 middleware
+JSON404_DATA_FUNCTION = json404_response
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 

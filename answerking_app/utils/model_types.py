@@ -1,73 +1,49 @@
-from typing import TypedDict, Any
+from typing import Any
+
+from typing_extensions import (  # for Python <3.11 with (Not)Required
+    NotRequired,
+    TypedDict,
+)
 
 
-class IDType(TypedDict):
-    id: int
-
-
-class NewItemType(TypedDict):
+class ItemType(TypedDict):
+    id: NotRequired[int]
     name: str
     price: str
     description: str
+    retired: NotRequired[bool]
     stock: int
     calories: int
 
 
-class ItemType(IDType, NewItemType):
-    retired: bool
-
-
-class NewCategoryName(TypedDict):
-    name: str
-
-
-class NewCategoryItems(TypedDict):
-    items: list[ItemType]
-
-
-class NewCategoryType(NewCategoryName, NewCategoryItems):
-    pass
-
-
-class CategoryType(IDType, NewCategoryType):
-    retired: bool
+class CategoryType(TypedDict):
+    id: NotRequired[int]
+    name: NotRequired[str]
+    retired: NotRequired[bool]
+    items: NotRequired["list[ItemType]"]
 
 
 class OrderItemType(TypedDict):
-    id: int
-    name: str
-    price: str
+    id: NotRequired[int]
+    name: NotRequired[str]
+    price: NotRequired[str]
     quantity: int
-    sub_total: str
+    sub_total: NotRequired[str]
 
 
-class NewOrderAddressType(TypedDict):
-    address: str
-
-
-class NewOrderType(NewOrderAddressType, TypedDict):
-    order_items: list[OrderItemType]
-
-
-class NewStatusType(TypedDict):
-    status: str
-
-
-class UpdateOrderType(NewOrderAddressType, NewStatusType):
-    pass
-
-
-class OrderType(IDType, NewOrderType, NewStatusType, TypedDict):
-    total: str
-
-
-class OrderItemQtyType(TypedDict):
-    quantity: int
+class OrderType(TypedDict):
+    id: NotRequired[int]
+    address: NotRequired[str]
+    order_items: NotRequired["list[OrderItemType]"]
+    status: NotRequired[str]
+    total: NotRequired[str]
 
 
 class DetailError(TypedDict):
-    detail: str
-
-
-class QuantityError(TypedDict):
-    quantity: list
+    detail: NotRequired[str]
+    type: str
+    title: str
+    instance: NotRequired[str]
+    errors: NotRequired["str | list[Any] | dict[Any, Any]"]
+    status: NotRequired[int]
+    traceID: NotRequired[str]

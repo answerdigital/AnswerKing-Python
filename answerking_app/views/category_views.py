@@ -1,27 +1,34 @@
 from django.db.models import QuerySet
-
-from rest_framework import mixins, generics
+from rest_framework import generics, mixins
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from answerking_app.utils.mixins.CategoryItemMixins import (
-    CategoryItemUpdateMixin,
-    CategoryItemRemoveMixin,
-)
 from answerking_app.models.models import Category
-
-from answerking_app.models.serializers import (
-    CategorySerializer,
+from answerking_app.models.serializers import CategorySerializer
+from answerking_app.utils.mixins.CategoryItemMixins import (
+    CategoryItemRemoveMixin,
+    CategoryItemUpdateMixin,
 )
-from answerking_app.utils.mixins.GenericMixins import (
-    CreateMixin,
-    UpdateMixin,
-    RetireMixin,
+from answerking_app.utils.mixins.IntegrityHandlerMixins import (
+    CreateIntegrityHandlerMixin,
+    UpdateIntegrityHandlerMixin,
+)
+from answerking_app.utils.mixins.NotFoundDetailMixins import (
+    GetNotFoundDetailMixin,
+    UpdateNotFoundDetailMixin,
+)
+from answerking_app.utils.mixins.RetireMixin import RetireMixin
+from answerking_app.utils.mixins.SerializeErrorDetailRFCMixins import (
+    CreateErrorDetailMixin,
+    UpdateErrorDetailMixin,
 )
 
 
 class CategoryListView(
-    mixins.ListModelMixin, CreateMixin, generics.GenericAPIView
+    mixins.ListModelMixin,
+    CreateIntegrityHandlerMixin,
+    CreateErrorDetailMixin,
+    generics.GenericAPIView,
 ):
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
@@ -34,9 +41,11 @@ class CategoryListView(
 
 
 class CategoryDetailView(
-    mixins.RetrieveModelMixin,
-    UpdateMixin,
     RetireMixin,
+    GetNotFoundDetailMixin,
+    UpdateNotFoundDetailMixin,
+    UpdateIntegrityHandlerMixin,
+    UpdateErrorDetailMixin,
     mixins.DestroyModelMixin,
     generics.GenericAPIView,
 ):
@@ -54,7 +63,9 @@ class CategoryDetailView(
 
 
 class CategoryItemListView(
-    CategoryItemUpdateMixin, CategoryItemRemoveMixin, generics.GenericAPIView
+    CategoryItemUpdateMixin,
+    CategoryItemRemoveMixin,
+    generics.GenericAPIView,
 ):
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer

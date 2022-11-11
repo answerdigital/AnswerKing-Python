@@ -151,7 +151,7 @@ class OrderSerializer(serializers.ModelSerializer):
             )
             for order_item in order_items_data:
                 item_data: ItemType = order_item.pop("item")
-                item: Item = get_object_or_404(Item, pk=item_data["id"])
+                item: Item = get_object_or_404(Item, pk=item_data["id"])  # type: ignore[reportTypedDictNotRequiredAccess]
                 if item.retired:
                     continue
                 OrderLine.objects.create(order=order, item=item, **order_item)
