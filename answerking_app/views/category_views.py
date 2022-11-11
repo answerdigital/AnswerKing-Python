@@ -70,12 +70,7 @@ class CategoryProductListView(
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
 
-    def put(
-        self, request: Request, cat_id: int, product_id: int, *args, **kwargs
+    def get(
+        self, request: Request, cat_id: int, *args, **kwargs
     ) -> Response:
-        return self.update(request, cat_id, product_id, *args, **kwargs)
-
-    def delete(
-        self, request: Request, cat_id: int, product_id: int, *args, **kwargs
-    ) -> Response:
-        return self.remove(request, cat_id, product_id, *args, **kwargs)
+        return self.list(request, cat_id, *args, **kwargs)

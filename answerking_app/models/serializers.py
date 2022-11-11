@@ -99,7 +99,6 @@ class ProductSerializer(serializers.ModelSerializer):
             )
         ],
     )
-    #categories = serializers.ManyRelatedField(many=True, read_only=True, slug_field=['name', 'description'])
     categories = CategoryDetailSerializer(source="category_set", many=True, required=False)
     retired = serializers.BooleanField(required=False)
 
