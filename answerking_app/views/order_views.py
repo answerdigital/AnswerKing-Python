@@ -13,9 +13,9 @@ from answerking_app.utils.mixins.NotFoundDetailMixins import (
     GetNotFoundDetailMixin,
     UpdateNotFoundDetailMixin,
 )
-from answerking_app.utils.mixins.OrderItemMixins import (
-    OrderItemRemoveMixin,
-    OrderItemUpdateMixin,
+from answerking_app.utils.mixins.OrderProductMixins import (
+    OrderProductRemoveMixin,
+    OrderProductUpdateMixin,
 )
 from answerking_app.utils.mixins.SerializeErrorDetailRFCMixins import (
     CreateErrorDetailMixin,
@@ -61,25 +61,25 @@ class OrderDetailView(
         return self.destroy(request, *args, **kwargs)
 
 
-class OrderItemListView(
+class OrderProductListView(
     GetNotFoundDetailMixin,
     UpdateErrorDetailMixin,
     UpdateNotFoundDetailMixin,
-    OrderItemUpdateMixin,
-    OrderItemRemoveMixin,
+    OrderProductUpdateMixin,
+    OrderProductRemoveMixin,
     generics.GenericAPIView,
 ):
     serializer_class: OrderSerializer = OrderSerializer
     lookup_url_kwarg: Literal["order_id"] = "order_id"
 
     def put(
-        self, request: Request, order_id: int, item_id: int, *args, **kwargs
+        self, request: Request, order_id: int, product_id: int, *args, **kwargs
     ) -> Response:
         return self.update(
-            request, order_id=order_id, item_id=item_id, *args, **kwargs
+            request, order_id=order_id, product_id=product_id, *args, **kwargs
         )
 
     def delete(
-        self, request: Request, order_id: int, item_id: int, *args, **kwargs
+        self, request: Request, order_id: int, product_id: int, *args, **kwargs
     ) -> Response:
-        return self.remove(request, order_id, item_id, *args, **kwargs)
+        return self.remove(request, order_id, product_id, *args, **kwargs)

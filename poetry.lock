@@ -139,6 +139,13 @@ description = "Django middleware that returns 404s as JSON instead of html"
 category = "main"
 optional = false
 python-versions = "*"
+develop = false
+
+[package.source]
+type = "git"
+url = "https://github.com/Axeltherabbit/django-json-404-middleware"
+reference = "HEAD"
+resolved_reference = "b7b0aae53e4b65fcef14d662c281eefa36a1bfe9"
 
 [[package]]
 name = "djangorestframework"
@@ -151,6 +158,25 @@ python-versions = ">=3.6"
 [package.dependencies]
 django = ">=3.0"
 pytz = "*"
+
+[[package]]
+name = "drf-problems"
+version = "1.0.5"
+description = "Never liked DRF plain old errors? Forget that and accept RFC 7807 - Problem Details!"
+category = "main"
+optional = false
+python-versions = "*"
+develop = false
+
+[package.dependencies]
+Django = ">=1.6"
+djangorestframework = ">=3.0.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/Axeltherabbit/drf-problems"
+reference = "HEAD"
+resolved_reference = "704ce4104f6d12dad0c13667af9af84f5a2c2410"
 
 [[package]]
 name = "drf-writable-nested"
@@ -410,6 +436,14 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "typing-extensions"
+version = "4.4.0"
+description = "Backported and Experimental Type Hints for Python 3.7+"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
 name = "tzdata"
 version = "2022.6"
 description = "Provider of IANA time zone data"
@@ -441,7 +475,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "acbcf566005e09cd5bdc513c4d2a6ea987b407eef1d670a6e53fc5f9c4e7ce14"
+content-hash = "52984e4b7c19ed3aaa4657f369fd3d11662f8ea8bcb8d83357daf3a8e2946135"
 
 [metadata.files]
 asgiref = [
@@ -555,14 +589,12 @@ django-cors-headers = [
     {file = "django-cors-headers-3.13.0.tar.gz", hash = "sha256:f9dc6b4e3f611c3199700b3e5f3398c28757dcd559c2f82932687f3d0443cfdf"},
     {file = "django_cors_headers-3.13.0-py3-none-any.whl", hash = "sha256:37e42883b5f1f2295df6b4bba96eb2417a14a03270cb24b2a07f021cd4487cf4"},
 ]
-django-json-404-middleware = [
-    {file = "django-json-404-middleware-0.0.1.tar.gz", hash = "sha256:cd38450284e198a05df890296fa87b0fade9ff2dba2380bb4f528b83b750964c"},
-    {file = "django_json_404_middleware-0.0.1-py3-none-any.whl", hash = "sha256:8e133a7814a70a89188101e21fcd30be79160dcdc8571cdc707729d69c557c72"},
-]
+django-json-404-middleware = []
 djangorestframework = [
     {file = "djangorestframework-3.14.0-py3-none-any.whl", hash = "sha256:eb63f58c9f218e1a7d064d17a70751f528ed4e1d35547fdade9aaf4cd103fd08"},
     {file = "djangorestframework-3.14.0.tar.gz", hash = "sha256:579a333e6256b09489cbe0a067e66abe55c6595d8926be6b99423786334350c8"},
 ]
+drf-problems = []
 drf-writable-nested = [
     {file = "drf_writable_nested-0.7.0-py3-none-any.whl", hash = "sha256:154c0381e8a3a477e0fd539d5e1caf8ff4c1097a9c0c0fe741d4858b11b0455b"},
 ]
@@ -731,6 +763,10 @@ sqlparse = [
 tomli = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
+]
+typing-extensions = [
+    {file = "typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},
+    {file = "typing_extensions-4.4.0.tar.gz", hash = "sha256:1511434bb92bf8dd198c12b1cc812e800d4181cfcb867674e0f8279cc93087aa"},
 ]
 tzdata = [
     {file = "tzdata-2022.6-py2.py3-none-any.whl", hash = "sha256:04a680bdc5b15750c39c12a448885a51134a27ec9af83667663f0b3a1bf3f342"},

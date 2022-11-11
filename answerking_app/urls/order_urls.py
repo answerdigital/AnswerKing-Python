@@ -12,8 +12,8 @@ urlpatterns: list[partial] = [
         name="order_detail",
     ),
     path(
-        "orders/<int:order_id>/orderline/<int:item_id>",
-        order_views.OrderItemListView.as_view(),
-        name="order_item_list",
+        "orders/<int:order_id>/orderline/<int:product_id>",
+        order_views.OrderProductListView.as_view(),
+        name="order_product_list",
     ),
 ]

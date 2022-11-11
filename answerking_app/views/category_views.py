@@ -5,9 +5,9 @@ from rest_framework.response import Response
 
 from answerking_app.models.models import Category
 from answerking_app.models.serializers import CategorySerializer
-from answerking_app.utils.mixins.CategoryItemMixins import (
-    CategoryItemRemoveMixin,
-    CategoryItemUpdateMixin,
+from answerking_app.utils.mixins.CategoryProductMixins import (
+    CategoryProductRemoveMixin,
+    CategoryProductUpdateMixin,
 )
 from answerking_app.utils.mixins.IntegrityHandlerMixins import (
     CreateIntegrityHandlerMixin,
@@ -62,20 +62,20 @@ class CategoryDetailView(
         return self.retire(request, *args, **kwargs)
 
 
-class CategoryItemListView(
-    CategoryItemUpdateMixin,
-    CategoryItemRemoveMixin,
+class CategoryProductListView(
+    CategoryProductUpdateMixin,
+    CategoryProductRemoveMixin,
     generics.GenericAPIView,
 ):
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
 
     def put(
-        self, request: Request, cat_id: int, item_id: int, *args, **kwargs
+        self, request: Request, cat_id: int, product_id: int, *args, **kwargs
     ) -> Response:
-        return self.update(request, cat_id, item_id, *args, **kwargs)
+        return self.update(request, cat_id, product_id, *args, **kwargs)
 
     def delete(
-        self, request: Request, cat_id: int, item_id: int, *args, **kwargs
+        self, request: Request, cat_id: int, product_id: int, *args, **kwargs
     ) -> Response:
-        return self.remove(request, cat_id, item_id, *args, **kwargs)
+        return self.remove(request, cat_id, product_id, *args, **kwargs)

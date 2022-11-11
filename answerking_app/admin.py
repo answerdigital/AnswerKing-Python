@@ -1,13 +1,13 @@
 from django.contrib import admin
 from answerking_app.models.models import (
-    Item,
+    Product,
     Category,
     Status,
     Order,
     OrderLine,
 )
 
-admin.site.register(Item)
+admin.site.register(Product)
 admin.site.register(Category)
 admin.site.register(Status)
 admin.site.register(Order)

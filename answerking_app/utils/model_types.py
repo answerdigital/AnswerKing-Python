@@ -6,24 +6,22 @@ from typing_extensions import (  # for Python <3.11 with (Not)Required
 )
 
 
-class ItemType(TypedDict):
+class ProductType(TypedDict):
     id: NotRequired[int]
     name: str
     price: str
     description: str
     retired: NotRequired[bool]
-    stock: int
-    calories: int
 
 
 class CategoryType(TypedDict):
     id: NotRequired[int]
     name: NotRequired[str]
     retired: NotRequired[bool]
-    items: NotRequired["list[ItemType]"]
+    products: NotRequired["list[ProductType]"]
 
 
-class OrderItemType(TypedDict):
+class OrderProductType(TypedDict):
     id: NotRequired[int]
     name: NotRequired[str]
     price: NotRequired[str]
@@ -34,7 +32,7 @@ class OrderItemType(TypedDict):
 class OrderType(TypedDict):
     id: NotRequired[int]
     address: NotRequired[str]
-    order_items: NotRequired["list[OrderItemType]"]
+    order_products: NotRequired["list[OrderProductType]"]
     status: NotRequired[str]
     total: NotRequired[str]
 

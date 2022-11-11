@@ -5,7 +5,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from answerking_app.models.models import Item, Order
+from answerking_app.models.models import Product, Order
 from answerking_app.models.serializers import (
     OrderLineSerializer,
     OrderSerializer,
@@ -13,12 +13,12 @@ from answerking_app.models.serializers import (
 from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
 
 
-class OrderItemUpdateMixin(UpdateModelMixin):
+class OrderProductUpdateMixin(UpdateModelMixin):
     def update(
-        self, request: Request, order_id: int, item_id: int, *args, **kwargs
+        self, request: Request, order_id: int, product_id: int, *args, **kwargs
     ) -> Response | None:
         order: Order = get_object_or_404(Order, pk=order_id)
-        item: Item = get_object_or_404(Item, pk=item_id)
+        product: Product = get_object_or_404(Product, pk=product_id)
 
         serialized_body: OrderLineSerializer = OrderLineSerializer(
             data=request.data
@@ -27,19 +27,19 @@ class OrderItemUpdateMixin(UpdateModelMixin):
         quantity: int = serialized_body.data["quantity"]
 
         if quantity == 0:
-            order.order_items.remove(item)
-        elif item not in order.order_items.all():
-            order.order_items.add(
-                item,
+            order.line_items.remove(product)
+        elif product not in order.line_items.all():
+            order.line_items.add(
+                product,
                 through_defaults={
                     "quantity": quantity,
-                    "sub_total": item.price * quantity,
+                    "sub_total": product.price * quantity,
                 },
             )
 
         else:
-            order.orderline_set.filter(item=item.id).update(
-                quantity=quantity, sub_total=quantity * item.price
+            order.orderline_set.filter(product=product.id).update(
+                quantity=quantity, sub_total=quantity * product.price
             )
         order.calculate_total()
         serializer: OrderSerializer = OrderSerializer(order, data=request.data)
@@ -51,23 +51,23 @@ class OrderItemUpdateMixin(UpdateModelMixin):
         return Response(response, status=status.HTTP_200_OK)
 
 
-class OrderItemRemoveMixin:
+class OrderProductRemoveMixin:
     def remove(
-        self, request: Request, order_id: int, item_id: int, *args, **kwargs
+        self, request: Request, order_id: int, product_id: int, *args, **kwargs
     ) -> Response:
         order: Order = get_object_or_404(Order, pk=order_id)
-        item: Item = get_object_or_404(Item, pk=item_id)
+        product: Product = get_object_or_404(Product, pk=product_id)
 
-        if item not in order.order_items.all():
+        if product not in order.line_items.all():
             raise HttpErrorResponse(status=status.HTTP_404_NOT_FOUND)
 
-        updated_order: Order | None = self.remove_item(order, item)
+        updated_order: Order | None = self.remove_product(order, product)
 
         response: ReturnDict = OrderSerializer(updated_order).data
 
         return Response(response, status=status.HTTP_200_OK)
 
-    def remove_item(self, order: Order, item: Item) -> Order:
-        order.order_items.remove(item)
+    def remove_product(self, order: Order, product: Product) -> Order:
+        order.line_items.remove(product)
         order.calculate_total()
         return order
