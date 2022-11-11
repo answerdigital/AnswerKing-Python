@@ -31,7 +31,6 @@ class OrderProductType(TypedDict):
 
 class OrderType(TypedDict):
     id: NotRequired[int]
-    address: NotRequired[str]
     order_products: NotRequired["list[OrderProductType]"]
     status: NotRequired[str]
     total: NotRequired[str]
