@@ -163,15 +163,34 @@ class CategorySerializer(CategoryDetailSerializer):
         )
 
 
+class ProductSerializerReadOnly(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+
+    class Meta:
+        model = Product
+        fields = "__all__"
+        read_only_fields = [
+            "name",
+            "description",
+            "price",
+            "categories",
+            "retired",
+        ]
+
+
 class OrderLineSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
+    product = ProductSerializerReadOnly()
     quantity = serializers.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
+    )
+    subTotal = serializers.DecimalField(
+        source="sub_total", read_only=True, decimal_places=2, max_digits=18
     )
 
     class Meta:
         model = OrderLine
-        fields = ("product", "quantity")
+        fields = ["product", "quantity", "subTotal"]
+        depth = 2
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -184,14 +203,14 @@ class OrderSerializer(serializers.ModelSerializer):
         source="order_total", read_only=True, decimal_places=2, max_digits=18
     )
     lineItems = OrderLineSerializer(
-        source="line_items", many=True, required=False
+        source="orderline_set", many=True, required=False
     )
 
     def create(self, validated_data: dict) -> Order:
         order: Order = Order.objects.create()
-        if "line_items_set" in validated_data:
+        if "orderline_set" in validated_data:
             line_items_data: list[OrderedDict] = validated_data[
-                "line_items_set"
+                "orderline_set"
             ]
             order = self.create_and_add_products_to_order(
                 order=order, line_items_data=line_items_data
@@ -199,11 +218,10 @@ class OrderSerializer(serializers.ModelSerializer):
         return order
 
     def update(self, order_to_update: Order, validated_data: dict) -> Order:
-        # OrderLine.objects.get(order_id=order_to_update.id).delete()
-        order_to_update.line_items.clear()
-        if "line_items_set" in validated_data:
+        OrderLine.objects.filter(order_id=order_to_update.id).delete()
+        if "orderline_set" in validated_data:
             line_items_data: list[OrderedDict] = validated_data[
-                "line_items_set"
+                "orderline_set"
             ]
             order_to_update = self.create_and_add_products_to_order(
                 order=order_to_update, line_items_data=line_items_data
@@ -215,7 +233,7 @@ class OrderSerializer(serializers.ModelSerializer):
     ):
         for order_item in line_items_data:
             product: Product = get_object_or_404(
-                Product, pk=order_item["product_set"]["id"]
+                Product, pk=order_item["product"]["id"]
             )
             if product.retired:
                 continue
@@ -236,3 +254,4 @@ class OrderSerializer(serializers.ModelSerializer):
             "orderTotal",
             "lineItems",
         )
+        depth = 3
