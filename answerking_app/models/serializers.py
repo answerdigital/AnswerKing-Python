@@ -94,6 +94,7 @@ class ProductSerializer(serializers.ModelSerializer):
     price = serializers.DecimalField(
         max_digits=18,
         decimal_places=2,
+        coerce_to_string=False,
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
     )
     description = serializers.CharField(
