@@ -6,8 +6,7 @@ from rest_framework.response import Response
 from answerking_app.models.models import Category
 from answerking_app.models.serializers import CategorySerializer
 from answerking_app.utils.mixins.CategoryProductMixins import (
-    CategoryProductRemoveMixin,
-    CategoryProductUpdateMixin,
+    CategoryProductListMixin,
 )
 from answerking_app.utils.mixins.IntegrityHandlerMixins import (
     CreateIntegrityHandlerMixin,
@@ -63,14 +62,11 @@ class CategoryDetailView(
 
 
 class CategoryProductListView(
-    CategoryProductUpdateMixin,
-    CategoryProductRemoveMixin,
+    CategoryProductListMixin,
     generics.GenericAPIView,
 ):
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
 
-    def get(
-        self, request: Request, cat_id: int, *args, **kwargs
-    ) -> Response:
+    def get(self, request: Request, cat_id: int, *args, **kwargs) -> Response:
         return self.list(request, cat_id, *args, **kwargs)

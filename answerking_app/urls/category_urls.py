@@ -16,7 +16,7 @@ urlpatterns: list[partial] = [
         name="category_detail",
     ),
     path(
-        "categories/<int:cat_id>/products/<int:product_id>",
+        "categories/<int:cat_id>/products",
         category_views.CategoryProductListView.as_view(),
         name="category_product_list",
     ),

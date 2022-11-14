@@ -5,7 +5,10 @@ from rest_framework.response import Response
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from answerking_app.models.models import Category, Product
-from answerking_app.models.serializers import CategorySerializer, ProductSerializer
+from answerking_app.models.serializers import (
+    CategorySerializer,
+    ProductSerializer,
+)
 
 
 class RetireMixin(GenericAPIView):

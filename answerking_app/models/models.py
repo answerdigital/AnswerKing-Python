@@ -24,8 +24,12 @@ class Status(models.Model):
 
 
 class Order(models.Model):
-    order_status = models.ForeignKey(Status, on_delete=models.CASCADE, default=1)
-    order_total = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
+    order_status = models.ForeignKey(
+        Status, on_delete=models.CASCADE, default=1
+    )
+    order_total = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.00
+    )
     line_items = models.ManyToManyField(Product, through="OrderLine")
     created_on = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
