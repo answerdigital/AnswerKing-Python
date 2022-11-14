@@ -144,3 +144,4 @@ GitHub.sublime-settings
 .idea/*
 *.sqlite3
 
+poetry.lock
