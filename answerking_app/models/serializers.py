@@ -14,10 +14,8 @@ from answerking_app.models.models import (
     Product,
     Order,
     OrderLine,
-    Status,
 )
 from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
-from answerking_app.utils.model_types import ProductType
 
 MAXNUMBERSIZE = 2147483647
 
@@ -198,7 +196,7 @@ class OrderSerializer(serializers.ModelSerializer):
     lastUpdated = serializers.DateTimeField(
         source="last_updated", read_only=True
     )
-    orderStatus = serializers.CharField(source="Status.status", read_only=True)
+    orderStatus = serializers.CharField(source="order_status", read_only=True)
     orderTotal = serializers.DecimalField(
         source="order_total", read_only=True, decimal_places=2, max_digits=18
     )

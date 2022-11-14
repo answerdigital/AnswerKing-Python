@@ -19,14 +19,14 @@ class Category(models.Model):
     retired = models.BooleanField(default=False, null=False)
 
 
-class Status(models.Model):
-    status = models.CharField(max_length=50)
-
-
 class Order(models.Model):
-    order_status = models.ForeignKey(
-        Status, on_delete=models.CASCADE, default=1
-    )
+
+    class Status(models.TextChoices):
+        CREATED = 'Created', 'Created'
+        PAID = 'Paid', 'Paid'
+        CANCELLED = 'Cancelled', 'Cancelled'
+
+    order_status = models.CharField(max_length=10, choices=Status.choices, default=Status.CREATED)
     order_total = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.00
     )
