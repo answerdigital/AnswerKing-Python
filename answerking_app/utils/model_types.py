@@ -1,4 +1,4 @@
-from typing import Any
+import datetime
 
 from typing_extensions import (  # for Python <3.11 with (Not)Required
     NotRequired,
@@ -23,17 +23,16 @@ class CategoryType(TypedDict):
 
 class OrderProductType(TypedDict):
     id: NotRequired[int]
-    name: NotRequired[str]
-    price: NotRequired[str]
     quantity: int
     sub_total: NotRequired[str]
 
 
 class OrderType(TypedDict):
     id: NotRequired[int]
-    order_products: NotRequired["list[OrderProductType]"]
-    status: NotRequired[str]
-    total: NotRequired[str]
+    order_status: NotRequired[str]
+    order_total: NotRequired[str]
+    created_on: NotRequired[datetime.datetime]
+    last_updated: NotRequired[datetime.datetime]
 
 
 class DetailError(TypedDict):

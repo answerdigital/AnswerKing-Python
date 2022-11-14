@@ -1,22 +1,18 @@
 from typing import Literal
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import QuerySet
-from rest_framework import generics, mixins, status
+from rest_framework import generics, mixins
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from answerking_app.models.models import Order
 from answerking_app.models.serializers import OrderSerializer
-from answerking_app.utils.ErrorType import ErrorMessage
 from answerking_app.utils.mixins.NotFoundDetailMixins import (
     GetNotFoundDetailMixin,
     UpdateNotFoundDetailMixin,
 )
-from answerking_app.utils.mixins.OrderProductMixins import (
-    OrderProductRemoveMixin,
-    OrderProductUpdateMixin,
-)
+from answerking_app.utils.mixins.RetireMixin import CancelOrderMixin
+
 from answerking_app.utils.mixins.SerializeErrorDetailRFCMixins import (
     CreateErrorDetailMixin,
     UpdateErrorDetailMixin,
@@ -43,8 +39,9 @@ class OrderDetailView(
     GetNotFoundDetailMixin,
     UpdateNotFoundDetailMixin,
     UpdateErrorDetailMixin,
-    mixins.DestroyModelMixin,
-    generics.GenericAPIView,
+    CancelOrderMixin,
+    generics.GenericAPIView
+
 ):
 
     queryset: QuerySet = Order.objects.all()
@@ -58,28 +55,4 @@ class OrderDetailView(
         return self.partial_update(request, *args, **kwargs)
 
     def delete(self, request: Request, *args, **kwargs) -> Response:
-        return self.destroy(request, *args, **kwargs)
-
-
-class OrderProductListView(
-    GetNotFoundDetailMixin,
-    UpdateErrorDetailMixin,
-    UpdateNotFoundDetailMixin,
-    OrderProductUpdateMixin,
-    OrderProductRemoveMixin,
-    generics.GenericAPIView,
-):
-    serializer_class: OrderSerializer = OrderSerializer
-    lookup_url_kwarg: Literal["order_id"] = "order_id"
-
-    def put(
-        self, request: Request, order_id: int, product_id: int, *args, **kwargs
-    ) -> Response:
-        return self.update(
-            request, order_id=order_id, product_id=product_id, *args, **kwargs
-        )
-
-    def delete(
-        self, request: Request, order_id: int, product_id: int, *args, **kwargs
-    ) -> Response:
-        return self.remove(request, order_id, product_id, *args, **kwargs)
+        return self.cancel_order(request, *args, **kwargs)
