@@ -38,9 +38,18 @@ class ModelTests(TestCase):
             total=7.50,
         )
 
-        self.test_order_1.order_items.add(self.test_item_1, through_defaults={"quantity": 1})
-        self.test_order_1.order_items.add(self.test_item_2, through_defaults={"quantity": 2})
-        self.test_order_1.order_items.add(self.test_item_3, through_defaults={"quantity": 1})
+        self.test_order_1.order_items.add(
+            self.test_item_1,
+            through_defaults={"quantity": 1, "sub_total": self.test_item_1.price}
+        )
+        self.test_order_1.order_items.add(
+            self.test_item_2,
+            through_defaults={"quantity": 2, "sub_total": self.test_item_2.price*2}
+        )
+        self.test_order_1.order_items.add(
+            self.test_item_3,
+            through_defaults={"quantity": 1, "sub_total": self.test_item_3.price}
+        )
 
     def tearDown(self):
         Item.objects.all().delete()
@@ -57,7 +66,4 @@ class ModelTests(TestCase):
                                  )
 
         assert init_tot, 7.50
-        print(self.test_order_1.total)
-        print(calculated_tot)
-        print(expected_tot)
         assert calculated_tot, expected_tot
