@@ -40,8 +40,7 @@ class OrderDetailView(
     UpdateNotFoundDetailMixin,
     UpdateErrorDetailMixin,
     CancelOrderMixin,
-    generics.GenericAPIView
-
+    generics.GenericAPIView,
 ):
 
     queryset: QuerySet = Order.objects.all()

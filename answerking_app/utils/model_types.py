@@ -2,9 +2,9 @@ import datetime
 
 from typing_extensions import (  # for Python <3.11 with (Not)Required
     NotRequired,
-    TypedDict,
+    TypedDict
 )
-
+from typing import Any
 
 class ProductType(TypedDict):
     id: NotRequired[int]

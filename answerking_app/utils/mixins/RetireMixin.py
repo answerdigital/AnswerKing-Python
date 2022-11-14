@@ -7,7 +7,8 @@ from rest_framework.utils.serializer_helpers import ReturnDict
 from answerking_app.models.models import Category, Product, Order
 from answerking_app.models.serializers import (
     CategorySerializer,
-    ProductSerializer, OrderSerializer,
+    ProductSerializer,
+    OrderSerializer,
 )
 from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
 
@@ -32,12 +33,12 @@ class RetireMixin(GenericAPIView):
 class CancelOrderMixin(GenericAPIView):
     def cancel_order(self, request: Request, *args, **kwargs) -> Response:
         instance: Order = self.get_object()
-        if instance.order_status == 'Cancelled':
+        if instance.order_status == "Cancelled":
             raise HttpErrorResponse(
                 status=status.HTTP_400_BAD_REQUEST,
                 detail="This order has already been cancelled",
             )
-        instance.order_status = 'Cancelled'
+        instance.order_status = "Cancelled"
         instance.save()
         response: ReturnDict = OrderSerializer(instance).data
         return Response(response, status=status.HTTP_200_OK)

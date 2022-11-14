@@ -10,5 +10,5 @@ urlpatterns: list[partial] = [
         "orders/<int:order_id>",
         order_views.OrderDetailView.as_view(),
         name="order_detail",
-    )
+    ),
 ]

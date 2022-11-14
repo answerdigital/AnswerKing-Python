@@ -20,13 +20,14 @@ class Category(models.Model):
 
 
 class Order(models.Model):
-
     class Status(models.TextChoices):
-        CREATED = 'Created', 'Created'
-        PAID = 'Paid', 'Paid'
-        CANCELLED = 'Cancelled', 'Cancelled'
+        CREATED = "Created", "Created"
+        PAID = "Paid", "Paid"
+        CANCELLED = "Cancelled", "Cancelled"
 
-    order_status = models.CharField(max_length=10, choices=Status.choices, default=Status.CREATED)
+    order_status = models.CharField(
+        max_length=10, choices=Status.choices, default=Status.CREATED
+    )
     order_total = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.00
     )
