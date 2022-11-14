@@ -9,14 +9,20 @@ from answerking_app.models.serializers import (
     CategorySerializer,
     ProductSerializer,
 )
+from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
 
 
 class RetireMixin(GenericAPIView):
     def retire(self, request: Request, *args, **kwargs) -> Response:
         instance: Category | Product = self.get_object()
+        if instance.retired:
+            raise HttpErrorResponse(
+                status=status.HTTP_400_BAD_REQUEST,
+                detail="This object has already been retired",
+            )
         instance.retired = True
         instance.save()
-        if type(instance) == Category:
+        if isinstance(instance, Category):
             response: ReturnDict = CategorySerializer(instance).data
         else:
             response: ReturnDict = ProductSerializer(instance).data
