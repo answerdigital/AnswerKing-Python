@@ -8,10 +8,20 @@ Answer King Python App
   - Follow installation documentation to configure Poetry for Windows https://python-poetry.org/docs/
 - #### node.js
   - Required by `pyright` package to detect and verify correct types have been used in the codebase
+
+- #### Docker
+  - Used to set up a disposable local MySQL database quickly.
+    - Install Docker following the docs [here](https://docs.docker.com/get-docker/).
+
 ***
 ### Installation:
 - Open root folder and run command `poetry install`
 - This will install a virtual environment to a path that looks like this `C:\Users\Username\AppData\Local\pypoetry\Cache\virtualenvs`. Alternatively, run command `poetry env info` or `poetry show -v`in the folder containing `pyproject.toml` and this will display where the virtual environment was installed
+
+### Setup
+- Add the required environment variables. The easiest ways to do this is with a .env file which can be provided by another member of the team.
+- Install the required MySQL container using `docker compose up -d`
+- Migrate the database using `poetry run python manage.py migrate`
 
 ### Run:
 - Run program using `poetry run python manage.py runserver`
