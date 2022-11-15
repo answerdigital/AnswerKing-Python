@@ -39,8 +39,8 @@ jobs:
       with:
         python-version: '3.10'
         cache: 'poetry'
-    
-    - run: poetry update
+
+    - run: poetry install
 
     - name: Run Migrations
       run: |
@@ -64,8 +64,8 @@ jobs:
         with:
           python-version: '3.10'
           cache: 'poetry'
-      
-      - run: poetry update
+
+      - run: poetry install
 
       - name: Run Black Test
         run: poetry run black . --line-length=79 --check
@@ -84,8 +84,8 @@ jobs:
         with:
           python-version: '3.10'
           cache: 'poetry'
-          
-      - run: poetry update
+
+      - run: poetry install
 
       - name: Run Pycodestyle Test
         run: poetry run pycodestyle . --ignore=E501
@@ -105,8 +105,8 @@ jobs:
         with:
           python-version: '3.10'
           cache: 'poetry'
-          
-      - run: poetry update
+
+      - run: poetry install
 
       - name: Run Pyright Test
         run: poetry run pyright
