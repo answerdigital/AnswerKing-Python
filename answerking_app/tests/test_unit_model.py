@@ -6,7 +6,6 @@ from answerking_app.models.models import Order, Item, Status
 
 
 class ModelTests(TestCase):
-
     def setUp(self):
         self.status_pending: Status = Status.objects.create(status="Pending")
 
@@ -40,15 +39,24 @@ class ModelTests(TestCase):
 
         self.test_order_1.order_items.add(
             self.test_item_1,
-            through_defaults={"quantity": 1, "sub_total": self.test_item_1.price}
+            through_defaults={
+                "quantity": 1,
+                "sub_total": self.test_item_1.price,
+            },
         )
         self.test_order_1.order_items.add(
             self.test_item_2,
-            through_defaults={"quantity": 2, "sub_total": self.test_item_2.price*2}
+            through_defaults={
+                "quantity": 2,
+                "sub_total": self.test_item_2.price * 2,
+            },
         )
         self.test_order_1.order_items.add(
             self.test_item_3,
-            through_defaults={"quantity": 1, "sub_total": self.test_item_3.price}
+            through_defaults={
+                "quantity": 1,
+                "sub_total": self.test_item_3.price,
+            },
         )
 
     def tearDown(self):
@@ -60,10 +68,11 @@ class ModelTests(TestCase):
         self.test_order_1.calculate_total()
 
         calculated_tot: Decimal = self.test_order_1.total
-        expected_tot: Decimal = (self.test_item_1.price +
-                                 (self.test_item_2.price * 2) +
-                                 self.test_item_3.price
-                                 )
+        expected_tot: Decimal = (
+            self.test_item_1.price
+            + (self.test_item_2.price * 2)
+            + self.test_item_3.price
+        )
 
         assert init_tot, 7.50
         assert calculated_tot, expected_tot
