@@ -18,9 +18,7 @@ class SerializerTests(TestCase):
             calories=100,
         )
 
-        self.test_cat_1: Category = Category.objects.create(
-            name="Burgers"
-        )
+        self.test_cat_1: Category = Category.objects.create(name="Burgers")
 
     def tearDown(self):
         Item.objects.all().delete()
@@ -74,9 +72,7 @@ class SerializerTests(TestCase):
         assert expected_items, actual_items
 
     def test_cat_serializer_update_retired_field_supplied(self):
-        mock_data: dict = {
-            "retired": True
-        }
+        mock_data: dict = {"retired": True}
         expected_retired_val: bool = True
         cs: CategorySerializer = CategorySerializer()
 
@@ -84,4 +80,3 @@ class SerializerTests(TestCase):
         actual_retired_val: bool = self.test_cat_1.retired
 
         assert expected_retired_val, actual_retired_val
-
