@@ -149,7 +149,7 @@ class TestBase:
             "description": item.description,
             "stock": item.stock,
             "calories": item.calories,
-            "retired": False,
+            "retired": item.retired,
         }
 
     def get_mock_category_api(
@@ -159,7 +159,7 @@ class TestBase:
             "id": category.id,
             "name": category.name,
             "items": items,
-            "retired": False,
+            "retired": category.retired,
         }
 
     def get_mock_order_item_api(
