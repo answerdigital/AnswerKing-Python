@@ -8,7 +8,6 @@ Answer King Python App
   - Follow installation documentation to configure Poetry for Windows https://python-poetry.org/docs/
 - #### node.js
   - Required by `pyright` package to detect and verify correct types have been used in the codebase
-
 - #### Docker
   - Used to set up a disposable local MySQL database quickly.
     - Install Docker following the docs [here](https://docs.docker.com/get-docker/).
