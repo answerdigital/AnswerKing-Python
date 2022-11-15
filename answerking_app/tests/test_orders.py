@@ -232,18 +232,15 @@ class OrderTests(TestBase, TestCase):
             "address": "test",
             "status": self.status_complete.status,
         }
-        expected: OrderType = (
-            self.get_mock_order_api(
-                self.test_order_1,
-                self.status_pending,
-                [
-                    self.get_mock_order_item_api(self.test_item_1, 2),
-                    self.get_mock_order_item_api(self.test_item_2, 1),
-                ],
-            )
-            | post_data
+        expected: OrderType = self.get_mock_order_api(
+            self.test_order_1,
+            self.status_pending,
+            [
+                self.get_mock_order_item_api(self.test_item_1, 2),
+                self.get_mock_order_item_api(self.test_item_2, 1),
+            ],
         )
-
+        expected.update(post_data)
         # Act
         response = client.put(
             f"/api/orders/{self.test_order_1.id}",
@@ -264,18 +261,15 @@ class OrderTests(TestBase, TestCase):
         # Arrange
         old_order = client.get(f"/api/orders/{self.test_order_1.id}").json()
         post_data: OrderType = {"address": "test"}
-        expected: OrderType = (
-            self.get_mock_order_api(
-                self.test_order_1,
-                self.status_pending,
-                [
-                    self.get_mock_order_item_api(self.test_item_1, 2),
-                    self.get_mock_order_item_api(self.test_item_2, 1),
-                ],
-            )
-            | post_data
+        expected: OrderType = self.get_mock_order_api(
+            self.test_order_1,
+            self.status_pending,
+            [
+                self.get_mock_order_item_api(self.test_item_1, 2),
+                self.get_mock_order_item_api(self.test_item_2, 1),
+            ],
         )
-
+        expected.update(post_data)
         # Act
         response = client.put(
             f"/api/orders/{self.test_order_1.id}",
@@ -298,17 +292,16 @@ class OrderTests(TestBase, TestCase):
         post_data: OrderType = {
             "status": self.status_complete.status,
         }
-        expected: OrderType = (
-            self.get_mock_order_api(
-                self.test_order_1,
-                self.status_pending,
-                [
-                    self.get_mock_order_item_api(self.test_item_1, 2),
-                    self.get_mock_order_item_api(self.test_item_2, 1),
-                ],
-            )
-            | post_data
+        expected: OrderType = self.get_mock_order_api(
+            self.test_order_1,
+            self.status_pending,
+            [
+                self.get_mock_order_item_api(self.test_item_1, 2),
+                self.get_mock_order_item_api(self.test_item_2, 1),
+            ],
         )
+
+        expected.update(post_data)
         # Act
         response = client.put(
             f"/api/orders/{self.test_order_1.id}",
