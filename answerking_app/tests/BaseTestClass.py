@@ -131,6 +131,7 @@ class TestBase:
         Item.objects.all().delete()
         Category.objects.all().delete()
         Status.objects.all().delete()
+        Order.objects.all().delete()
 
     def assertJSONResponse(self, expected, actual, response, status_code):
         self.assertEqual(expected, actual)  # type: ignore[reportGeneralTypeIssues]
