@@ -6,7 +6,9 @@ from rest_framework.response import Response
 from answerking_app.models.models import Category
 from answerking_app.models.serializers import CategorySerializer
 from answerking_app.utils.mixins.CategoryItemMixins import (
-    CategoryItemRemoveMixin, CategoryItemUpdateMixin)
+    CategoryItemRemoveMixin,
+    CategoryItemUpdateMixin,
+)
 from answerking_app.utils.mixins.RetireMixin import RetireMixin
 
 

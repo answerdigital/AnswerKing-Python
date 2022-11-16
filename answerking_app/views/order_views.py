@@ -7,8 +7,10 @@ from rest_framework.response import Response
 
 from answerking_app.models.models import Order
 from answerking_app.models.serializers import OrderSerializer
-from answerking_app.utils.mixins.OrderItemMixins import (OrderItemRemoveMixin,
-                                                         OrderItemUpdateMixin)
+from answerking_app.utils.mixins.OrderItemMixins import (
+    OrderItemRemoveMixin,
+    OrderItemUpdateMixin,
+)
 
 
 class OrderListView(
