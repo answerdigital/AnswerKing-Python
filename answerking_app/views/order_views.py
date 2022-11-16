@@ -1,31 +1,18 @@
 from typing import Literal
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import QuerySet
-from rest_framework import generics, mixins, status
+from rest_framework import generics, mixins
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from answerking_app.models.models import Order
 from answerking_app.models.serializers import OrderSerializer
-from answerking_app.utils.ErrorType import ErrorMessage
-from answerking_app.utils.mixins.NotFoundDetailMixins import (
-    GetNotFoundDetailMixin,
-    UpdateNotFoundDetailMixin,
-)
-from answerking_app.utils.mixins.OrderItemMixins import (
-    OrderItemRemoveMixin,
-    OrderItemUpdateMixin,
-)
-from answerking_app.utils.mixins.SerializeErrorDetailRFCMixins import (
-    CreateErrorDetailMixin,
-    UpdateErrorDetailMixin,
-)
+from answerking_app.utils.mixins.OrderItemMixins import (OrderItemRemoveMixin,
+                                                         OrderItemUpdateMixin)
 
 
 class OrderListView(
     mixins.ListModelMixin,
-    CreateErrorDetailMixin,
     mixins.CreateModelMixin,
     generics.GenericAPIView,
 ):
@@ -40,10 +27,9 @@ class OrderListView(
 
 
 class OrderDetailView(
-    GetNotFoundDetailMixin,
-    UpdateNotFoundDetailMixin,
-    UpdateErrorDetailMixin,
+    mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
+    mixins.UpdateModelMixin,
     generics.GenericAPIView,
 ):
 
@@ -62,9 +48,6 @@ class OrderDetailView(
 
 
 class OrderItemListView(
-    GetNotFoundDetailMixin,
-    UpdateErrorDetailMixin,
-    UpdateNotFoundDetailMixin,
     OrderItemUpdateMixin,
     OrderItemRemoveMixin,
     generics.GenericAPIView,
