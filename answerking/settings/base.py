@@ -76,7 +76,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
     ],
-    "EXCEPTION_HANDLER": "drf_problems.exceptions.exception_handler",
+    "EXCEPTION_HANDLER": "answerking_app.utils.exceptions_handler.wrapper",
 }
 
 # Database
