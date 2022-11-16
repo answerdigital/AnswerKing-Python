@@ -21,7 +21,7 @@ MAXNUMBERSIZE = 2147483647
 
 
 def compress_white_spaces(value: str) -> str:
-    return re.sub(" +", " ", value)
+    return re.sub(" +", " ", value.strip())
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):

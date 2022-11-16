@@ -6,70 +6,44 @@ from answerking_app.models.serializers import (
     ItemSerializer,
     CategorySerializer,
 )
+from answerking_app.tests.BaseTestClass import TestBase
+from answerking_app.utils.model_types import ItemType
 
 
-class SerializerTests(TestCase):
-    def setUp(self):
-        self.test_item_1: Item = Item.objects.create(
-            name="Burger",
-            price=1.20,
-            description="desc",
-            stock=100,
-            calories=100,
-        )
-
-        self.test_cat_1: Category = Category.objects.create(name="Burgers")
-
-    def tearDown(self):
-        Item.objects.all().delete()
-        Category.objects.all().delete()
+class SerializerTests(TestBase, TestCase):
 
     def test_compress_white_spaces_fn(self):
         test_str: str = "  White   Spaces    "
         expected: str = "White Spaces"
         actual: str = compress_white_spaces(test_str)
 
-        assert expected, actual
+        self.assertEqual(expected, actual)
 
     def test_regex_validator_raises_error(self):
-        invalid_item_details: dict = {
-            "name": "new_name",
-            "price": 2.00,
-            "description": "Blah",
-            "stock": 200,
-            "calories": 0,
-        }
+        invalid_name_item: ItemType = self.post_mock_item
+        invalid_name_item["name"] = "new_name"
         serialized_item: ItemSerializer = ItemSerializer(
-            data=invalid_item_details
+            data=invalid_name_item
         )
 
         expected_error: str = "Enter a valid value."
         # needed to access .errors
-        if serialized_item.is_valid():
-            pass
+        actual_error = 'name valid'
+        if not serialized_item.is_valid():
+            actual_error = serialized_item.errors["name"][0]
 
-        assert serialized_item.errors["name"][0], expected_error
+        self.assertEqual(expected_error, actual_error)
 
     def test_items_check_fn_only_depends_on_item_ids(self):
-        mock_data: dict = {
-            "items": [
-                {
-                    "id": self.test_item_1.id,
-                    "name": "new_name",
-                    "price": 25.00,
-                    "description": "Blah",
-                    "stock": 200,
-                    "calories": 0,
-                    "retired": False,
-                },
-            ]
-        }
+        rand_item_data: ItemType = self.post_mock_item
+        rand_item_data["id"] = self.test_item_1.id
+        mock_validated_data = {"items": [rand_item_data]}
 
         expected_items: list[Item] = [self.test_item_1]
         cs: CategorySerializer = CategorySerializer()
-        actual_items: list[Item] = cs.items_check(validated_data=mock_data)
+        actual_items: list[Item] = cs.items_check(validated_data=mock_validated_data)
 
-        assert expected_items, actual_items
+        self.assertEqual(expected_items, actual_items)
 
     def test_cat_serializer_update_retired_field_supplied(self):
         mock_data: dict = {"retired": True}
@@ -79,4 +53,4 @@ class SerializerTests(TestCase):
         cs.update(self.test_cat_1, mock_data)
         actual_retired_val: bool = self.test_cat_1.retired
 
-        assert expected_retired_val, actual_retired_val
+        self.assertEqual(expected_retired_val, actual_retired_val)
