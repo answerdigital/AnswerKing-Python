@@ -3,50 +3,60 @@ from decimal import Decimal
 from django.db import models
 
 
-class Item(models.Model):
+class Product(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    price = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
     description = models.CharField(max_length=200, blank=True, null=True)
-    stock = models.IntegerField()
-    calories = models.IntegerField()
+    price = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
     retired = models.BooleanField(default=False, null=False)
 
 
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
-    items = models.ManyToManyField(Item)
+    description = models.CharField(max_length=200, blank=True, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+    products = models.ManyToManyField(Product)
     retired = models.BooleanField(default=False, null=False)
 
 
-class Status(models.Model):
-    status = models.CharField(max_length=50)
-
-
 class Order(models.Model):
-    status = models.ForeignKey(Status, on_delete=models.CASCADE)
-    address = models.CharField(max_length=200)
-    total = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
-    order_items = models.ManyToManyField(Item, through="OrderLine")
+    class Status(models.TextChoices):
+        CREATED = "Created", "Created"
+        PAID = "Paid", "Paid"
+        CANCELLED = "Cancelled", "Cancelled"
+
+    order_status = models.CharField(
+        max_length=10, choices=Status.choices, default=Status.CREATED
+    )
+    order_total = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.00
+    )
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
 
     def calculate_total(self):
         total = Decimal(0.00)
-        orderlines = OrderLine.objects.filter(order=self.pk).values()
+        line_items = OrderLine.objects.filter(order=self.pk).values()
 
-        if orderlines:
-            for ol in orderlines:
+        if line_items:
+            for ol in line_items:
                 total += ol["sub_total"]
 
-        self.total = total
+        self.order_total = total
         self.save()
 
 
 class OrderLine(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
     sub_total = models.DecimalField(
         max_digits=18, decimal_places=2, default=0.00
     )
 
+    def calculate_sub_total(self):
+        self.sub_total = self.quantity * self.product.price
+        self.save()
+
     class Meta:
-        unique_together = [["order", "item"]]
+        unique_together = [["order", "product"]]

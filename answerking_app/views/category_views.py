@@ -5,9 +5,8 @@ from rest_framework.response import Response
 
 from answerking_app.models.models import Category
 from answerking_app.models.serializers import CategorySerializer
-from answerking_app.utils.mixins.CategoryItemMixins import (
-    CategoryItemRemoveMixin,
-    CategoryItemUpdateMixin,
+from answerking_app.utils.mixins.CategoryProductMixins import (
+    CategoryProductListMixin,
 )
 from answerking_app.utils.mixins.RetireMixin import RetireMixin
 
@@ -46,20 +45,12 @@ class CategoryDetailView(
         return self.retire(request, *args, **kwargs)
 
 
-class CategoryItemListView(
-    CategoryItemUpdateMixin,
-    CategoryItemRemoveMixin,
+class CategoryProductListView(
+    CategoryProductListMixin,
     generics.GenericAPIView,
 ):
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
 
-    def put(
-        self, request: Request, cat_id: int, item_id: int, *args, **kwargs
-    ) -> Response:
-        return self.update(request, cat_id, item_id, *args, **kwargs)
-
-    def delete(
-        self, request: Request, cat_id: int, item_id: int, *args, **kwargs
-    ) -> Response:
-        return self.remove(request, cat_id, item_id, *args, **kwargs)
+    def get(self, request: Request, cat_id: int, *args, **kwargs) -> Response:
+        return self.list(request, cat_id, *args, **kwargs)

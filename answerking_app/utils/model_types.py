@@ -1,4 +1,4 @@
-from typing import Any
+import datetime
 
 from typing_extensions import (  # for Python <3.11 with (Not)Required
     NotRequired,
@@ -6,37 +6,67 @@ from typing_extensions import (  # for Python <3.11 with (Not)Required
 )
 
 
-class ItemType(TypedDict):
+class ProductType(TypedDict):
     id: NotRequired[int]
     name: str
-    price: str
+    price: str | float
     description: str
+    categories: NotRequired["list[CategoryType]"]
     retired: NotRequired[bool]
-    stock: int
-    calories: int
 
 
 class CategoryType(TypedDict):
     id: NotRequired[int]
     name: NotRequired[str]
+    description: NotRequired[str]
+    created_on: NotRequired[datetime.datetime]
+    last_updated: NotRequired[datetime.datetime]
     retired: NotRequired[bool]
-    items: NotRequired["list[ItemType]"]
+    products: NotRequired["list[ProductType]"]
 
 
-class OrderItemType(TypedDict):
-    id: NotRequired[int]
-    name: NotRequired[str]
-    price: NotRequired[str]
+class OrderProductType(TypedDict):
+    product: ProductType
     quantity: int
     sub_total: NotRequired[str]
 
 
 class OrderType(TypedDict):
     id: NotRequired[int]
-    address: NotRequired[str]
-    order_items: NotRequired["list[OrderItemType]"]
-    status: NotRequired[str]
-    total: NotRequired[str]
+    order_status: NotRequired[str]
+    order_total: NotRequired[str]
+    created_on: NotRequired[datetime.datetime]
+    last_updated: NotRequired[datetime.datetime]
+    line_items: NotRequired["list[OrderProductType]"]
+
+
+class ProductTypeApiFormat(TypedDict):
+    id: NotRequired[int]
+    name: str
+    description: str
+    price: float
+    categories: NotRequired["list[CategoryTypeApiFormat]"]
+
+
+class OrderProductTypeApiFormat(TypedDict):
+    product: ProductTypeApiFormat
+    quantity: int
+    subTotal: NotRequired[float]
+
+
+class CategoryTypeApiFormat(TypedDict):
+    id: NotRequired[int]
+    name: NotRequired[str]
+    description: NotRequired[str]
+
+
+class OrderTypeApiFormat(TypedDict):
+    id: NotRequired[int]
+    orderStatus: NotRequired[str]
+    orderTotal: NotRequired[float]
+    createdOn: NotRequired[str]
+    lastUpdated: NotRequired[str]
+    lineItems: NotRequired["list[OrderProductTypeApiFormat]"]
 
 
 class DetailError(TypedDict):

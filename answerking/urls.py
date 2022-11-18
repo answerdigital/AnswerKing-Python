@@ -3,7 +3,7 @@ from django.urls import include, path
 from django.conf import settings
 
 urlpatterns = [
-    path("api/", include("answerking_app.urls.item_urls")),
+    path("api/", include("answerking_app.urls.product_urls")),
     path("api/", include("answerking_app.urls.category_urls")),
     path("api/", include("answerking_app.urls.order_urls")),
     path("admin/", admin.site.urls),
