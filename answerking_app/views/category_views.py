@@ -28,6 +28,7 @@ class CategoryListView(
 
 class CategoryDetailView(
     mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
     RetireMixin,
     mixins.DestroyModelMixin,
     generics.GenericAPIView,

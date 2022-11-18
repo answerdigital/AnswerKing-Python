@@ -1,4 +1,5 @@
-from datetime import datetime
+import datetime
+
 
 from answerking_app.models.models import Category, Product, Order, OrderLine
 from answerking_app.utils.model_types import (
@@ -8,6 +9,8 @@ from answerking_app.utils.model_types import (
     OrderTypeApiFormat,
     OrderProductTypeApiFormat,
     ProductTypeApiFormat, CategoryTypeApiFormat,
+    OrderType,
+    CategoryProductType,
 )
 
 
@@ -61,9 +64,11 @@ class TestBase:
     }
     post_mock_product: ProductType = {
         "name": "Whopper",
-        "price": "1.50",
+        "price": 1.50,
         "description": "desc",
     }
+
+    invalid_mock_category_product: CategoryProductType = {"id": -1}
 
     invalid_json_data: str = '{"invalid": }'
 
@@ -118,25 +123,69 @@ class TestBase:
         self.assertIsInstance(actual.pop("traceId"), str)  # type: ignore[reportGeneralTypeIssues]
         self.assertJSONResponse(expected, actual, response, status_code)
 
+    def assertUpdateTime(self, expected, actual, response, status_code):
+        actual_time: datetime.datetime = self.convert_time(
+            actual["lastUpdated"]
+        )
+        self.assertAlmostEqual(expected["lastUpdated"], actual_time, delta=datetime.timedelta(seconds=2))  # type: ignore[reportGeneralTypeIssues]
+        self.assertIsInstance(actual.pop("lastUpdated"), str)  # type: ignore[reportGeneralTypeIssues]
+        self.assertIsInstance(expected.pop("lastUpdated"), datetime.datetime)  # type: ignore[reportGeneralTypeIssues]
+        self.assertJSONResponse(expected, actual, response, status_code)
+
+    def assertCreateUpdateTime(self, expected, actual, response, status_code):
+        actual_time: datetime.datetime = self.convert_time(actual["createdOn"])
+        self.assertAlmostEqual(expected["createdOn"], actual_time, delta=datetime.timedelta(seconds=2))  # type: ignore[reportGeneralTypeIssues]
+        self.assertIsInstance(actual.pop("createdOn"), str)  # type: ignore[reportGeneralTypeIssues]
+        self.assertIsInstance(expected.pop("createdOn"), datetime.datetime)  # type: ignore[reportGeneralTypeIssues]
+        self.assertUpdateTime(expected, actual, response, status_code)
+
+    def convert_time(self, time_1):
+        converted_time = datetime.datetime.strptime(
+            time_1, "%Y-%m-%dT%H:%M:%S.%fZ"
+        )
+        return converted_time
+
+    def get_mock_product_categories(
+        self, product: Product
+    ) -> list[CategoryType]:
+        return [
+            {
+                "id": category.id,
+                "name": category.name,
+                "description": category.description,
+            }
+            for category in Category.objects.filter(products=product)
+        ]
+
     def get_mock_product_api(self, product: Product) -> ProductType:
+        categories: list[CategoryType] = self.get_mock_product_categories(
+            product
+        )
         return {
             "id": product.id,
             "name": product.name,
-            "price": f"{product.price:.2f}",
+            "price": product.price,
             "description": product.description,
-            "categories": product.category_set,
+            "categories": categories,
             "retired": product.retired,
         }
 
+    def get_mock_category_product_api(
+        self, product: Product
+    ) -> CategoryProductType:
+        return {"id": product.id}
+
     def get_mock_category_api(
-        self, category: Category, products: list[ProductType]
+        self, category: Category, products: list[CategoryProductType]
     ) -> CategoryType:
         return {
             "id": category.id,
             "name": category.name,
             "description": category.description,
-            "created_on": category.created_on,
-            "last_updated": category.last_updated,
+            "createdOn": category.created_on.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "lastUpdated": category.last_updated.strftime(
+                "%Y-%m-%dT%H:%M:%S.%fZ"
+            ),
             "products": products,
             "retired": category.retired,
         }

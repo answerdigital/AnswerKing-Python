@@ -26,6 +26,7 @@ class ProductListView(
 
 class ProductDetailView(
     mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
     RetireMixin,
     generics.GenericAPIView,
 ):

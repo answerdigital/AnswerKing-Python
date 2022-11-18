@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 
 from pathlib import Path
 
+from os.path import join
+from dotenv import load_dotenv
+
 from corsheaders.defaults import default_headers, default_methods
 
 from answerking_app.utils.json404_middleware_config import json404_response
@@ -15,6 +18,7 @@ from answerking_app.utils.json404_middleware_config import json404_response
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 dotenv_path = join(BASE_DIR, ".env")
 load_dotenv(dotenv_path)
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -81,6 +85,7 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.JSONParser",
     ],
     "EXCEPTION_HANDLER": "answerking_app.utils.exceptions_handler.wrapper",
+    "COERCE_DECIMAL_TO_STRING": False,
 }
 
 # Database

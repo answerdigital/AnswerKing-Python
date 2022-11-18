@@ -67,11 +67,11 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
     def products_check(self, validated_data: dict) -> list[Product]:
         products: list[Product] = []
         if "products" in validated_data:
-            products_data: list[OrderedDict] = validated_data["products"]
-            for product_in_request in products_data:
-                product: Product = get_object_or_400(
-                    Product, pk=product_in_request["id"]
-                )
+            products_id_list: list[int] = [
+                prod["id"] for prod in validated_data["products"]
+            ]
+            for product_id in products_id_list:
+                product: Product = get_object_or_400(Product, pk=product_id)
                 if product.retired:
                     raise HttpErrorResponse(
                         status=status.HTTP_410_GONE,
@@ -186,7 +186,6 @@ class OrderLineSerializer(serializers.ModelSerializer):
         read_only=True,
         decimal_places=2,
         max_digits=18,
-        coerce_to_string=False,
     )
 
     class Meta:
@@ -206,7 +205,6 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only=True,
         decimal_places=2,
         max_digits=18,
-        coerce_to_string=False,
     )
     lineItems = OrderLineSerializer(
         source="orderline_set", many=True, required=False

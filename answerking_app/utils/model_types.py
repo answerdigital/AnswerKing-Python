@@ -4,6 +4,7 @@ from typing_extensions import (  # for Python <3.11 with (Not)Required
     NotRequired,
     TypedDict,
 )
+from typing import Any
 
 
 class ProductType(TypedDict):
@@ -15,18 +16,22 @@ class ProductType(TypedDict):
     retired: NotRequired[bool]
 
 
+class CategoryProductType(TypedDict):
+    id: int
+
+
 class CategoryType(TypedDict):
     id: NotRequired[int]
     name: NotRequired[str]
     description: NotRequired[str]
-    created_on: NotRequired[datetime.datetime]
-    last_updated: NotRequired[datetime.datetime]
+    createdOn: NotRequired[datetime.datetime | str]
+    lastUpdated: NotRequired[datetime.datetime | str]
     retired: NotRequired[bool]
-    products: NotRequired["list[ProductType]"]
+    products: NotRequired[list[CategoryProductType]]
 
 
 class OrderProductType(TypedDict):
-    product: ProductType
+    id: NotRequired[int]
     quantity: int
     sub_total: NotRequired[str]
 

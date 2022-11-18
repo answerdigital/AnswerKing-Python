@@ -23,12 +23,14 @@ class RetireMixin(GenericAPIView):
                 status=status.HTTP_410_GONE,
                 detail="This object has already been retired",
             )
-        product_active_order_check(instance)
-        instance.retired = True
-        instance.save()
         if isinstance(instance, Category):
+            instance.retired = True
+            instance.save()
             response: ReturnDict = CategorySerializer(instance).data
         else:
+            product_active_order_check(instance)
+            instance.retired = True
+            instance.save()
             response: ReturnDict = ProductSerializer(instance).data
         return Response(response, status=status.HTTP_200_OK)
 

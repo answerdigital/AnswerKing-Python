@@ -1,12 +1,14 @@
+import datetime
+
 from django.db.models.query import QuerySet
 from django.test import Client, TestCase, TransactionTestCase
 
-from answerking_app.models.models import Category, Product
+from answerking_app.models.models import Category
 from answerking_app.tests.BaseTestClass import TestBase
 from answerking_app.utils.model_types import (
     CategoryType,
     DetailError,
-    ProductType,
+    CategoryProductType,
 )
 
 client = Client()
@@ -16,7 +18,7 @@ class CategoryTests(TestBase, TestCase):
     def test_get_all_without_categories_returns_no_content(self):
         # Arrange
         Category.objects.all().delete()
-        expected = []
+        expected: list = []
 
         # Act
         response = client.get("/api/categories")
@@ -31,11 +33,14 @@ class CategoryTests(TestBase, TestCase):
             self.get_mock_category_api(
                 self.test_cat_1,
                 [
-                    self.get_mock_product_api(self.test_product_1),
-                    self.get_mock_product_api(self.test_product_2),
+                    self.get_mock_category_product_api(self.test_product_1),
+                    self.get_mock_category_product_api(self.test_product_2),
                 ],
             ),
-            self.get_mock_category_api(self.test_cat_2),
+            self.get_mock_category_api(
+                self.test_cat_2,
+                [self.get_mock_category_product_api(self.test_product_3)],
+            ),
         ]
 
         # Act
@@ -50,8 +55,8 @@ class CategoryTests(TestBase, TestCase):
         expected: CategoryType = self.get_mock_category_api(
             self.test_cat_1,
             [
-                self.get_mock_product_api(self.test_product_1),
-                self.get_mock_product_api(self.test_product_2),
+                self.get_mock_category_product_api(self.test_product_1),
+                self.get_mock_category_product_api(self.test_product_2),
             ],
         )
 
@@ -75,12 +80,17 @@ class CategoryTests(TestBase, TestCase):
         # Arrange
         old_list = client.get("/api/categories").json()
 
-        product: ProductType = self.get_mock_product_api(self.test_product_3)
-        post_data: CategoryType = {"name": "Vegetarian", "products": [product]}
+        post_data: CategoryType = {
+            "name": "Vegetarian",
+            "description": "desc",
+            "products": [{"id": self.test_product_3.id}],
+        }
 
         expected: CategoryType = {
             **post_data,
             "id": self.test_cat_2.id + 1,
+            "createdOn": datetime.datetime.now(),
+            "lastUpdated": datetime.datetime.now(),
             "retired": False,
         }
 
@@ -93,23 +103,27 @@ class CategoryTests(TestBase, TestCase):
         created_category: Category = Category.objects.filter(
             name="Vegetarian"
         )[0]
-        created_category_products: list[ProductType] = actual["products"]
         updated_list: QuerySet[Category] = Category.objects.all()
 
         # Assert
         self.assertNotIn(actual, old_list)
         self.assertIn(created_category, updated_list)
-        self.assertIn(product, created_category_products)
-        self.assertJSONResponse(expected, actual, response, 201)
+        self.assertCreateUpdateTime(expected, actual, response, 201)
 
     def test_post_valid_without_products_returns_ok(self):
         # Arrange
         old_list = client.get("/api/categories").json()
-        post_data: CategoryType = {"name": "Gluten Free", "products": []}
+        post_data: CategoryType = {
+            "name": "Gluten Free",
+            "description": "desc",
+            "products": [],
+        }
 
         expected: CategoryType = {
             **post_data,
             "id": self.test_cat_2.id + 1,
+            "createdOn": datetime.datetime.now(),
+            "lastUpdated": datetime.datetime.now(),
             "retired": False,
         }
 
@@ -127,7 +141,7 @@ class CategoryTests(TestBase, TestCase):
         # Assert
         self.assertNotIn(actual, old_list)
         self.assertIn(created_product, updated_list)
-        self.assertJSONResponse(expected, actual, response, 201)
+        self.assertCreateUpdateTime(expected, actual, response, 201)
 
     def test_post_invalid_json_returns_bad_request(self):
         # Act
@@ -147,6 +161,7 @@ class CategoryTests(TestBase, TestCase):
         # Arrange
         invalid_post_data: CategoryType = {
             "name": "Vegetarian%",
+            "description": "desc",
             "products": [],
         }
         expected: DetailError = {**self.expected_serializer_error_400}
@@ -169,14 +184,20 @@ class CategoryTests(TestBase, TestCase):
             f"/api/categories/{self.test_cat_1.id}"
         ).json()
 
-        post_data: CategoryType = {"name": "New Name"}
+        post_data: CategoryType = {
+            "name": "New Name",
+            "description": "desc",
+            "products": [],
+        }
 
         expected: CategoryType = {
+            **self.get_mock_category_api(
+                self.test_cat_1, post_data["products"]
+            ),
             **post_data,
-            "id": self.test_cat_1.id,
-            "products": [],
-            "retired": False,
+            "lastUpdated": datetime.datetime.now(),
         }
+
         # Act
         response = client.put(
             f"/api/categories/{self.test_cat_1.id}",
@@ -193,7 +214,7 @@ class CategoryTests(TestBase, TestCase):
         # Assert
         self.assertNotEqual(old_category, actual)
         self.assertIn(updated_category, updated_list)
-        self.assertJSONResponse(expected, actual, response, 200)
+        self.assertUpdateTime(expected, actual, response, 200)
 
     def test_put_invalid_id_returns_not_found(self):
         # Act
@@ -206,8 +227,6 @@ class CategoryTests(TestBase, TestCase):
         )
 
     def test_put_invalid_json_returns_bad_request(self):
-        # Arrange
-        invalid_json_data: str = '{"invalid": }'
         # Act
         response = client.put(
             f"/api/categories/{self.test_cat_1.id}",
@@ -225,6 +244,7 @@ class CategoryTests(TestBase, TestCase):
         # Arrange
         invalid_post_data: CategoryType = {
             "name": "New Name*",
+            "description": "desc",
             "products": [],
         }
         expected: DetailError = {
@@ -245,12 +265,10 @@ class CategoryTests(TestBase, TestCase):
 
     def test_put_not_existing_product_returns_not_found(self):
         # Arrange
-        product: ProductType = {
-            **self.get_mock_product_api(self.test_product_1),
-            "id": -1,
-        }
+        product: CategoryProductType = self.invalid_mock_category_product
         invalid_post_data: CategoryType = {
             "name": "New Name",
+            "description": "desc",
             "products": [product],
         }
         expected = {
@@ -268,51 +286,28 @@ class CategoryTests(TestBase, TestCase):
         # Assert
         self.assertJSONErrorResponse(expected, actual, response, 404)
 
-    def test_put_wrong_product_except_id_returns_correct_product_details(self):
-        # Arrange
-        product_with_wrong_info: ProductType = {
-            "id": self.test_product_1.id,
-            "name": "Rubbish name",
-            "price": "100",
-            "description": "new text new text",
-            "stock": 666,
-            "calories": 666,
-            "retired": False,
-        }
-        invalid_post_data: CategoryType = {
-            "name": "Burgers",
-            "products": [product_with_wrong_info],
-        }
-        expected: CategoryType = {
-            "id": self.test_cat_1.id,
-            "name": self.test_cat_1.name,
-            "products": [self.get_mock_product_api(self.test_product_1)],
-            "retired": False,
-        }
-
-        # Act
-        response = client.put(
-            f"/api/categories/{self.test_cat_1.id}",
-            invalid_post_data,
-            content_type="application/json",
-        )
-        actual = response.json()
-
-        # Assert
-        self.assertNotEqual(invalid_post_data, actual)
-        self.assertJSONResponse(expected, actual, response, 200)
-
     def test_delete_valid_returns_ok(self):
         # Arrange
-        category: Category = Category.objects.filter(pk=self.test_cat_1.id)
+        expected: CategoryType = self.get_mock_category_api(
+            self.test_cat_1,
+            [
+                self.get_mock_category_product_api(self.test_product_1),
+                self.get_mock_category_product_api(self.test_product_2),
+            ],
+        )
+
+        expected["retired"] = True
 
         # Act
         response = client.delete(f"/api/categories/{self.test_cat_1.id}")
-        categories: QuerySet[Category] = Category.objects.all()
+        actual = response.json()
+
+        expected["createdOn"] = actual["createdOn"]
+        expected["lastUpdated"] = actual["lastUpdated"]
 
         # Assert
         self.assertEqual(response.status_code, 200)
-        self.assertNotIn(category, categories)
+        self.assertJSONResponse(expected, actual, response, 200)
 
     def test_delete_invalid_id_returns_not_found(self):
         # Act
@@ -326,41 +321,43 @@ class CategoryTests(TestBase, TestCase):
 
     def test_put_add_duplicated_product_in_body_to_category_return_one(self):
         # Arrange
-        product: ProductType = self.get_mock_product_api(self.test_product_1)
-        post_data: CategoryType = self.get_mock_category_api(
-            self.test_cat_1, [product, product]
+        product: CategoryProductType = self.get_mock_category_product_api(
+            self.test_product_1
         )
+        post_data: CategoryType = {
+            "name": self.test_cat_2.name,
+            "description": self.test_cat_2.description,
+            "products": [product, product],
+        }
+
         expected: CategoryType = {
+            **self.get_mock_category_api(
+                self.test_cat_2, post_data["products"]
+            ),
             **post_data,
+            "lastUpdated": datetime.datetime.now(),
             "products": [product],
         }
+
         # Act
         response = client.put(
-            f"/api/categories/{self.test_cat_1.id}",
+            f"/api/categories/{self.test_cat_2.id}",
             post_data,
             content_type="application/json",
         )
         actual = response.json()
-        # Assert
-        self.assertJSONResponse(expected, actual, response, 200)
 
-    def test_put_add_duplicated_product_in_url_to_category_return_400(self):
-        # Act
-        response = client.put(
-            f"/api/categories/{self.test_cat_1.id}/products/{self.test_product_1.id}",
-            content_type="application/json",
-        )
-        actual = response.json()
-        # Assert
-        self.assertJSONErrorResponse(
-            self.expected_product_already_in_category, actual, response, 400
-        )
+        self.assertUpdateTime(expected, actual, response, 200)
 
 
 class CategoryTestsDB(TestBase, TransactionTestCase):
     def test_post_duplicated_name_returns_400(self):
         # Arrange
-        post_data: CategoryType = {"name": "Vegan", "products": []}
+        post_data: CategoryType = {
+            "name": "Vegan",
+            "description": "desc",
+            "products": [],
+        }
         client.post(
             "/api/categories", post_data, content_type="application/json"
         )
@@ -379,7 +376,11 @@ class CategoryTestsDB(TestBase, TransactionTestCase):
 
     def test_put_duplicated_name_returns_400(self):
         # Arrange
-        post_data: CategoryType = {"name": "Vegan", "products": []}
+        post_data: CategoryType = {
+            "name": "Vegan",
+            "description": "desc",
+            "products": [],
+        }
 
         client.post(
             "/api/categories", post_data, content_type="application/json"

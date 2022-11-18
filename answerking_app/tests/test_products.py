@@ -12,7 +12,7 @@ class ProductTests(TestBase, TestCase):
     def test_get_all_without_products_returns_no_content(self):
         # Arrange
         Product.objects.all().delete()
-        expected = []
+        expected: list = []
 
         # Act
         response = client.get("/api/products")
@@ -64,6 +64,7 @@ class ProductTests(TestBase, TestCase):
         expected: ProductType = {
             "id": self.test_product_3.id + 1,
             **self.post_mock_product,
+            "categories": [],
             "retired": False,
         }
 
@@ -135,18 +136,21 @@ class ProductTests(TestBase, TestCase):
     def test_put_valid_returns_ok(self):
         # Arrange
         old_product = client.get(
-            f"/api/products/{self.test_product_1.id}"
+            f"/api/products/{self.test_product_3.id}"
         ).json()
 
         expected: ProductType = {
-            "id": self.test_product_1.id,
+            "id": self.test_product_3.id,
             **self.post_mock_product,
+            "categories": self.get_mock_product_categories(
+                self.test_product_3
+            ),
             "retired": False,
         }
 
         # Act
         response = client.put(
-            f"/api/products/{self.test_product_1.id}",
+            f"/api/products/{self.test_product_3.id}",
             self.post_mock_product,
             content_type="application/json",
         )
@@ -177,12 +181,12 @@ class ProductTests(TestBase, TestCase):
     def test_delete_valid_returns_retired_true(self):
         # Arrange
         old_product: QuerySet[Product] = Product.objects.filter(
-            pk=self.test_product_1.id
+            pk=self.test_product_3.id
         )
-        expected: ProductType = self.get_mock_product_api(self.test_product_1)
+        expected: ProductType = self.get_mock_product_api(self.test_product_3)
         expected["retired"] = True
         # Act
-        response = client.delete(f"/api/products/{self.test_product_1.id}")
+        response = client.delete(f"/api/products/{self.test_product_3.id}")
         products: QuerySet[Product] = Product.objects.all()
         actual = response.json()
 
