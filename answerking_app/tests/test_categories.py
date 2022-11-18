@@ -272,7 +272,7 @@ class CategoryTests(TestBase, TestCase):
             "products": [product],
         }
         expected = {
-            **self.expected_base_404,
+            **self.expected_nonexistent_product_error,
             "type": "http://testserver/problems/error/",
         }
         # Act
@@ -284,7 +284,7 @@ class CategoryTests(TestBase, TestCase):
         actual = response.json()
 
         # Assert
-        self.assertJSONErrorResponse(expected, actual, response, 404)
+        self.assertJSONErrorResponse(expected, actual, response, 400)
 
     def test_delete_valid_returns_ok(self):
         # Arrange

@@ -240,9 +240,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def check_products(self, line_items_data: list[OrderedDict]):
         for order_item in line_items_data:
-            get_object_or_400(
-                Product, pk=order_item["product"]["id"]
-            )
+            get_object_or_400(Product, pk=order_item["product"]["id"])
 
     def create_and_add_products_to_order(
         self, order: Order, line_items_data: list[OrderedDict]

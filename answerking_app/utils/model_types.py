@@ -27,7 +27,7 @@ class CategoryType(TypedDict):
     createdOn: NotRequired[datetime.datetime | str]
     lastUpdated: NotRequired[datetime.datetime | str]
     retired: NotRequired[bool]
-    products: NotRequired[list[CategoryProductType]]
+    products: NotRequired["list[CategoryProductType]"]
 
 
 class OrderProductType(TypedDict):
