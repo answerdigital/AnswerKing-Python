@@ -73,8 +73,8 @@ class OrderTests(TestBase, TestCase):
         post_data: dict = {}
         expected: OrderTypeApiFormat = {
             "id": self.test_order_2.id + 1,
-            "createdOn": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-            "lastUpdated": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "createdOn": datetime.now(),
+            "lastUpdated": datetime.now(),
             "orderStatus": "Created",
             "orderTotal": 0.00,
             "lineItems": [],
@@ -94,9 +94,7 @@ class OrderTests(TestBase, TestCase):
         self.assertNotIn(actual, old_list)
         self.assertIn(created_order, updated_list)
         self.assertEqual(len(created_order_products), 0)
-        expected.pop("lastUpdated")
-        actual.pop("lastUpdated")
-        self.assertJSONResponse(expected, actual, response, 201)
+        self.assertCreateUpdateTime(expected, actual, response, 201)
 
     def test_post_valid_with_empty_products_returns_ok(self):
         # Arrange
@@ -129,7 +127,7 @@ class OrderTests(TestBase, TestCase):
         self.assertAlmostEqual(actual["createdOn"], expected["createdOn"])
         # self.assertAlmostEquals(actual["lastUpdated"], expected["lastUpdated"])
         self.assertEqual(len(created_order_products), 0)
-        self.assertJSONResponse(expected, actual, response, 201)
+        self.assertCreateUpdateTime(expected, actual, response, 201)
 
     def test_post_valid_with_products_returns_ok(self):
         # Arrange
@@ -141,8 +139,8 @@ class OrderTests(TestBase, TestCase):
         }
         expected: OrderTypeApiFormat = {
             "id": self.test_order_2.id + 1,
-            "createdOn": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-            "lastUpdated": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "createdOn": datetime.now(),
+            "lastUpdated": datetime.now(),
             "orderStatus": "Created",
             "orderTotal": self.test_product_1.price,
             "lineItems": [
@@ -165,22 +163,12 @@ class OrderTests(TestBase, TestCase):
         updated_orders_objects: list[Order] = Order.objects.all()
 
         created_order: Order = Order.objects.get(pk=actual["id"])
-        order_in_db_json: OrderTypeApiFormat = self.get_mock_order_api(
-            created_order
-        )
 
         # Assert
         self.assertIn(created_order, updated_orders_objects)
         self.assertNotIn(actual, old_orders_list_json)
         self.assertIn(actual, updated_orders_list_json)
-        self.assertAlmostEqual(actual["createdOn"], expected["createdOn"])
-        self.assertEquals(actual["createdOn"], order_in_db_json["createdOn"])
-        self.assertEquals(
-            actual["lastUpdated"], order_in_db_json["lastUpdated"]
-        )
-        expected.pop("lastUpdated")
-        actual.pop("lastUpdated")
-        self.assertJSONResponse(expected, actual, response, 201)
+        self.assertCreateUpdateTime(expected, actual, response, status_code=201)
 
     def test_post_invalid_json_returns_bad_request(self):
         # Act
@@ -244,22 +232,12 @@ class OrderTests(TestBase, TestCase):
         updated_orders_objects: list[Order] = Order.objects.all()
 
         created_order: Order = Order.objects.get(pk=actual["id"])
-        order_in_db_json: OrderTypeApiFormat = self.get_mock_order_api(
-            created_order
-        )
 
         # Assert
         self.assertIn(created_order, updated_orders_objects)
         self.assertNotIn(actual, old_orders_list_json)
         self.assertIn(actual, updated_orders_list_json)
-        self.assertAlmostEqual(actual["createdOn"], expected["createdOn"])
-        self.assertNotEqual(actual["lastUpdated"], actual["createdOn"])
-        self.assertEquals(
-            actual["lastUpdated"], order_in_db_json["lastUpdated"]
-        )
-        expected.pop("lastUpdated")
-        actual.pop("lastUpdated")
-        self.assertJSONResponse(expected, actual, response, 200)
+        self.assertCreateUpdateTime(expected, actual, response, status_code=200)
 
     def test_put_update_quantity_to_zero_return_empty_line_items(self):
         # Arrange
@@ -269,9 +247,11 @@ class OrderTests(TestBase, TestCase):
                 {"product": {"id": self.test_product_1.id}, "quantity": 0}
             ]
         }
-        expected: OrderTypeApiFormat = self.expected_order_after_put_request(
-            order=self.test_order_1, post_data=post_data["lineItems"]
-        )
+        expected = {
+            **self.expected_order_after_put_request(
+                self.test_order_1, post_data["lineItems"]),
+            "lastUpdated": make_aware(datetime.now()),
+        }
         # Act
         response = client.put(
             f"/api/orders/{self.test_order_1.id}",
@@ -284,22 +264,12 @@ class OrderTests(TestBase, TestCase):
         updated_orders_objects: list[Order] = Order.objects.all()
 
         created_order: Order = Order.objects.get(pk=actual["id"])
-        order_in_db_json: OrderTypeApiFormat = self.get_mock_order_api(
-            created_order
-        )
 
         # Assert
         self.assertIn(created_order, updated_orders_objects)
         self.assertNotIn(actual, old_orders_list_json)
         self.assertIn(actual, updated_orders_list_json)
-        self.assertAlmostEqual(actual["createdOn"], expected["createdOn"])
-        self.assertNotEqual(actual["lastUpdated"], actual["createdOn"])
-        self.assertEquals(
-            actual["lastUpdated"], order_in_db_json["lastUpdated"]
-        )
-        expected.pop("lastUpdated")
-        actual.pop("lastUpdated")
-        self.assertJSONResponse(expected, actual, response, 200)
+        self.assertCreateUpdateTime(expected, actual, response, status_code=200)
         self.assertEqual(actual["lineItems"], [])
 
     def test_put_invalid_order_id_return_not_found(self):

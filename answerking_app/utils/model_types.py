@@ -69,8 +69,8 @@ class OrderTypeApiFormat(TypedDict):
     id: NotRequired[int]
     orderStatus: NotRequired[str]
     orderTotal: NotRequired[float]
-    createdOn: NotRequired[str]
-    lastUpdated: NotRequired[str]
+    createdOn: NotRequired[datetime.datetime]
+    lastUpdated: NotRequired[datetime.datetime]
     lineItems: NotRequired["list[OrderProductTypeApiFormat]"]
 
 

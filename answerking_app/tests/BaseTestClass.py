@@ -190,14 +190,7 @@ class TestBase:
     def get_category_and_product_for_order(
         self, product: Product
     ) -> ProductTypeApiFormat:
-        categories: list[CategoryTypeApiFormat] = [
-            {
-                "id": category.id,
-                "name": category.name,
-                "description": category.description,
-            }
-            for category in Category.objects.filter(products=product)
-        ]
+        categories: list[CategoryType] = self.get_mock_product_categories(product)
         return {
             "id": product.id,
             "name": product.name,
