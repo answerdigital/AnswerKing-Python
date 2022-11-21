@@ -98,7 +98,6 @@ class ProductSerializer(serializers.ModelSerializer):
     price = serializers.DecimalField(
         max_digits=18,
         decimal_places=2,
-        coerce_to_string=False,
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
     )
     description = serializers.CharField(
@@ -167,7 +166,7 @@ class ProductSerializerReadOnly(serializers.ModelSerializer):
         source="category_set", read_only=True, many=True
     )
     price = serializers.DecimalField(
-        max_digits=18, decimal_places=2, coerce_to_string=False, read_only=True
+        max_digits=18, decimal_places=2, read_only=True
     )
 
     class Meta:
