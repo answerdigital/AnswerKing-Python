@@ -24,6 +24,8 @@ pyright = "^1.1.278"
 coverage = "^6.5.0"
 pycodestyle = "^2.9.1"
 drf-yasg = "^1.21.4"
+assertpy = "^1.1"
+snapshottest = "^0.6.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
-from django.test import TransactionTestCase
+import json
+
 from answerking_app.models.models import Category, Product, Order, LineItem
 from answerking_app.utils.model_types import (
     CategoryType,
@@ -78,89 +79,104 @@ class TestBase(TransactionTestCase):
     time_format: str = "%Y-%m-%dT%H:%M:%S.%fZ"
 
     def setUp(self):
-        self.test_product_1: Product = Product.objects.create(
-            name="Burger", price=1.20, description="desc"
-        )
-        self.test_product_2: Product = Product.objects.create(
-            name="Coke", price=1.50, description="desc"
-        )
-        self.test_product_3: Product = Product.objects.create(
-            name="Chips", price=1.50, description="desc"
-        )
+        Item.objects.all().delete()
+        Category.objects.all().delete()
+        Status.objects.all().delete()
+        Order.objects.all().delete()
 
-        self.test_cat_1: Category = Category.objects.create(
-            name="Burgers", description="desc"
-        )
-        self.test_cat_2: Category = Category.objects.create(
-            name="Sides", description="desc"
-        )
+    def seedData(self, type, fixtureName):
+        fixturePath = "answerking_app/tests/fixtures"
 
-        self.test_cat_1.products.add(self.test_product_1)
-        self.test_cat_1.products.add(self.test_product_2)
-        self.test_cat_2.products.add(self.test_product_3)
+        if type == "items":
+            data = json.load(open(f"{fixturePath}/{type}/{fixtureName}"))
+            for item in data:
+                Item.objects.create(**item)
+            return(data)
+        else:
+            raise Exception(f"{type} is not a valid data seeding type")
 
-        self.test_order_empty: Order = Order.objects.create()
+        # Item.objects.create(**data)
 
-        self.test_order_1: Order = Order.objects.create()
+        # self.test_item_1: Item = Item.objects.create(
+        #     id="1",
+        #     name="Burger",
+        #     price=1.20,
+        #     description="desc",
+        #     stock=100,
+        #     calories=100,
+        # )
+        # self.test_item_2: Item = Item.objects.create(
+        #     id="2",
+        #     name="Coke",
+        #     price=1.50,
+        #     description="desc",
+        #     stock=100,
+        #     calories=100,
+        # )
+        # self.test_item_3: Item = Item.objects.create(
+        #     id="3",
+        #     name="Chips",
+        #     price=1.50,
+        #     description="desc",
+        #     stock=100,
+        #     calories=100,
+        # )
 
-        self.test_order_2: Order = Order.objects.create()
+        # self.test_cat_1: Category = Category.objects.create(name="Burgers")
+        # self.test_cat_2: Category = Category.objects.create(name="Sides")
 
-        self.test_order_line_1 = LineItem.objects.create(
-            order=self.test_order_1, product=self.test_product_1, quantity=2
-        )
-        self.test_order_line_2 = LineItem.objects.create(
-            order=self.test_order_1, product=self.test_product_2, quantity=1
-        )
-        self.test_order_line_1.calculate_sub_total()
-        self.test_order_line_2.calculate_sub_total()
-        self.test_order_1.calculate_total()
+        # self.test_cat_1.items.add(self.test_item_1)
+        # self.test_cat_1.items.add(self.test_item_2)
+        # self.status_pending: Status = Status.objects.create(status="Pending")
+        # self.status_complete: Status = Status.objects.create(
+        #     status="Completed"
+        # )
+
+        # self.test_order_empty: Order = Order.objects.create(
+        #     address="123A3 Street, Leeds, LS17PP",
+        #     status=self.status_pending,
+        # )
+
+        # self.test_cat_1.products.add(self.test_product_1)
+        #self.test_cat_1.products.add(self.test_product_2)
+        # self.test_cat_2.products.add(self.test_product_3)
+
+        # self.test_order_empty: Order = Order.objects.create()
+
+        # self.test_order_1: Order = Order.objects.create()
+
+        # self.test_order_2: Order = Order.objects.create(
+        #     address="456 Test Lane, Bradford, BD30PA",
+        #     status=self.status_pending,
+        # )
+
+        # self.test_order_1.order_items.add(
+        #     self.test_item_1,
+        #     through_defaults={
+        #         "quantity": 2,
+        #         "sub_total": f"{self.test_item_1.price * 2:.2f}",
+        #     },
+        # )
+
+        # self.test_order_1.order_items.add(
+        #     self.test_item_2,
+        #     through_defaults={
+        #         "quantity": 1,
+        #         "sub_total": f"{self.test_item_2.price:.2f}",
+        #     },
+        # )
+        # self.test_order_1.calculate_total()
 
     def assertJSONResponse(self, expected, actual, response, status_code):
-        self.assertEqual(expected, actual)
-        self.assertEqual(response.status_code, status_code)
+        self.assertEqual(expected, actual)  # type: ignore[reportGeneralTypeIssues]
+        self.assertEqual(response.status_code, status_code)  # type: ignore[reportGeneralTypeIssues]
 
-    def assertJSONErrorResponse(self, expected, actual, response, status_code):
-        self.assertIsInstance(actual.pop("traceId"), str)
-        self.assertJSONResponse(expected, actual, response, status_code)
+    def assertJSONErrorResponse(self, response):
+        self.assertIsInstance(response.pop("traceId"), str)  # type: ignore[reportGeneralTypeIssues]
+        self.assertMatchSnapshot(response)
+        
 
-    def assertUpdateTime(self, expected, actual, response, status_code):
-        actual_time: datetime = self.convert_time(actual["lastUpdated"])
-        self.assertAlmostEqual(
-            expected["lastUpdated"], actual_time, delta=timedelta(seconds=2)
-        )
-        self.assertIsInstance(actual.pop("lastUpdated"), str)
-        self.assertIsInstance(expected.pop("lastUpdated"), datetime)
-        self.assertJSONResponse(expected, actual, response, status_code)
-
-    def assertCreateUpdateTime(self, expected, actual, response, status_code):
-        actual_time: datetime = self.convert_time(actual["createdOn"])
-        self.assertAlmostEqual(
-            expected["createdOn"], actual_time, delta=timedelta(seconds=2)
-        )
-        self.assertIsInstance(actual.pop("createdOn"), str)
-        self.assertIsInstance(expected.pop("createdOn"), datetime)
-        self.assertUpdateTime(expected, actual, response, status_code)
-
-    def convert_time(self, time_1):
-        converted_time: datetime = datetime.strptime(time_1, self.time_format)
-        return converted_time
-
-    def get_mock_product_categories(
-        self, product: Product
-    ) -> list[CategoryType]:
-        return [
-            {
-                "id": category.id,
-                "name": category.name,
-                "description": category.description,
-            }
-            for category in Category.objects.filter(products=product)
-        ]
-
-    def get_mock_product_api(self, product: Product) -> ProductType:
-        categories: list[CategoryType] = self.get_mock_product_categories(
-            product
-        )
+    def get_mock_item_api(self, item: Item) -> ItemType:
         return {
             "id": product.id,
             "name": product.name,
