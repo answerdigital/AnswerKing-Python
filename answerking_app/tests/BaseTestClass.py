@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from django.utils.timezone import localtime, make_aware
 
 from answerking_app.models.models import Category, Product, Order, OrderLine
 from answerking_app.utils.model_types import (
@@ -190,7 +191,9 @@ class TestBase:
     def get_category_and_product_for_order(
         self, product: Product
     ) -> ProductTypeApiFormat:
-        categories: list[CategoryType] = self.get_mock_product_categories(product)
+        categories: list[CategoryType] = self.get_mock_product_categories(
+            product
+        )
         return {
             "id": product.id,
             "name": product.name,
@@ -231,9 +234,7 @@ class TestBase:
     ) -> OrderTypeApiFormat:
         old_order: OrderTypeApiFormat = self.get_mock_order_api(order)
         expected_order: OrderTypeApiFormat = old_order
-        expected_order["lastUpdated"] = datetime.now().strftime(
-            "%Y-%m-%dT%H:%M:%S.%fZ"
-        )
+        expected_order["lastUpdated"] = datetime.now()
         order_total = 0
         line_items: list = []
         for product_post_data in post_data:

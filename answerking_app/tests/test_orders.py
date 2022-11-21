@@ -105,8 +105,8 @@ class OrderTests(TestBase, TestCase):
         }
         expected: dict = {
             "id": self.test_order_2.id + 1,
-            "createdOn": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-            "lastUpdated": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "createdOn": datetime.now(),
+            "lastUpdated": datetime.now(),
             "orderStatus": "Created",
             "orderTotal": 0.00,
             **post_data,
@@ -124,8 +124,6 @@ class OrderTests(TestBase, TestCase):
         # Assert
         self.assertNotIn(actual, old_list)
         self.assertIn(actual, updated_list)
-        self.assertAlmostEqual(actual["createdOn"], expected["createdOn"])
-        # self.assertAlmostEquals(actual["lastUpdated"], expected["lastUpdated"])
         self.assertEqual(len(created_order_products), 0)
         self.assertCreateUpdateTime(expected, actual, response, 201)
 
@@ -168,7 +166,9 @@ class OrderTests(TestBase, TestCase):
         self.assertIn(created_order, updated_orders_objects)
         self.assertNotIn(actual, old_orders_list_json)
         self.assertIn(actual, updated_orders_list_json)
-        self.assertCreateUpdateTime(expected, actual, response, status_code=201)
+        self.assertCreateUpdateTime(
+            expected, actual, response, status_code=201
+        )
 
     def test_post_invalid_json_returns_bad_request(self):
         # Act
@@ -237,7 +237,7 @@ class OrderTests(TestBase, TestCase):
         self.assertIn(created_order, updated_orders_objects)
         self.assertNotIn(actual, old_orders_list_json)
         self.assertIn(actual, updated_orders_list_json)
-        self.assertCreateUpdateTime(expected, actual, response, status_code=200)
+        self.assertUpdateTime(expected, actual, response, status_code=200)
 
     def test_put_update_quantity_to_zero_return_empty_line_items(self):
         # Arrange
@@ -249,8 +249,8 @@ class OrderTests(TestBase, TestCase):
         }
         expected = {
             **self.expected_order_after_put_request(
-                self.test_order_1, post_data["lineItems"]),
-            "lastUpdated": make_aware(datetime.now()),
+                self.test_order_1, post_data["lineItems"]
+            ),
         }
         # Act
         response = client.put(
@@ -269,7 +269,7 @@ class OrderTests(TestBase, TestCase):
         self.assertIn(created_order, updated_orders_objects)
         self.assertNotIn(actual, old_orders_list_json)
         self.assertIn(actual, updated_orders_list_json)
-        self.assertCreateUpdateTime(expected, actual, response, status_code=200)
+        self.assertUpdateTime(expected, actual, response, status_code=200)
         self.assertEqual(actual["lineItems"], [])
 
     def test_put_invalid_order_id_return_not_found(self):

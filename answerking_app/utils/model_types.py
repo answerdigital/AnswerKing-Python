@@ -50,7 +50,7 @@ class ProductTypeApiFormat(TypedDict):
     name: str
     description: str
     price: float
-    categories: NotRequired["list[CategoryTypeApiFormat]"]
+    categories: NotRequired["list[CategoryType]"]
 
 
 class OrderProductTypeApiFormat(TypedDict):
