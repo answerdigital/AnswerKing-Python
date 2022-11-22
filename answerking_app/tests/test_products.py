@@ -231,9 +231,6 @@ class ProductTestsDB(TestBase, TransactionTestCase):
 
     def test_put_duplicated_name_returns_400(self):
         # Arrange
-        old_product = client.get(
-            f"/api/products/{self.test_product_1.id}"
-        ).json()
 
         post_data_different_name: ProductType = {
             **self.post_mock_product,

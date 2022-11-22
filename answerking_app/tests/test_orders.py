@@ -45,9 +45,7 @@ class OrderTests(TestBase, TestCase):
 
     def test_get_id_valid_returns_ok(self):
         # Arrange
-        expected: OrderType = self.get_mock_order_api(
-            self.test_order_1
-        )
+        expected: OrderType = self.get_mock_order_api(self.test_order_1)
 
         # Act
         response = client.get(f"/api/orders/{self.test_order_1.id}")

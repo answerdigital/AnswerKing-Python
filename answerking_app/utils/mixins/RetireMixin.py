@@ -1,5 +1,6 @@
 from django.db.models import QuerySet
 from rest_framework import status
+from rest_framework.exceptions import ParseError
 from rest_framework.generics import GenericAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -26,11 +27,13 @@ class RetireMixin(GenericAPIView):
             instance.retired = True
             instance.save()
             response: ReturnDict = CategorySerializer(instance).data
-        else:
+        elif isinstance(instance, Product):
             product_active_order_check(instance)
             instance.retired = True
             instance.save()
             response: ReturnDict = ProductSerializer(instance).data
+        else:
+            raise ParseError
         return Response(response, status=status.HTTP_200_OK)
 
 
@@ -48,7 +51,7 @@ class CancelOrderMixin(GenericAPIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-def product_active_order_check(instance: Category | Product):
+def product_active_order_check(instance: Product):
     existing_order_products: QuerySet[OrderLine] = OrderLine.objects.filter(
         product=instance.id
     )
