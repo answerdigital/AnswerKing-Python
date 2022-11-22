@@ -178,9 +178,7 @@ class TestBase:
             "name": category.name,
             "description": category.description,
             "createdOn": category.created_on.strftime(self.time_format),
-            "lastUpdated": category.last_updated.strftime(
-                "%Y-%m-%dT%H:%M:%S.%fZ"
-            ),
+            "lastUpdated": category.last_updated.strftime(self.time_format),
             "products": products,
             "retired": category.retired,
         }
@@ -218,9 +216,7 @@ class TestBase:
         return {
             "id": order.id,
             "createdOn": order.created_on.strftime(self.time_format),
-            "lastUpdated": order.last_updated.strftime(
-                "%Y-%m-%dT%H:%M:%S.%fZ"
-            ),
+            "lastUpdated": order.last_updated.strftime(self.time_format),
             "orderStatus": str(order.order_status),
             "orderTotal": float(order.order_total),
             "lineItems": order_lines,
