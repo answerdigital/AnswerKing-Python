@@ -6,8 +6,8 @@ from answerking_app.utils.model_types import (
     CategoryType,
     DetailError,
     ProductType,
-    OrderTypeApiFormat,
-    OrderProductTypeApiFormat,
+    OrderType,
+    OrderProductType,
     CategoryProductType,
 )
 
@@ -218,7 +218,7 @@ class TestBase:
 
     def get_orderline_for_order(
         self, order_line: OrderLine
-    ) -> OrderProductTypeApiFormat:
+    ) -> OrderProductType:
         return {
             "product": self.get_category_and_product_for_order(
                 order_line.product
@@ -227,7 +227,7 @@ class TestBase:
             "subTotal": float(order_line.sub_total),
         }
 
-    def get_mock_order_api(self, order: Order) -> OrderTypeApiFormat:
+    def get_mock_order_api(self, order: Order) -> OrderType:
         order_lines = [
             self.get_orderline_for_order(order_line)
             for order_line in OrderLine.objects.filter(order=order)
@@ -243,9 +243,9 @@ class TestBase:
 
     def expected_order_after_put_request(
         self, order: Order, post_data: list
-    ) -> OrderTypeApiFormat:
-        old_order: OrderTypeApiFormat = self.get_mock_order_api(order)
-        expected_order: OrderTypeApiFormat = old_order
+    ) -> OrderType:
+        old_order: OrderType = self.get_mock_order_api(order)
+        expected_order: OrderType = old_order
         expected_order["lastUpdated"] = datetime.now()
         order_total: float = 0
         line_items: list = []

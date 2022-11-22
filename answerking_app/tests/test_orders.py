@@ -1,4 +1,3 @@
-from abc import ABC
 from datetime import datetime
 
 from django.db.models import QuerySet
@@ -8,7 +7,7 @@ from answerking_app.models.models import Order, OrderLine
 from answerking_app.tests.BaseTestClass import TestBase
 from answerking_app.utils.model_types import (
     DetailError,
-    OrderTypeApiFormat,
+    OrderType,
 )
 
 client = Client()
@@ -29,7 +28,7 @@ class OrderTests(TestBase, TestCase):
 
     def test_get_all_with_orders_returns_ok(self):
         # Arrange
-        expected: list[OrderTypeApiFormat] = [
+        expected: list[OrderType] = [
             self.get_mock_order_api(self.test_order_empty),
             self.get_mock_order_api(
                 self.test_order_1,
@@ -46,7 +45,7 @@ class OrderTests(TestBase, TestCase):
 
     def test_get_id_valid_returns_ok(self):
         # Arrange
-        expected: OrderTypeApiFormat = self.get_mock_order_api(
+        expected: OrderType = self.get_mock_order_api(
             self.test_order_1
         )
 
@@ -72,7 +71,7 @@ class OrderTests(TestBase, TestCase):
         old_list = client.get("/api/orders").json()
 
         post_data: dict = {}
-        expected: OrderTypeApiFormat = {
+        expected: OrderType = {
             "id": self.test_order_2.id + 1,
             "createdOn": datetime.now(),
             "lastUpdated": datetime.now(),
@@ -136,7 +135,7 @@ class OrderTests(TestBase, TestCase):
                 {"product": {"id": self.test_product_1.id}, "quantity": 1}
             ]
         }
-        expected: OrderTypeApiFormat = {
+        expected: OrderType = {
             "id": self.test_order_2.id + 1,
             "createdOn": datetime.now(),
             "lastUpdated": datetime.now(),

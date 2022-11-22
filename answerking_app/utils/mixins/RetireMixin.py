@@ -12,7 +12,6 @@ from answerking_app.models.serializers import (
     OrderSerializer,
 )
 from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
-from answerking_app.utils.model_types import OrderProductType
 
 
 class RetireMixin(GenericAPIView):
