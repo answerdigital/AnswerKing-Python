@@ -1,3 +1,4 @@
+from abc import ABC
 from datetime import datetime
 
 from django.db.models import QuerySet

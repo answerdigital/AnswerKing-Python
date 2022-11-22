@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from datetime import datetime, timedelta
 
 from answerking_app.models.models import Category, Product, Order, OrderLine
@@ -12,7 +12,7 @@ from answerking_app.utils.model_types import (
 )
 
 
-class TestBase(ABC):
+class TestBase:
     expected_serializer_error_400: DetailError = {
         "detail": "Validation Error",
         "errors": {},
@@ -72,14 +72,16 @@ class TestBase(ABC):
 
     time_format: str = "%Y-%m-%dT%H:%M:%S.%fZ"
 
+    @abstractmethod
     def assertEqual(self, first, second, msg=None):
         pass
 
+    @abstractmethod
     def assertAlmostEqual(
         self, first, second, places=None, msg=None, delta=None
     ):
         pass
-
+    @abstractmethod
     def assertIsInstance(self, obj, cls, msg=None):
         pass
 
