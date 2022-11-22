@@ -45,24 +45,10 @@ class OrderType(TypedDict):
     line_items: NotRequired["list[OrderProductType]"]
 
 
-class ProductTypeApiFormat(TypedDict):
-    id: NotRequired[int]
-    name: str
-    description: str
-    price: float
-    categories: NotRequired["list[CategoryType]"]
-
-
 class OrderProductTypeApiFormat(TypedDict):
-    product: ProductTypeApiFormat
+    product: ProductType
     quantity: int
     subTotal: NotRequired[float]
-
-
-class CategoryTypeApiFormat(TypedDict):
-    id: NotRequired[int]
-    name: NotRequired[str]
-    description: NotRequired[str]
 
 
 class OrderTypeApiFormat(TypedDict):

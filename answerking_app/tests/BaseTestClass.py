@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 
-from django.utils.timezone import localtime, make_aware
-
 from answerking_app.models.models import Category, Product, Order, OrderLine
 from answerking_app.utils.model_types import (
     CategoryType,
@@ -9,9 +7,6 @@ from answerking_app.utils.model_types import (
     ProductType,
     OrderTypeApiFormat,
     OrderProductTypeApiFormat,
-    ProductTypeApiFormat,
-    CategoryTypeApiFormat,
-    OrderType,
     CategoryProductType,
 )
 
@@ -73,6 +68,8 @@ class TestBase:
     invalid_mock_category_product: CategoryProductType = {"id": -1}
 
     invalid_json_data: str = '{"invalid": }'
+
+    time_format: str = "%Y-%m-%dT%H:%M:%S.%fZ"
 
     def setUp(self):
         self.test_product_1: Product = Product.objects.create(
@@ -140,7 +137,7 @@ class TestBase:
         self.assertUpdateTime(expected, actual, response, status_code)
 
     def convert_time(self, time_1):
-        converted_time = datetime.strptime(time_1, "%Y-%m-%dT%H:%M:%S.%fZ")
+        converted_time = datetime.strptime(time_1, self.time_format)
         return converted_time
 
     def get_mock_product_categories(
@@ -180,7 +177,7 @@ class TestBase:
             "id": category.id,
             "name": category.name,
             "description": category.description,
-            "createdOn": category.created_on.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "createdOn": category.created_on.strftime(self.time_format),
             "lastUpdated": category.last_updated.strftime(
                 "%Y-%m-%dT%H:%M:%S.%fZ"
             ),
@@ -190,7 +187,7 @@ class TestBase:
 
     def get_category_and_product_for_order(
         self, product: Product
-    ) -> ProductTypeApiFormat:
+    ) -> ProductType:
         categories: list[CategoryType] = self.get_mock_product_categories(
             product
         )
@@ -220,7 +217,7 @@ class TestBase:
         ]
         return {
             "id": order.id,
-            "createdOn": order.created_on.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "createdOn": order.created_on.strftime(self.time_format),
             "lastUpdated": order.last_updated.strftime(
                 "%Y-%m-%dT%H:%M:%S.%fZ"
             ),

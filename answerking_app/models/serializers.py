@@ -14,7 +14,7 @@ from answerking_app.models.models import (
     Order,
     OrderLine,
 )
-from answerking_app.utils.get_object_or_400 import get_object_or_400
+from answerking_app.utils.get_object_or_400 import get_product_or_400
 from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
 
 MAXNUMBERSIZE = 2147483647
@@ -71,7 +71,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
                 prod["id"] for prod in validated_data["products"]
             ]
             for product_id in products_id_list:
-                product: Product = get_object_or_400(Product, pk=product_id)
+                product: Product = get_product_or_400(Product, pk=product_id)
                 if product.retired:
                     raise HttpErrorResponse(
                         status=status.HTTP_410_GONE,
@@ -239,7 +239,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def check_products(self, line_items_data: list[OrderedDict]):
         for order_item in line_items_data:
-            get_object_or_400(Product, pk=order_item["product"]["id"])
+            get_product_or_400(Product, pk=order_item["product"]["id"])
 
     def create_and_add_products_to_order(
         self, order: Order, line_items_data: list[OrderedDict]

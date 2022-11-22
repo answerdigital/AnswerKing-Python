@@ -53,10 +53,9 @@ def product_active_order_check(instance: Category | Product):
     existing_order_products: QuerySet[OrderLine] = OrderLine.objects.filter(
         product=instance.id
     )
-    if existing_order_products:
-        for order_product in existing_order_products:
-            if order_product.order.order_status == "Created":
-                raise HttpErrorResponse(
-                    status=status.HTTP_400_BAD_REQUEST,
-                    detail="This product is in an active order",
-                )
+    for order_product in existing_order_products:
+        if order_product.order.order_status == "Created":
+            raise HttpErrorResponse(
+                status=status.HTTP_400_BAD_REQUEST,
+                detail="This product is in an active order",
+            )
