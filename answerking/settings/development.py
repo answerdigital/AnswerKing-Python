@@ -11,3 +11,5 @@ INSTALLED_APPS += (
 )
 
 MIDDLEWARE.remove("django.middleware.csrf.CsrfViewMiddleware")
+
+TEST_RUNNER = "snapshottest.django.TestRunner"
