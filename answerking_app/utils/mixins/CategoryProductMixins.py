@@ -12,7 +12,7 @@ class CategoryProductListMixin:
     def list(self, request: Request, cat_id: int, *args, **kwargs) -> Response:
 
         products: QuerySet[Product] = Product.objects.filter(
-            category__id=cat_id
+            category_id=cat_id
         )
         if not products:
             raise HttpErrorResponse(status=status.HTTP_404_NOT_FOUND)
