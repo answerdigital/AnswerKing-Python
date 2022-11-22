@@ -12,72 +12,7 @@ from answerking_app.utils.model_types import (
 )
 
 
-class TestBase(TransactionTestCase):
-    expected_serializer_error_400: DetailError = {
-        "detail": "Validation Error",
-        "errors": {},
-        "status": 400,
-        "title": "Invalid input.",
-        "type": "http://testserver/problems/error/",
-    }
-    expected_base_json_parsing_error_400: DetailError = {
-        "detail": "Parsing JSON Error",
-        "errors": "JSON parse error - Expecting value: line 1 column 13 (char 12)",
-        "status": 400,
-        "title": "Invalid input json.",
-        "type": "http://testserver/problems/error/",
-    }
-    expected_product_already_in_category: DetailError = {
-        "detail": "Product is already in the category",
-        "status": 400,
-        "title": "A server error occurred.",
-        "type": "http://testserver/problems/error/",
-    }
-
-    expected_base_404: DetailError = {
-        "detail": "Not Found",
-        "status": 404,
-        "title": "Resource not found",
-        "type": "http://testserver/problems/not_found/",
-    }
-    expected_invalid_url_parameters: DetailError = {
-        "detail": "Invalid parameters",
-        "status": 400,
-        "title": "Request has invalid parameters",
-        "type": "http://testserver/problems/error/",
-    }
-    expected_duplicated_name_error: DetailError = {
-        "detail": "This name already exists",
-        "status": 400,
-        "title": "A server error occurred.",
-        "type": "http://testserver/problems/error/",
-    }
-    expected_invalid_status = {
-        "detail": "Object was not Found",
-        "errors": ["Status matching query does not exist."],
-        "status": 404,
-        "title": "Resource not found",
-        "type": "http://testserver/problems/error/",
-    }
-    expected_nonexistent_product_error: DetailError = {
-        "detail": "Product was not Found",
-        "status": 400,
-        "title": "Product not found",
-        "type": "http://testserver/problems/error/",
-        "errors": ["Product matching query does not exist."],
-    }
-    post_mock_product: ProductType = {
-        "name": "Whopper",
-        "price": 1.50,
-        "description": "desc",
-    }
-
-    invalid_mock_category_product: CategoryProductType = {"id": -1}
-
-    invalid_json_data: str = '{"invalid": }'
-
-    time_format: str = "%Y-%m-%dT%H:%M:%S.%fZ"
-
+class TestBase:
     def setUp(self):
         Item.objects.all().delete()
         Category.objects.all().delete()
@@ -85,11 +20,15 @@ class TestBase(TransactionTestCase):
         Order.objects.all().delete()
 
     def seedFixture(self, type, fixtureName):
-
         if type == "items":
             data = self.getFixture(type, fixtureName)
-            for item in data:
-                Item.objects.create(**item)
+            if isinstance(data, list):
+                for item in data:
+                    Item.objects.create(**item)
+            elif isinstance(data, dict):
+                Item.objects.create(**data)
+            else:
+                raise Exception(f"{data} is not valid json")
             return(data)
         else:
             raise Exception(f"{type} is not a valid data seeding type")
@@ -171,29 +110,14 @@ class TestBase(TransactionTestCase):
         # )
         # self.test_order_1.calculate_total()
 
-    def assertJSONResponse(self, expected, actual, response, status_code):
-        self.assertEqual(expected, actual)  # type: ignore[reportGeneralTypeIssues]
-        self.assertEqual(response.status_code, status_code)  # type: ignore[reportGeneralTypeIssues]
+    def tearDown(self):
+        Product.objects.all().delete()
+        Category.objects.all().delete()
+        Order.objects.all().delete()
 
     def assertJSONErrorResponse(self, response):
         self.assertIsInstance(response.pop("traceId"), str)  # type: ignore[reportGeneralTypeIssues]
         self.assertMatchSnapshot(response)
-        
-
-    def get_mock_item_api(self, item: Item) -> ItemType:
-        return {
-            "id": product.id,
-            "name": product.name,
-            "price": product.price,
-            "description": product.description,
-            "categories": categories,
-            "retired": product.retired,
-        }
-
-    def get_mock_category_product_api(
-        self, product: Product
-    ) -> CategoryProductType:
-        return {"id": product.id}
 
     def get_mock_category_api(
         self, category: Category, products: list[CategoryProductType]

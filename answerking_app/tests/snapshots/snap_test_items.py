@@ -42,7 +42,7 @@ snapshots['PostTests::test_post_duplicated_name_returns_400 1'] = {
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PostTests::test_post_invalid_data_returns_bad_request_1_invalid_id_item_json 1'] = {
+snapshots['PostTests::test_post_invalid_data_returns_bad_request_1_invalid_id_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'id': [
@@ -54,7 +54,7 @@ snapshots['PostTests::test_post_invalid_data_returns_bad_request_1_invalid_id_it
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PostTests::test_post_invalid_data_returns_bad_request_2_invalid_name_item_json 1'] = {
+snapshots['PostTests::test_post_invalid_data_returns_bad_request_2_invalid_name_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'name': [
@@ -67,7 +67,7 @@ snapshots['PostTests::test_post_invalid_data_returns_bad_request_2_invalid_name_
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PostTests::test_post_invalid_data_returns_bad_request_3_invalid_calories_item_json 1'] = {
+snapshots['PostTests::test_post_invalid_data_returns_bad_request_3_invalid_calories_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'calories': [
@@ -79,7 +79,7 @@ snapshots['PostTests::test_post_invalid_data_returns_bad_request_3_invalid_calor
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PostTests::test_post_invalid_data_returns_bad_request_4_invalid_description_item_json 1'] = {
+snapshots['PostTests::test_post_invalid_data_returns_bad_request_4_invalid_description_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'description': [
@@ -92,7 +92,7 @@ snapshots['PostTests::test_post_invalid_data_returns_bad_request_4_invalid_descr
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PostTests::test_post_invalid_data_returns_bad_request_5_invalid_retired_item_json 1'] = {
+snapshots['PostTests::test_post_invalid_data_returns_bad_request_5_invalid_retired_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'retired': [
@@ -104,7 +104,7 @@ snapshots['PostTests::test_post_invalid_data_returns_bad_request_5_invalid_retir
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PostTests::test_post_invalid_data_returns_bad_request_6_invalid_stock_item_json 1'] = {
+snapshots['PostTests::test_post_invalid_data_returns_bad_request_6_invalid_stock_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'stock': [
@@ -116,7 +116,7 @@ snapshots['PostTests::test_post_invalid_data_returns_bad_request_6_invalid_stock
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PostTests::test_post_invalid_data_returns_bad_request_7_invalid_item_missing_fields_1_json 1'] = {
+snapshots['PostTests::test_post_invalid_data_returns_bad_request_7_invalid_missing_fields_1_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'name': [
@@ -131,7 +131,7 @@ snapshots['PostTests::test_post_invalid_data_returns_bad_request_7_invalid_item_
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PostTests::test_post_invalid_data_returns_bad_request_8_invalid_item_missing_fields_2_json 1'] = {
+snapshots['PostTests::test_post_invalid_data_returns_bad_request_8_invalid_missing_fields_2_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'description': [
@@ -146,7 +146,7 @@ snapshots['PostTests::test_post_invalid_data_returns_bad_request_8_invalid_item_
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PostTests::test_post_invalid_data_returns_bad_request_9_invalid_item_missing_fields_3_json 1'] = {
+snapshots['PostTests::test_post_invalid_data_returns_bad_request_9_invalid_missing_fields_3_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'calories': [
@@ -173,7 +173,7 @@ snapshots['PutTests::test_put_duplicated_name_returns_400 1'] = {
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PutTests::test_put_invalid_data_returns_bad_request_1_invalid_id_item_json 1'] = {
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_1_invalid_id_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'id': [
@@ -185,7 +185,7 @@ snapshots['PutTests::test_put_invalid_data_returns_bad_request_1_invalid_id_item
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PutTests::test_put_invalid_data_returns_bad_request_2_invalid_name_item_json 1'] = {
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_2_invalid_name_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'name': [
@@ -198,7 +198,7 @@ snapshots['PutTests::test_put_invalid_data_returns_bad_request_2_invalid_name_it
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PutTests::test_put_invalid_data_returns_bad_request_3_invalid_calories_item_json 1'] = {
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_3_invalid_calories_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'calories': [
@@ -210,7 +210,7 @@ snapshots['PutTests::test_put_invalid_data_returns_bad_request_3_invalid_calorie
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PutTests::test_put_invalid_data_returns_bad_request_4_invalid_description_item_json 1'] = {
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_4_invalid_description_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'description': [
@@ -223,7 +223,7 @@ snapshots['PutTests::test_put_invalid_data_returns_bad_request_4_invalid_descrip
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PutTests::test_put_invalid_data_returns_bad_request_5_invalid_retired_item_json 1'] = {
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_5_invalid_retired_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'retired': [
@@ -235,7 +235,7 @@ snapshots['PutTests::test_put_invalid_data_returns_bad_request_5_invalid_retired
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PutTests::test_put_invalid_data_returns_bad_request_6_invalid_stock_item_json 1'] = {
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_6_invalid_stock_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'stock': [
@@ -247,7 +247,7 @@ snapshots['PutTests::test_put_invalid_data_returns_bad_request_6_invalid_stock_i
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PutTests::test_put_invalid_data_returns_bad_request_7_invalid_item_missing_fields_1_json 1'] = {
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_7_invalid_missing_fields_1_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'name': [
@@ -262,7 +262,7 @@ snapshots['PutTests::test_put_invalid_data_returns_bad_request_7_invalid_item_mi
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PutTests::test_put_invalid_data_returns_bad_request_8_invalid_item_missing_fields_2_json 1'] = {
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_8_invalid_missing_fields_2_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'description': [
@@ -277,7 +277,7 @@ snapshots['PutTests::test_put_invalid_data_returns_bad_request_8_invalid_item_mi
     'type': 'http://testserver/problems/error/'
 }
 
-snapshots['PutTests::test_put_invalid_data_returns_bad_request_9_invalid_item_missing_fields_3_json 1'] = {
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_9_invalid_missing_fields_3_json 1'] = {
     'detail': 'Validation Error',
     'errors': {
         'calories': [
