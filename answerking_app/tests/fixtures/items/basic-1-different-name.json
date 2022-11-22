@@ -1,0 +1,11 @@
+[
+    {
+        "id": 2,
+        "name": "BurgerTwo",
+        "price": "1.20",
+        "description": "desc",
+        "stock": 100,
+        "calories": 100,
+        "retired": false
+    }
+]

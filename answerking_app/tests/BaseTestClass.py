@@ -84,16 +84,20 @@ class TestBase(TransactionTestCase):
         Status.objects.all().delete()
         Order.objects.all().delete()
 
-    def seedData(self, type, fixtureName):
-        fixturePath = "answerking_app/tests/fixtures"
+    def seedFixture(self, type, fixtureName):
 
         if type == "items":
-            data = json.load(open(f"{fixturePath}/{type}/{fixtureName}"))
+            data = self.getFixture(type, fixtureName)
             for item in data:
                 Item.objects.create(**item)
             return(data)
         else:
             raise Exception(f"{type} is not a valid data seeding type")
+
+    def getFixture(self, type, fixtureName):
+        fixturePath = "answerking_app/tests/fixtures"
+        return json.load(open(f"{fixturePath}/{type}/{fixtureName}"))
+
 
         # Item.objects.create(**data)
 

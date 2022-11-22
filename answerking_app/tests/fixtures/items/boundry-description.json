@@ -1,0 +1,11 @@
+[
+    {
+        "id": 1,
+        "name": "Burger",
+        "price": "1.20",
+        "description": "200 chars - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacinia dui et nunc hendrerit ullamcorper. Duis sit amet magna ac velit auctor porta. Praesent viverra vulputate lectus, a ves",
+        "stock": 100,
+        "calories": 100,
+        "retired": false
+    }
+]
