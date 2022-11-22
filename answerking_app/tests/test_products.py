@@ -38,6 +38,7 @@ class GetTests(TestBase, TestCase):
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(404)
 
+
 @ddt
 class PostTests(TestBase, TestCase):
     @data(

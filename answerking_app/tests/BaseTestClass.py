@@ -29,14 +29,13 @@ class TestBase:
                 Item.objects.create(**data)
             else:
                 raise Exception(f"{data} is not valid json")
-            return(data)
+            return data
         else:
             raise Exception(f"{type} is not a valid data seeding type")
 
     def getFixture(self, type, fixtureName):
         fixturePath = "answerking_app/tests/fixtures"
         return json.load(open(f"{fixturePath}/{type}/{fixtureName}"))
-
 
         # Item.objects.create(**data)
 
