@@ -88,5 +88,5 @@ jobs:
       run: |
         poetry run python manage.py migrate
 
-    - name: Run Unit Tests
+    - name: Run Integration Tests
       run: poetry run python manage.py test
