@@ -4,6 +4,8 @@ from typing_extensions import (  # for Python <3.11 with (Not)Required
     NotRequired,
     TypedDict,
 )
+from decimal import Decimal
+
 from typing import Any
 
 
@@ -39,7 +41,7 @@ class OrderProductType(TypedDict):
 class OrderType(TypedDict):
     id: NotRequired[int]
     order_status: NotRequired[str]
-    order_total: NotRequired[str]
+    order_total: NotRequired[Decimal]
     created_on: NotRequired[datetime.datetime]
     last_updated: NotRequired[datetime.datetime]
     line_items: NotRequired["list[OrderProductType]"]
@@ -55,8 +57,8 @@ class OrderTypeApiFormat(TypedDict):
     id: NotRequired[int]
     orderStatus: NotRequired[str]
     orderTotal: NotRequired[float]
-    createdOn: NotRequired[datetime.datetime]
-    lastUpdated: NotRequired[datetime.datetime]
+    createdOn: NotRequired[datetime.datetime | str]
+    lastUpdated: NotRequired[datetime.datetime | str]
     lineItems: NotRequired["list[OrderProductTypeApiFormat]"]
 
 

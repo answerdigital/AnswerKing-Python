@@ -81,6 +81,7 @@ class TestBase:
         self, first, second, places=None, msg=None, delta=None
     ):
         pass
+
     @abstractmethod
     def assertIsInstance(self, obj, cls, msg=None):
         pass
