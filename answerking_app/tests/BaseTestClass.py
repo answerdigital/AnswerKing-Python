@@ -217,7 +217,7 @@ class TestBase:
             "id": order.id,
             "createdOn": order.created_on.strftime(self.time_format),
             "lastUpdated": order.last_updated.strftime(self.time_format),
-            "orderStatus": str(order.order_status),
+            "orderStatus": order.order_status,
             "orderTotal": float(order.order_total),
             "lineItems": order_lines,
         }
@@ -228,16 +228,16 @@ class TestBase:
         old_order: OrderTypeApiFormat = self.get_mock_order_api(order)
         expected_order: OrderTypeApiFormat = old_order
         expected_order["lastUpdated"] = datetime.now()
-        order_total = 0
+        order_total: float = 0
         line_items: list = []
         for product_post_data in post_data:
-            product = Product.objects.get(
+            product: Product = Product.objects.get(
                 id=product_post_data["product"]["id"]
             )
-            quantity = product_post_data["quantity"]
+            quantity: int = product_post_data["quantity"]
             if product.retired or quantity < 1:
                 continue
-            sub_total = float(product.price * quantity)
+            sub_total: float = float(product.price * quantity)
             line_items.append(
                 {
                     "product": self.get_category_and_product_for_order(
