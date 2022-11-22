@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
 from answerking_app.models.models import Category, Product, Order, OrderLine
@@ -11,7 +12,7 @@ from answerking_app.utils.model_types import (
 )
 
 
-class TestBase:
+class TestBase(ABC):
     expected_serializer_error_400: DetailError = {
         "detail": "Validation Error",
         "errors": {},
@@ -71,6 +72,17 @@ class TestBase:
 
     time_format: str = "%Y-%m-%dT%H:%M:%S.%fZ"
 
+    def assertEqual(self, first, second, msg=None):
+        pass
+
+    def assertAlmostEqual(
+        self, first, second, places=None, msg=None, delta=None
+    ):
+        pass
+
+    def assertIsInstance(self, obj, cls, msg=None):
+        pass
+
     def setUp(self):
         self.test_product_1: Product = Product.objects.create(
             name="Burger", price=1.20, description="desc"
@@ -115,29 +127,33 @@ class TestBase:
         Order.objects.all().delete()
 
     def assertJSONResponse(self, expected, actual, response, status_code):
-        self.assertEqual(expected, actual)  # type: ignore[reportGeneralTypeIssues]
-        self.assertEqual(response.status_code, status_code)  # type: ignore[reportGeneralTypeIssues]
+        self.assertEqual(expected, actual)
+        self.assertEqual(response.status_code, status_code)
 
     def assertJSONErrorResponse(self, expected, actual, response, status_code):
-        self.assertIsInstance(actual.pop("traceId"), str)  # type: ignore[reportGeneralTypeIssues]
+        self.assertIsInstance(actual.pop("traceId"), str)
         self.assertJSONResponse(expected, actual, response, status_code)
 
     def assertUpdateTime(self, expected, actual, response, status_code):
         actual_time: datetime = self.convert_time(actual["lastUpdated"])
-        self.assertAlmostEqual(expected["lastUpdated"], actual_time, delta=timedelta(seconds=2))  # type: ignore[reportGeneralTypeIssues]
-        self.assertIsInstance(actual.pop("lastUpdated"), str)  # type: ignore[reportGeneralTypeIssues]
-        self.assertIsInstance(expected.pop("lastUpdated"), datetime)  # type: ignore[reportGeneralTypeIssues]
+        self.assertAlmostEqual(
+            expected["lastUpdated"], actual_time, delta=timedelta(seconds=2)
+        )
+        self.assertIsInstance(actual.pop("lastUpdated"), str)
+        self.assertIsInstance(expected.pop("lastUpdated"), datetime)
         self.assertJSONResponse(expected, actual, response, status_code)
 
     def assertCreateUpdateTime(self, expected, actual, response, status_code):
         actual_time: datetime = self.convert_time(actual["createdOn"])
-        self.assertAlmostEqual(expected["createdOn"], actual_time, delta=timedelta(seconds=2))  # type: ignore[reportGeneralTypeIssues]
-        self.assertIsInstance(actual.pop("createdOn"), str)  # type: ignore[reportGeneralTypeIssues]
-        self.assertIsInstance(expected.pop("createdOn"), datetime)  # type: ignore[reportGeneralTypeIssues]
+        self.assertAlmostEqual(
+            expected["createdOn"], actual_time, delta=timedelta(seconds=2)
+        )
+        self.assertIsInstance(actual.pop("createdOn"), str)
+        self.assertIsInstance(expected.pop("createdOn"), datetime)
         self.assertUpdateTime(expected, actual, response, status_code)
 
     def convert_time(self, time_1):
-        converted_time = datetime.strptime(time_1, self.time_format)
+        converted_time: datetime = datetime.strptime(time_1, self.time_format)
         return converted_time
 
     def get_mock_product_categories(
