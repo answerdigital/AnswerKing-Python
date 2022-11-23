@@ -1,42 +1,49 @@
-from typing import Any
+import datetime
 
 from typing_extensions import (  # for Python <3.11 with (Not)Required
     NotRequired,
     TypedDict,
 )
 
+from typing import Any
 
-class ItemType(TypedDict):
+
+class ProductType(TypedDict):
     id: NotRequired[int]
     name: str
-    price: str
+    price: str | float
     description: str
+    categories: NotRequired["list[CategoryType]"]
     retired: NotRequired[bool]
-    stock: int
-    calories: int
+
+
+class CategoryProductType(TypedDict):
+    id: int
 
 
 class CategoryType(TypedDict):
     id: NotRequired[int]
     name: NotRequired[str]
+    description: NotRequired[str]
+    createdOn: NotRequired[datetime.datetime | str]
+    lastUpdated: NotRequired[datetime.datetime | str]
     retired: NotRequired[bool]
-    items: NotRequired["list[ItemType]"]
+    products: NotRequired["list[CategoryProductType]"]
 
 
-class OrderItemType(TypedDict):
-    id: NotRequired[int]
-    name: NotRequired[str]
-    price: NotRequired[str]
+class OrderProductType(TypedDict):
+    product: ProductType
     quantity: int
-    sub_total: NotRequired[str]
+    subTotal: NotRequired[float]
 
 
 class OrderType(TypedDict):
     id: NotRequired[int]
-    address: NotRequired[str]
-    order_items: NotRequired["list[OrderItemType]"]
-    status: NotRequired[str]
-    total: NotRequired[str]
+    orderStatus: NotRequired[str]
+    orderTotal: NotRequired[float]
+    createdOn: NotRequired[datetime.datetime | str]
+    lastUpdated: NotRequired[datetime.datetime | str]
+    lineItems: NotRequired["list[OrderProductType]"]
 
 
 class DetailError(TypedDict):

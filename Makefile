@@ -1,7 +1,6 @@
 .PHONY: clean test lint migrate
 
 clean:
-	find . -name "*.pyc" -print0 | xargs -0 rm -rf
 	-rm -rf htmlcov
 	-rm -rf .coverage
 	-rm -rf build

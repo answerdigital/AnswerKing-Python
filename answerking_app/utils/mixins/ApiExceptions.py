@@ -3,7 +3,7 @@ import uuid
 from rest_framework.exceptions import APIException
 
 
-class HttpErrorResponse(APIException):
+class ProblemDetails(APIException):
     def __init__(
         self,
         status: int,

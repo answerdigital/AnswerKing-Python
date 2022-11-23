@@ -1,36 +1,36 @@
 from django.db.models.query import QuerySet
 from django.test import Client, TestCase, TransactionTestCase
 
-from answerking_app.models.models import Item
+from answerking_app.models.models import Product
 from answerking_app.tests.BaseTestClass import TestBase
-from answerking_app.utils.model_types import DetailError, ItemType
+from answerking_app.utils.model_types import DetailError, ProductType
 
 client = Client()
 
 
-class ItemTests(TestBase, TestCase):
-    def test_get_all_without_items_returns_no_content(self):
+class ProductTests(TestBase, TestCase):
+    def test_get_all_without_products_returns_no_content(self):
         # Arrange
-        Item.objects.all().delete()
-        expected = []
+        Product.objects.all().delete()
+        expected: list = []
 
         # Act
-        response = client.get("/api/items")
+        response = client.get("/api/products")
         actual = response.json()
 
         # Assert
         self.assertJSONResponse(expected, actual, response, 200)
 
-    def test_get_all_with_items_returns_ok(self):
+    def test_get_all_with_products_returns_ok(self):
         # Arrange
-        expected: list[ItemType] = [
-            self.get_mock_item_api(self.test_item_1),
-            self.get_mock_item_api(self.test_item_2),
-            self.get_mock_item_api(self.test_item_3),
+        expected: list[ProductType] = [
+            self.get_mock_product_api(self.test_product_1),
+            self.get_mock_product_api(self.test_product_2),
+            self.get_mock_product_api(self.test_product_3),
         ]
 
         # Act
-        response = client.get("/api/items")
+        response = client.get("/api/products")
         actual = response.json()
 
         # Assert
@@ -38,10 +38,10 @@ class ItemTests(TestBase, TestCase):
 
     def test_get_id_valid_returns_ok(self):
         # Arrange
-        expected: ItemType = self.get_mock_item_api(self.test_item_1)
+        expected: ProductType = self.get_mock_product_api(self.test_product_1)
 
         # Act
-        response = client.get(f"/api/items/{self.test_item_1.id}")
+        response = client.get(f"/api/products/{self.test_product_1.id}")
         actual = response.json()
 
         # Assert
@@ -49,7 +49,7 @@ class ItemTests(TestBase, TestCase):
 
     def test_get_invalid_id_returns_not_found(self):
         # Act
-        response = client.get("/api/items/f")
+        response = client.get("/api/products/f")
         actual = response.json()
 
         # Assert
@@ -59,31 +59,34 @@ class ItemTests(TestBase, TestCase):
 
     def test_post_valid_returns_ok(self):
         # Arrange
-        old_list = client.get("/api/items").json()
+        old_list = client.get("/api/products").json()
 
-        expected: ItemType = {
-            "id": self.test_item_3.id + 1,
-            **self.post_mock_item,
+        expected: ProductType = {
+            "id": self.test_product_3.id + 1,
+            **self.post_mock_product,
+            "categories": [],
             "retired": False,
         }
 
         # Act
         response = client.post(
-            "/api/items", self.post_mock_item, content_type="application/json"
+            "/api/products",
+            self.post_mock_product,
+            content_type="application/json",
         )
         actual = response.json()
 
-        created_item: Item = Item.objects.filter(name="Whopper")[0]
-        updated_list: QuerySet[Item] = Item.objects.all()
+        created_product: Product = Product.objects.filter(name="Whopper")[0]
+        updated_list: QuerySet[Product] = Product.objects.all()
 
         # Assert
         self.assertNotIn(actual, old_list)
-        self.assertIn(created_item, updated_list)
+        self.assertIn(created_product, updated_list)
         self.assertJSONResponse(expected, actual, response, 201)
 
     def test_post_invalid_json_returns_bad_request(self):
         response = client.post(
-            "/api/items",
+            "/api/products",
             self.invalid_json_data,
             content_type="application/json",
         )
@@ -109,19 +112,19 @@ class ItemTests(TestBase, TestCase):
             "calories": ["Ensure this value is greater than or equal to 0."],
         }
         # Arrange
-        for key in self.post_mock_item:
+        for key in self.post_mock_product:
             for invalid_data, error_codes in [
                 ("Bad data£", error_codes_invalid_string),
                 (-9999, error_codes_negative_number),
             ]:
-                invalid_post_data: ItemType = {**self.post_mock_item}
+                invalid_post_data: ProductType = {**self.post_mock_product}
                 invalid_post_data[key] = invalid_data
                 expected: DetailError = {**self.expected_serializer_error_400}
                 expected["errors"] = {key: error_codes[key]}
 
                 # Act
                 response = client.post(
-                    "/api/items",
+                    "/api/products",
                     invalid_post_data,
                     content_type="application/json",
                 )
@@ -132,34 +135,39 @@ class ItemTests(TestBase, TestCase):
 
     def test_put_valid_returns_ok(self):
         # Arrange
-        old_item = client.get(f"/api/items/{self.test_item_1.id}").json()
+        old_product = client.get(
+            f"/api/products/{self.test_product_3.id}"
+        ).json()
 
-        expected: ItemType = {
-            "id": self.test_item_1.id,
-            **self.post_mock_item,
+        expected: ProductType = {
+            "id": self.test_product_3.id,
+            **self.post_mock_product,
+            "categories": self.get_mock_product_categories(
+                self.test_product_3
+            ),
             "retired": False,
         }
 
         # Act
         response = client.put(
-            f"/api/items/{self.test_item_1.id}",
-            self.post_mock_item,
+            f"/api/products/{self.test_product_3.id}",
+            self.post_mock_product,
             content_type="application/json",
         )
         actual = response.json()
 
-        updated_item: Item = Item.objects.filter(name="Whopper")[0]
-        updated_list: QuerySet[Item] = Item.objects.all()
+        updated_product: Product = Product.objects.filter(name="Whopper")[0]
+        updated_list: QuerySet[Product] = Product.objects.all()
 
         # Assert
-        self.assertNotEqual(old_item, actual)
-        self.assertIn(updated_item, updated_list)
+        self.assertNotEqual(old_product, actual)
+        self.assertIn(updated_product, updated_list)
         self.assertJSONResponse(expected, actual, response, 200)
 
     def test_put_invalid_json_returns_bad_request(self):
         # Act
         response = client.put(
-            f"/api/items/{self.test_item_1.id}",
+            f"/api/products/{self.test_product_1.id}",
             self.invalid_json_data,
             content_type="application/json",
         )
@@ -172,22 +180,24 @@ class ItemTests(TestBase, TestCase):
 
     def test_delete_valid_returns_retired_true(self):
         # Arrange
-        old_item: QuerySet[Item] = Item.objects.filter(pk=self.test_item_1.id)
-        expected: ItemType = self.get_mock_item_api(self.test_item_1)
+        old_product: QuerySet[Product] = Product.objects.filter(
+            pk=self.test_product_3.id
+        )
+        expected: ProductType = self.get_mock_product_api(self.test_product_3)
         expected["retired"] = True
         # Act
-        response = client.delete(f"/api/items/{self.test_item_1.id}")
-        items: QuerySet[Item] = Item.objects.all()
+        response = client.delete(f"/api/products/{self.test_product_3.id}")
+        products: QuerySet[Product] = Product.objects.all()
         actual = response.json()
 
         # Assert
-        self.assertNotIn(old_item, items)
-        self.assertNotEqual(old_item, expected)
+        self.assertNotIn(old_product, products)
+        self.assertNotEqual(old_product, expected)
         self.assertJSONResponse(actual, expected, response, 200)
 
     def test_delete_invalid_id_returns_not_found(self):
         # Act
-        response = client.delete("/api/items/f")
+        response = client.delete("/api/products/f")
         actual = response.json()
 
         # Assert
@@ -196,16 +206,20 @@ class ItemTests(TestBase, TestCase):
         )
 
 
-class ItemTestsDB(TestBase, TransactionTestCase):
+class ProductTestsDB(TestBase, TransactionTestCase):
     def test_post_duplicated_name_returns_400(self):
         # Arrange
         client.post(
-            "/api/items", self.post_mock_item, content_type="application/json"
+            "/api/products",
+            self.post_mock_product,
+            content_type="application/json",
         )
 
         # Act
         response = client.post(
-            "/api/items", self.post_mock_item, content_type="application/json"
+            "/api/products",
+            self.post_mock_product,
+            content_type="application/json",
         )
 
         actual = response.json()
@@ -217,26 +231,27 @@ class ItemTestsDB(TestBase, TransactionTestCase):
 
     def test_put_duplicated_name_returns_400(self):
         # Arrange
-        old_item = client.get(f"/api/items/{self.test_item_1.id}").json()
 
-        post_data_different_name: ItemType = {
-            **self.post_mock_item,
+        post_data_different_name: ProductType = {
+            **self.post_mock_product,
             "name": "Different Name",
         }
 
         client.post(
-            "/api/items", self.post_mock_item, content_type="application/json"
+            "/api/products",
+            self.post_mock_product,
+            content_type="application/json",
         )
         client.post(
-            "/api/items",
+            "/api/products",
             post_data_different_name,
             content_type="application/json",
         )
 
         # Act
         response = client.put(
-            f"/api/items/{self.test_item_1.id + 1}",
-            self.post_mock_item,
+            f"/api/products/{self.test_product_1.id + 1}",
+            self.post_mock_product,
             content_type="application/json",
         )
         actual = response.json()

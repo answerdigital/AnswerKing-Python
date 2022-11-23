@@ -7,10 +7,7 @@ from rest_framework.response import Response
 
 from answerking_app.models.models import Order
 from answerking_app.models.serializers import OrderSerializer
-from answerking_app.utils.mixins.OrderItemMixins import (
-    OrderItemRemoveMixin,
-    OrderItemUpdateMixin,
-)
+from answerking_app.utils.mixins.RetireMixin import CancelOrderMixin
 
 
 class OrderListView(
@@ -32,6 +29,7 @@ class OrderDetailView(
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
+    CancelOrderMixin,
     generics.GenericAPIView,
 ):
 
@@ -46,25 +44,4 @@ class OrderDetailView(
         return self.partial_update(request, *args, **kwargs)
 
     def delete(self, request: Request, *args, **kwargs) -> Response:
-        return self.destroy(request, *args, **kwargs)
-
-
-class OrderItemListView(
-    OrderItemUpdateMixin,
-    OrderItemRemoveMixin,
-    generics.GenericAPIView,
-):
-    serializer_class: OrderSerializer = OrderSerializer
-    lookup_url_kwarg: Literal["order_id"] = "order_id"
-
-    def put(
-        self, request: Request, order_id: int, item_id: int, *args, **kwargs
-    ) -> Response:
-        return self.update(
-            request, order_id=order_id, item_id=item_id, *args, **kwargs
-        )
-
-    def delete(
-        self, request: Request, order_id: int, item_id: int, *args, **kwargs
-    ) -> Response:
-        return self.remove(request, order_id, item_id, *args, **kwargs)
+        return self.cancel_order(request, *args, **kwargs)
