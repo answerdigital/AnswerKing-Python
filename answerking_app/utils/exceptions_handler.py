@@ -45,8 +45,6 @@ def wrapper(exc, context):
                 detail="This name already exists",
             )
         else:
-            exc = ProblemDetails(
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            exc = ProblemDetails(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return exception_handler(exc, context)
