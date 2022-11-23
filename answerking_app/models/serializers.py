@@ -15,7 +15,7 @@ from answerking_app.models.models import (
     LineItem,
 )
 from answerking_app.utils.get_object_or_400 import get_product_or_400
-from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
+from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 MAXNUMBERSIZE = 2147483647
 
@@ -53,7 +53,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
     def update(self, category: Category, validated_data: dict) -> Category:
         if category.retired:
-            raise HttpErrorResponse(
+            raise ProblemDetails(
                 status=status.HTTP_410_GONE,
                 detail="This category has been retired",
             )
@@ -73,7 +73,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
             for product_id in products_id_list:
                 product: Product = get_product_or_400(Product, pk=product_id)
                 if product.retired:
-                    raise HttpErrorResponse(
+                    raise ProblemDetails(
                         status=status.HTTP_410_GONE,
                         detail="This product has been retired",
                     )

@@ -12,14 +12,14 @@ from answerking_app.models.serializers import (
     ProductSerializer,
     OrderSerializer,
 )
-from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
+from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 
 class RetireMixin(GenericAPIView):
     def retire(self, request: Request, *args, **kwargs) -> Response:
         instance: Category | Product = self.get_object()
         if instance.retired:
-            raise HttpErrorResponse(
+            raise ProblemDetails(
                 status=status.HTTP_410_GONE,
                 detail="This object has already been retired",
             )
@@ -41,7 +41,7 @@ class CancelOrderMixin(GenericAPIView):
     def cancel_order(self, request: Request, *args, **kwargs) -> Response:
         instance: Order = self.get_object()
         if instance.order_status == "Cancelled":
-            raise HttpErrorResponse(
+            raise ProblemDetails(
                 status=status.HTTP_400_BAD_REQUEST,
                 detail="This order has already been cancelled",
             )
@@ -57,7 +57,7 @@ def product_active_order_check(instance: Product):
     )
     for order_product in existing_order_products:
         if order_product.order.order_status == "Created":
-            raise HttpErrorResponse(
+            raise ProblemDetails(
                 status=status.HTTP_400_BAD_REQUEST,
                 detail="This product is in an active order",
             )

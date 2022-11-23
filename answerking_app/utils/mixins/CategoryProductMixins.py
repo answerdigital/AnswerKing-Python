@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from answerking_app.models.models import Product
 from answerking_app.models.serializers import ProductSerializer
-from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
+from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 
 class CategoryProductListMixin:
@@ -15,7 +15,7 @@ class CategoryProductListMixin:
             category__id=cat_id
         )
         if not products:
-            raise HttpErrorResponse(status=status.HTTP_404_NOT_FOUND)
+            raise ProblemDetails(status=status.HTTP_404_NOT_FOUND)
         response = ProductSerializer(products, many=True).data
 
         return Response(response, status=status.HTTP_200_OK)
