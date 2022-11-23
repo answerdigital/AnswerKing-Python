@@ -12,7 +12,7 @@ from answerking_app.models.models import (
     Category,
     Product,
     Order,
-    OrderLine,
+    LineItem,
 )
 from answerking_app.utils.get_object_or_400 import get_product_or_400
 from answerking_app.utils.mixins.ApiExceptions import HttpErrorResponse
@@ -175,7 +175,7 @@ class ProductSerializerReadOnly(serializers.ModelSerializer):
         exclude = ["retired"]
 
 
-class OrderLineSerializer(serializers.ModelSerializer):
+class LineItemSerializer(serializers.ModelSerializer):
     product = ProductSerializerReadOnly()
     quantity = serializers.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
@@ -188,7 +188,7 @@ class OrderLineSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = OrderLine
+        model = LineItem
         fields = ["product", "quantity", "subTotal"]
         depth = 2
 
@@ -205,16 +205,14 @@ class OrderSerializer(serializers.ModelSerializer):
         decimal_places=2,
         max_digits=18,
     )
-    lineItems = OrderLineSerializer(
-        source="orderline_set", many=True, required=False
+    lineItems = LineItemSerializer(
+        source="lineitem_set", many=True, required=False
     )
 
     def create(self, validated_data: dict) -> Order:
         order: Order = Order.objects.create()
-        if "orderline_set" in validated_data:
-            line_items_data: list[OrderedDict] = validated_data[
-                "orderline_set"
-            ]
+        if "lineitem_set" in validated_data:
+            line_items_data: list[OrderedDict] = validated_data["lineitem_set"]
             self.create_and_add_products_to_order(
                 order=order, line_items_data=line_items_data
             )
@@ -222,17 +220,15 @@ class OrderSerializer(serializers.ModelSerializer):
         return order
 
     def update(self, order_to_update: Order, validated_data: dict) -> Order:
-        if "orderline_set" in validated_data:
-            line_items_data: list[OrderedDict] = validated_data[
-                "orderline_set"
-            ]
+        if "lineitem_set" in validated_data:
+            line_items_data: list[OrderedDict] = validated_data["lineitem_set"]
             self.check_products(line_items_data)
-            OrderLine.objects.filter(order_id=order_to_update.id).delete()
+            LineItem.objects.filter(order_id=order_to_update.id).delete()
             self.create_and_add_products_to_order(
                 order=order_to_update, line_items_data=line_items_data
             )
         else:
-            OrderLine.objects.filter(order_id=order_to_update.id).delete()
+            LineItem.objects.filter(order_id=order_to_update.id).delete()
         order_to_update.calculate_total()
 
         return order_to_update
@@ -250,7 +246,7 @@ class OrderSerializer(serializers.ModelSerializer):
             )
             if product.retired or order_item["quantity"] < 1:
                 continue
-            new_line_item = OrderLine.objects.create(
+            new_line_item = LineItem.objects.create(
                 order=order, product=product, quantity=order_item["quantity"]
             )
             new_line_item.calculate_sub_total()

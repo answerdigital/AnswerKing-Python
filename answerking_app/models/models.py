@@ -36,7 +36,7 @@ class Order(models.Model):
 
     def calculate_total(self):
         total = Decimal(0.00)
-        line_items = OrderLine.objects.filter(order=self.pk).values()
+        line_items = LineItem.objects.filter(order=self.pk).values()
 
         if line_items:
             for ol in line_items:
@@ -46,7 +46,7 @@ class Order(models.Model):
         self.save()
 
 
-class OrderLine(models.Model):
+class LineItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()

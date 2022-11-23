@@ -3,7 +3,7 @@ from datetime import datetime
 from django.db.models import QuerySet
 from django.test import Client, TestCase
 
-from answerking_app.models.models import Order, OrderLine
+from answerking_app.models.models import Order, LineItem
 from answerking_app.tests.BaseTestClass import TestBase
 from answerking_app.utils.model_types import (
     DetailError,
@@ -85,7 +85,7 @@ class OrderTests(TestBase, TestCase):
         actual = response.json()
 
         created_order: Order = Order.objects.get(pk=self.test_order_2.id + 1)
-        created_order_products: list[OrderLine] = actual["lineItems"]
+        created_order_products: list[LineItem] = actual["lineItems"]
         updated_list: QuerySet[Order] = Order.objects.all()
 
         # Assert
@@ -116,7 +116,7 @@ class OrderTests(TestBase, TestCase):
         )
         actual = response.json()
 
-        created_order_products: list[OrderLine] = actual["lineItems"]
+        created_order_products: list[LineItem] = actual["lineItems"]
         updated_list = client.get("/api/orders").json()
 
         # Assert

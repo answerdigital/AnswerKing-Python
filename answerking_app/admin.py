@@ -3,10 +3,10 @@ from answerking_app.models.models import (
     Product,
     Category,
     Order,
-    OrderLine,
+    LineItem,
 )
 
 admin.site.register(Product)
 admin.site.register(Category)
 admin.site.register(Order)
-admin.site.register(OrderLine)
+admin.site.register(LineItem)

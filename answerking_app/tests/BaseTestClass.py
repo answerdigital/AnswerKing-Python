@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from datetime import datetime, timedelta
 
-from answerking_app.models.models import Category, Product, Order, OrderLine
+from answerking_app.models.models import Category, Product, Order, LineItem
 from answerking_app.utils.model_types import (
     CategoryType,
     DetailError,
@@ -114,10 +114,10 @@ class TestBase:
 
         self.test_order_2: Order = Order.objects.create()
 
-        self.test_order_line_1 = OrderLine.objects.create(
+        self.test_order_line_1 = LineItem.objects.create(
             order=self.test_order_1, product=self.test_product_1, quantity=2
         )
-        self.test_order_line_2 = OrderLine.objects.create(
+        self.test_order_line_2 = LineItem.objects.create(
             order=self.test_order_1, product=self.test_product_2, quantity=1
         )
         self.test_order_line_1.calculate_sub_total()
@@ -216,9 +216,7 @@ class TestBase:
             "categories": categories,
         }
 
-    def get_orderline_for_order(
-        self, order_line: OrderLine
-    ) -> OrderProductType:
+    def get_lineitem_for_order(self, order_line: LineItem) -> OrderProductType:
         return {
             "product": self.get_category_and_product_for_order(
                 order_line.product
@@ -229,8 +227,8 @@ class TestBase:
 
     def get_mock_order_api(self, order: Order) -> OrderType:
         order_lines = [
-            self.get_orderline_for_order(order_line)
-            for order_line in OrderLine.objects.filter(order=order)
+            self.get_lineitem_for_order(order_line)
+            for order_line in LineItem.objects.filter(order=order)
         ]
         return {
             "id": order.id,

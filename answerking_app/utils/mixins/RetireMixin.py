@@ -6,7 +6,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from answerking_app.models.models import Category, Product, Order, OrderLine
+from answerking_app.models.models import Category, Product, Order, LineItem
 from answerking_app.models.serializers import (
     CategorySerializer,
     ProductSerializer,
@@ -52,7 +52,7 @@ class CancelOrderMixin(GenericAPIView):
 
 
 def product_active_order_check(instance: Product):
-    existing_order_products: QuerySet[OrderLine] = OrderLine.objects.filter(
+    existing_order_products: QuerySet[LineItem] = LineItem.objects.filter(
         product=instance.id
     )
     for order_product in existing_order_products:
