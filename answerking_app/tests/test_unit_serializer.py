@@ -1,16 +1,24 @@
-from django.test import TestCase
+from unittest import mock
 
-from answerking_app.models.models import Item, Category
+from django.test import TestCase
+from rest_framework import status
+from rest_framework.utils.serializer_helpers import ReturnDict
+
+from answerking_app.models.models import Product, Category
 from answerking_app.models.serializers import (
     compress_white_spaces,
-    ItemSerializer,
+    ProductSerializer,
     CategorySerializer,
+    CategoryDetailSerializer,
 )
 from answerking_app.tests.BaseTestClass import TestBase
-from answerking_app.utils.model_types import ItemType
+from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
+from answerking_app.utils.model_types import ProductType
 
 
 class SerializerTests(TestBase, TestCase):
+
+    serializer_path = 'answerking_app.models.serializers.'
 
     def test_compress_white_spaces_fn(self):
         test_str: str = "  White   Spaces    "
@@ -19,38 +27,145 @@ class SerializerTests(TestBase, TestCase):
 
         self.assertEqual(expected, actual)
 
-    def test_regex_validator_raises_error(self):
-        invalid_name_item: ItemType = self.post_mock_item
-        invalid_name_item["name"] = "new_name"
-        serialized_item: ItemSerializer = ItemSerializer(
-            data=invalid_name_item
-        )
+    def test_cat_det_serializer_contains_correct_fields(self):
+        data: ReturnDict = self.test_cat_det_serializer.data
+        self.assertCountEqual(data.keys(), ['id', 'name', 'description'])
 
-        expected_error: str = "Enter a valid value."
-        # needed to access .errors
-        actual_error = 'name valid'
-        if not serialized_item.is_valid():
-            actual_error = serialized_item.errors["name"][0]
+    def test_cat_det_serializer_id_field_content(self):
+        data: ReturnDict = self.test_cat_det_serializer.data
+        self.assertEqual(data['id'], self.test_cat_1.id)
 
-        self.assertEqual(expected_error, actual_error)
+    def test_cat_det_serializer_name_field_content(self):
+        data: ReturnDict = self.test_cat_det_serializer.data
+        self.assertEqual(data['name'], self.test_cat_1.name)
 
-    def test_items_check_fn_only_depends_on_item_ids(self):
-        rand_item_data: ItemType = self.post_mock_item
-        rand_item_data["id"] = self.test_item_1.id
-        mock_validated_data = {"items": [rand_item_data]}
+    def test_cat_det_serializer_name_max_length_fail(self):
+        serializer_data = self.cat_det_serializer_data
+        serializer_data['name'] = 'e'*51
+        serializer: CategoryDetailSerializer = CategoryDetailSerializer(data=serializer_data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(set(serializer.errors), set('name'))
 
-        expected_items: list[Item] = [self.test_item_1]
-        cs: CategorySerializer = CategorySerializer()
-        actual_items: list[Item] = cs.items_check(validated_data=mock_validated_data)
+    def test_cat_det_serializer_name_blank_fail(self):
+        serializer_data = self.cat_det_serializer_data
+        serializer_data['name'] = ''
+        serializer: CategoryDetailSerializer = CategoryDetailSerializer(data=serializer_data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(set(serializer.errors), set('name'))
 
-        self.assertEqual(expected_items, actual_items)
+    def test_cat_det_serializer_name_regex_validator_pass_1(self):
+        allowed_characters: str = 'abcdefghijklmnopqrstuvwxyz '
+        serializer_data = self.cat_det_serializer_data
+        serializer_data['name'] = allowed_characters
+        serializer = CategoryDetailSerializer(data=serializer_data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.data['name'], allowed_characters)
 
-    def test_cat_serializer_update_retired_field_supplied(self):
-        mock_data: dict = {"retired": True}
-        expected_retired_val: bool = True
-        cs: CategorySerializer = CategorySerializer()
+    def test_cat_det_serializer_name_regex_validator_pass_2(self):
+        allowed_characters: str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!'
+        serializer_data = self.cat_det_serializer_data
+        serializer_data['name'] = allowed_characters
+        serializer = CategoryDetailSerializer(data=serializer_data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.data['name'], allowed_characters)
 
-        cs.update(self.test_cat_1, mock_data)
-        actual_retired_val: bool = self.test_cat_1.retired
+    def test_cat_det_serializer_name_regex_validator_fail(self):
+        allowed_characters: str = 'abcdefghijklmnopqrstuvwxyz '
+        serializer_data = self.cat_det_serializer_data
+        serializer_data['name'] = allowed_characters + '#'
+        serializer = CategoryDetailSerializer(data=serializer_data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(set(serializer.errors), set('name'))
 
-        self.assertEqual(expected_retired_val, actual_retired_val)
+    def test_cat_det_serializer_desc_field_content(self):
+        data: ReturnDict = self.test_cat_det_serializer.data
+        self.assertEqual(data['description'], self.test_cat_1.description)
+
+    def test_cat_det_serializer_desc_max_length_fail(self):
+        serializer_data = self.cat_det_serializer_data
+        serializer_data['description'] = 'e'*201
+        serializer: CategoryDetailSerializer = CategoryDetailSerializer(data=serializer_data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(set(serializer.errors), set('description'))
+
+    def test_cat_det_serializer_desc_None_pass(self):
+        serializer_data = self.cat_det_serializer_data
+        serializer_data['description'] = None
+        serializer: CategoryDetailSerializer = CategoryDetailSerializer(data=serializer_data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.data['description'], None)
+
+    def test_cat_det_serializer_desc_blank_pass(self):
+        serializer_data = self.cat_det_serializer_data
+        serializer_data['description'] = ''
+        serializer: CategoryDetailSerializer = CategoryDetailSerializer(data=serializer_data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.data['description'], '')
+
+    def test_cat_det_serializer_desc_regex_validator_pass_1(self):
+        allowed_characters: str = 'abcdefghijklmnopqrstuvwxyz .!'
+        serializer_data = self.cat_det_serializer_data
+        serializer_data['description'] = allowed_characters
+        serializer = CategoryDetailSerializer(data=serializer_data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.data['description'], allowed_characters)
+
+    def test_cat_det_serializer_desc_regex_validator_pass_2(self):
+        allowed_characters: str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ,#'
+        serializer_data = self.cat_det_serializer_data
+        serializer_data['description'] = allowed_characters
+        serializer = CategoryDetailSerializer(data=serializer_data)
+        self.assertTrue(serializer.is_valid())
+        expected = allowed_characters+'~'
+        actual = serializer.data['description']
+        self.assertEqual(actual, expected)
+
+    def test_cat_det_serializer_desc_regex_validator_fail(self):
+        allowed_characters: str = 'abcdefghijklmnopqrstuvwxyz '
+        serializer_data = self.cat_det_serializer_data
+        serializer_data['description'] = allowed_characters + '*'
+        serializer = CategoryDetailSerializer(data=serializer_data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(set(serializer.errors), set('name'))
+
+    @mock.patch(
+        serializer_path + 'CategoryDetailSerializer.products_check',
+    )
+    def test_cat_det_create_fn_no_products_pass(self, products_check_mock):
+        products_check_mock.return_value = []
+        cds = CategoryDetailSerializer()
+        new_cat = cds.create(self.cat_det_serializer_data)
+        created_cat = Category.objects.get(pk=new_cat.id)
+        products_check_mock.assert_called_once()
+        cat_name = created_cat.name
+        self.assertEqual(cat_name, 'blah')  # self.cat_det_serializer_data['name']
+        self.assertEqual(created_cat.description, self.cat_det_serializer_data['description'])
+        self.assertEqual(created_cat.products, [])
+
+    @mock.patch(
+        serializer_path + 'CategoryDetailSerializer.products_check',
+    )
+    def test_cat_det_create_fn_w_products_pass(self, products_check_mock):
+        products_check_mock.return_value = [self.test_product_1, self.test_product_2]
+        cds = CategoryDetailSerializer()
+        new_cat = cds.create(self.cat_det_serializer_data)
+        created_cat = Category.objects.get(pk=new_cat.id)
+        products_check_mock.assert_called_once()
+        self.assertEqual(created_cat.name, self.cat_det_serializer_data['name'])
+        self.assertEqual(created_cat.description, self.cat_det_serializer_data['description'])
+        self.assertEqual(created_cat.products, [self.test_product_1, self.test_product_2])
+
+    # @mock.patch(
+    #     serializer_path + 'CategoryDetailSerializer.products_check',
+    # )
+    def test_cat_det_update_fn_retired_category_fail(self): # , products_check_mock):
+        self.assertEqual(2, 'bob')
+        # with self.assertRaises(ProblemDetails) as cm:
+        #     retired_cat = self.test_cat_retired
+        #     cds = CategoryDetailSerializer()
+        #     cds.update(retired_cat, self.cat_det_serializer_data)
+        #
+        # products_check_mock.assert_not_called()
+        # self.assertRaises(ProblemDetails)
+        # self.assertEqual(cm.exception.detail, "Bob")
+        # self.assertEqual(cm.exception.status_code, status.HTTP_410_GONE)
