@@ -60,8 +60,8 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         products: list[Product] = self.products_check(validated_data)
         category.name = validated_data["name"]
         category.description = validated_data["description"]
-        category.products.set(objs=products)
         category.save()
+        category.products.set(objs=products)
         return category
 
     def products_check(self, validated_data: dict) -> list[Product]:
