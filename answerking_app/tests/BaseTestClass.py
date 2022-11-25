@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
-from unittest import TestCase
-
+from django.test import TransactionTestCase
 from answerking_app.models.models import Category, Product, Order, LineItem
 from answerking_app.utils.model_types import (
     CategoryType,
@@ -12,7 +11,7 @@ from answerking_app.utils.model_types import (
 )
 
 
-class TestBase(TestCase):
+class TestBase(TransactionTestCase):
     expected_serializer_error_400: DetailError = {
         "detail": "Validation Error",
         "errors": {},
