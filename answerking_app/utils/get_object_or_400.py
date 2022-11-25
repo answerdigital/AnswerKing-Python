@@ -11,7 +11,7 @@ def get_product_or_400(object_class, pk, *filter_args, **filter_kwargs):
         raise ProblemDetails(
             status=status.HTTP_400_BAD_REQUEST,
             detail="Product was not Found",
-            title="Product not found.",
+            title="Product not found",
             extensions={"errors": exc.args},
         )
     return requested_object

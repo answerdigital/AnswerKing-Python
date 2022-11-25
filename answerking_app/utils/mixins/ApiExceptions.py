@@ -3,6 +3,10 @@ import uuid
 from rest_framework.exceptions import APIException
 
 
+class BadInputParameter(Exception):
+    pass
+
+
 class ProblemDetails(APIException):
     def __init__(
         self,
