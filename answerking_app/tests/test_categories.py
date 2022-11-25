@@ -349,8 +349,6 @@ class CategoryTests(TestBase):
 
         self.assertUpdateTime(expected, actual, response, 200)
 
-
-class CategoryTestsDB(TestBase, TransactionTestCase):
     def test_post_duplicated_name_returns_400(self):
         # Arrange
         post_data: CategoryType = {

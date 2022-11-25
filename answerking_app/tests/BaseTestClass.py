@@ -109,11 +109,6 @@ class TestBase(TransactionTestCase):
         self.test_order_line_2.calculate_sub_total()
         self.test_order_1.calculate_total()
 
-    def tearDown(self):
-        Product.objects.all().delete()
-        Category.objects.all().delete()
-        Order.objects.all().delete()
-
     def assertJSONResponse(self, expected, actual, response, status_code):
         self.assertEqual(expected, actual)
         self.assertEqual(response.status_code, status_code)

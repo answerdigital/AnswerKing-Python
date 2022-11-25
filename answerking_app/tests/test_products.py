@@ -205,8 +205,6 @@ class ProductTests(TestBase):
             self.expected_base_404, actual, response, 404
         )
 
-
-class ProductTestsDB(TestBase, TransactionTestCase):
     def test_post_duplicated_name_returns_400(self):
         # Arrange
         client.post(
