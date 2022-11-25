@@ -1,5 +1,5 @@
-from abc import abstractmethod
 from datetime import datetime, timedelta
+from unittest import TestCase
 
 from answerking_app.models.models import Category, Product, Order, LineItem
 from answerking_app.utils.model_types import (
@@ -12,7 +12,7 @@ from answerking_app.utils.model_types import (
 )
 
 
-class TestBase:
+class TestBase(TestCase):
     expected_serializer_error_400: DetailError = {
         "detail": "Validation Error",
         "errors": {},
@@ -71,20 +71,6 @@ class TestBase:
     invalid_json_data: str = '{"invalid": }'
 
     time_format: str = "%Y-%m-%dT%H:%M:%S.%fZ"
-
-    @abstractmethod
-    def assertEqual(self, first, second, msg=None):
-        pass
-
-    @abstractmethod
-    def assertAlmostEqual(
-        self, first, second, places=None, msg=None, delta=None
-    ):
-        pass
-
-    @abstractmethod
-    def assertIsInstance(self, obj, cls, msg=None):
-        pass
 
     def setUp(self):
         self.test_product_1: Product = Product.objects.create(
