@@ -1,5 +1,5 @@
 from django.db.models.query import QuerySet
-from django.test import Client, TestCase, TransactionTestCase
+from django.test import Client, TransactionTestCase
 
 from answerking_app.models.models import Product
 from answerking_app.tests.BaseTestClass import TestBase
@@ -8,7 +8,7 @@ from answerking_app.utils.model_types import DetailError, ProductType
 client = Client()
 
 
-class ProductTests(TestBase, TestCase):
+class ProductTests(TestBase):
     def test_get_all_without_products_returns_no_content(self):
         # Arrange
         Product.objects.all().delete()
@@ -205,8 +205,6 @@ class ProductTests(TestBase, TestCase):
             self.expected_base_404, actual, response, 404
         )
 
-
-class ProductTestsDB(TestBase, TransactionTestCase):
     def test_post_duplicated_name_returns_400(self):
         # Arrange
         client.post(

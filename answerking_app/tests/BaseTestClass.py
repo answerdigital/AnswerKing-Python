@@ -1,6 +1,5 @@
-from abc import abstractmethod
 from datetime import datetime, timedelta
-
+from django.test import TransactionTestCase
 from answerking_app.models.models import Category, Product, Order, LineItem
 from answerking_app.utils.model_types import (
     CategoryType,
@@ -12,7 +11,7 @@ from answerking_app.utils.model_types import (
 )
 
 
-class TestBase:
+class TestBase(TransactionTestCase):
     expected_serializer_error_400: DetailError = {
         "detail": "Validation Error",
         "errors": {},
@@ -72,20 +71,6 @@ class TestBase:
 
     time_format: str = "%Y-%m-%dT%H:%M:%S.%fZ"
 
-    @abstractmethod
-    def assertEqual(self, first, second, msg=None):
-        pass
-
-    @abstractmethod
-    def assertAlmostEqual(
-        self, first, second, places=None, msg=None, delta=None
-    ):
-        pass
-
-    @abstractmethod
-    def assertIsInstance(self, obj, cls, msg=None):
-        pass
-
     def setUp(self):
         self.test_product_1: Product = Product.objects.create(
             name="Burger", price=1.20, description="desc"
@@ -123,11 +108,6 @@ class TestBase:
         self.test_order_line_1.calculate_sub_total()
         self.test_order_line_2.calculate_sub_total()
         self.test_order_1.calculate_total()
-
-    def tearDown(self):
-        Product.objects.all().delete()
-        Category.objects.all().delete()
-        Order.objects.all().delete()
 
     def assertJSONResponse(self, expected, actual, response, status_code):
         self.assertEqual(expected, actual)

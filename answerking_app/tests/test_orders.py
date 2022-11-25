@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django.db.models import QuerySet
-from django.test import Client, TestCase
+from django.test import Client
 
 from answerking_app.models.models import Order, LineItem
 from answerking_app.tests.BaseTestClass import TestBase
@@ -13,7 +13,7 @@ from answerking_app.utils.model_types import (
 client = Client()
 
 
-class OrderTests(TestBase, TestCase):
+class OrderTests(TestBase):
     maxDiff = None
 
     def test_get_all_without_orders_returns_no_content(self):

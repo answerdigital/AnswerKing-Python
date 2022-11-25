@@ -1,7 +1,7 @@
 import datetime
 
 from django.db.models.query import QuerySet
-from django.test import Client, TestCase, TransactionTestCase
+from django.test import Client, TransactionTestCase
 
 from answerking_app.models.models import Category
 from answerking_app.tests.BaseTestClass import TestBase
@@ -14,7 +14,7 @@ from answerking_app.utils.model_types import (
 client = Client()
 
 
-class CategoryTests(TestBase, TestCase):
+class CategoryTests(TestBase):
     def test_get_all_without_categories_returns_no_content(self):
         # Arrange
         Category.objects.all().delete()
@@ -349,8 +349,6 @@ class CategoryTests(TestBase, TestCase):
 
         self.assertUpdateTime(expected, actual, response, 200)
 
-
-class CategoryTestsDB(TestBase, TransactionTestCase):
     def test_post_duplicated_name_returns_400(self):
         # Arrange
         post_data: CategoryType = {
