@@ -1,8 +1,8 @@
-"""
-Django base settings for answerking project.
-"""
 import os
 from pathlib import Path
+
+from os.path import join
+from dotenv import load_dotenv
 
 from corsheaders.defaults import default_headers, default_methods
 
