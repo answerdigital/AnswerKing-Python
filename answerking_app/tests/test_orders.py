@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.db.models import QuerySet
 from django.test import Client
+from freezegun import freeze_time
 
 from answerking_app.models.models import Order, LineItem
 from answerking_app.tests.BaseTestClass import TestBase
@@ -64,6 +65,7 @@ class OrderTests(TestBase):
             self.expected_invalid_url_parameters, actual, response, 400
         )
 
+    @freeze_time("2022-11-28 13:00:00")
     def test_post_valid_without_products_returns_ok(self):
         # Arrange
         old_list = client.get("/api/orders").json()
@@ -94,6 +96,7 @@ class OrderTests(TestBase):
         self.assertEqual(len(created_order_products), 0)
         self.assertCreateUpdateTime(expected, actual, response, 201)
 
+    @freeze_time("2022-11-28 13:00:00")
     def test_post_valid_with_empty_products_returns_ok(self):
         # Arrange
         old_list = client.get("/api/orders").json()
@@ -125,6 +128,7 @@ class OrderTests(TestBase):
         self.assertEqual(len(created_order_products), 0)
         self.assertCreateUpdateTime(expected, actual, response, 201)
 
+    @freeze_time("2022-11-28 13:00:00")
     def test_post_valid_with_products_returns_ok(self):
         # Arrange
         old_orders_list_json = client.get("/api/orders").json()
@@ -206,6 +210,7 @@ class OrderTests(TestBase):
         # Assert
         self.assertJSONErrorResponse(expected, actual, response, 400)
 
+    @freeze_time("2022-11-28 13:30:00")
     def test_put_add_valid_products_to_order_return_ok(self):
         # Arrange
         old_orders_list_json = client.get("/api/orders").json()
@@ -237,6 +242,7 @@ class OrderTests(TestBase):
         self.assertIn(actual, updated_orders_list_json)
         self.assertUpdateTime(expected, actual, response, status_code=200)
 
+    @freeze_time("2022-11-28 13:30:00")
     def test_put_update_quantity_to_zero_return_empty_line_items(self):
         # Arrange
         old_orders_list_json = client.get("/api/orders").json()

@@ -9,6 +9,7 @@ from answerking_app.utils.model_types import (
     OrderProductType,
     CategoryProductType,
 )
+from freezegun import freeze_time
 
 
 class TestBase(TransactionTestCase):
@@ -77,6 +78,7 @@ class TestBase(TransactionTestCase):
 
     time_format: str = "%Y-%m-%dT%H:%M:%S.%fZ"
 
+    @freeze_time("2022-11-28 13:00:00")
     def setUp(self):
         self.test_product_1: Product = Product.objects.create(
             name="Burger", price=1.20, description="desc"
@@ -125,18 +127,14 @@ class TestBase(TransactionTestCase):
 
     def assertUpdateTime(self, expected, actual, response, status_code):
         actual_time: datetime = self.convert_time(actual["lastUpdated"])
-        self.assertAlmostEqual(
-            expected["lastUpdated"], actual_time, delta=timedelta(seconds=2)
-        )
+        self.assertEqual(expected["lastUpdated"], actual_time)
         self.assertIsInstance(actual.pop("lastUpdated"), str)
         self.assertIsInstance(expected.pop("lastUpdated"), datetime)
         self.assertJSONResponse(expected, actual, response, status_code)
 
     def assertCreateUpdateTime(self, expected, actual, response, status_code):
         actual_time: datetime = self.convert_time(actual["createdOn"])
-        self.assertAlmostEqual(
-            expected["createdOn"], actual_time, delta=timedelta(seconds=2)
-        )
+        self.assertEqual(expected["createdOn"], actual_time)
         self.assertIsInstance(actual.pop("createdOn"), str)
         self.assertIsInstance(expected.pop("createdOn"), datetime)
         self.assertUpdateTime(expected, actual, response, status_code)

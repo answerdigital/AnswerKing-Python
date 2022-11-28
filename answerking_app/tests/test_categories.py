@@ -11,6 +11,8 @@ from answerking_app.utils.model_types import (
     CategoryProductType,
 )
 
+from freezegun import freeze_time
+
 client = Client()
 
 
@@ -76,6 +78,7 @@ class CategoryTests(TestBase):
             self.expected_invalid_url_parameters, actual, response, 400
         )
 
+    @freeze_time("2022-11-28 13:00:00")
     def test_post_valid_with_products_returns_ok(self):
         # Arrange
         old_list = client.get("/api/categories").json()
@@ -110,6 +113,7 @@ class CategoryTests(TestBase):
         self.assertIn(created_category, updated_list)
         self.assertCreateUpdateTime(expected, actual, response, 201)
 
+    @freeze_time("2022-11-28 13:00:00")
     def test_post_valid_without_products_returns_ok(self):
         # Arrange
         old_list = client.get("/api/categories").json()
@@ -141,6 +145,7 @@ class CategoryTests(TestBase):
         # Assert
         self.assertNotIn(actual, old_list)
         self.assertIn(created_product, updated_list)
+        # self.assertJSONResponse(expected, actual, response, 200)
         self.assertCreateUpdateTime(expected, actual, response, 201)
 
     def test_post_invalid_json_returns_bad_request(self):
@@ -178,6 +183,7 @@ class CategoryTests(TestBase):
         # Assert
         self.assertJSONErrorResponse(expected, actual, response, 400)
 
+    @freeze_time("2022-11-28 13:30:00")
     def test_put_valid_without_products_returns_no_products(self):
         # Arrange
         old_category = client.get(
@@ -319,6 +325,7 @@ class CategoryTests(TestBase):
             self.expected_invalid_url_parameters, actual, response, 400
         )
 
+    @freeze_time("2022-11-28 13:30:00")
     def test_put_add_duplicated_product_in_body_to_category_return_one(self):
         # Arrange
         product: CategoryProductType = self.get_mock_category_product_api(
