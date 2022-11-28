@@ -240,6 +240,7 @@ class OrderTests(TestBase):
         self.assertIn(created_order, updated_orders_objects)
         self.assertNotIn(actual, old_orders_list_json)
         self.assertIn(actual, updated_orders_list_json)
+        self.assertUpdateGreaterThanCreated(expected, actual)
         self.assertUpdateTime(expected, actual, response, status_code=200)
 
     @freeze_time("2022-11-28 13:30:00")
@@ -273,6 +274,7 @@ class OrderTests(TestBase):
         self.assertIn(created_order, updated_orders_objects)
         self.assertNotIn(actual, old_orders_list_json)
         self.assertIn(actual, updated_orders_list_json)
+        self.assertUpdateGreaterThanCreated(expected, actual)
         self.assertUpdateTime(expected, actual, response, status_code=200)
         self.assertEqual(actual["lineItems"], [])
 

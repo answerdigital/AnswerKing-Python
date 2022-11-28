@@ -220,6 +220,7 @@ class CategoryTests(TestBase):
         # Assert
         self.assertNotEqual(old_category, actual)
         self.assertIn(updated_category, updated_list)
+        self.assertUpdateGreaterThanCreated(expected, actual)
         self.assertUpdateTime(expected, actual, response, 200)
 
     def test_put_invalid_id_returns_not_found(self):
@@ -354,6 +355,7 @@ class CategoryTests(TestBase):
         )
         actual = response.json()
 
+        self.assertUpdateGreaterThanCreated(expected, actual)
         self.assertUpdateTime(expected, actual, response, 200)
 
     def test_post_duplicated_name_returns_400(self):

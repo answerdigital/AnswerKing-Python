@@ -139,7 +139,12 @@ class TestBase(TransactionTestCase):
         self.assertIsInstance(expected.pop("createdOn"), datetime)
         self.assertUpdateTime(expected, actual, response, status_code)
 
-    def convert_time(self, time_1):
+    def assertUpdateGreaterThanCreated(self, expected, actual):
+        expected_created: datetime = self.convert_time(expected["createdOn"])
+        self.assertTrue(actual["lastUpdated"] > actual["createdOn"])
+        self.assertTrue(expected["lastUpdated"] > expected_created)
+
+    def convert_time(self, time_1, *args):
         converted_time: datetime = datetime.strptime(time_1, self.time_format)
         return converted_time
 
