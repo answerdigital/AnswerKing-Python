@@ -4,6 +4,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.utils.serializer_helpers import ReturnDict
 
+import answerking_app.utils.get_object_or_400
 from answerking_app.models.models import Product, Category
 from answerking_app.models.serializers import (
     compress_white_spaces,
@@ -147,15 +148,20 @@ class SerializerTests(TestBase):
     )
     def test_cat_det_create_fn_w_products_pass(self, products_check_mock):
         products_check_mock.return_value = [self.test_product_1, self.test_product_2]
+        serializer_data = self.cat_det_serializer_data
+        serializer_data['products'] = [
+            self.get_mock_product_api(self.test_product_1),
+            self.get_mock_product_api(self.test_product_2)
+        ]
         cds = CategoryDetailSerializer()
-        new_cat = cds.create(self.cat_det_serializer_data)
+        new_cat = cds.create(serializer_data)
         created_cat = Category.objects.get(pk=new_cat.id)
         expected_prod_ids = [self.test_product_1,
                              self.test_product_2
                              ]
         actual_prod_ids = list(created_cat.products.all())
-        products_check_mock.assert_called_once()
 
+        products_check_mock.assert_called_once()
         self.assertEqual(created_cat.name, self.cat_det_serializer_data['name'])
         self.assertEqual(created_cat.description, self.cat_det_serializer_data['description'])
         self.assertEqual(actual_prod_ids, expected_prod_ids)
@@ -184,30 +190,9 @@ class SerializerTests(TestBase):
             self.test_product_1,
             self.test_product_2,
         ]
-        acutal: list[Product] = cds.products_check(validated_data)
-
-        self.assertEqual(acutal, expected)
-
-    def test_product_check_no_products_returns_empty_list_pass(self):
-        validated_data: dict = {}
-        cds = CategoryDetailSerializer()
-        expected = []
-        actual: list = cds.products_check(validated_data)
+        actual: list[Product] = cds.products_check(validated_data)
 
         self.assertEqual(actual, expected)
-
-    def test_product_check_invalid_id_returns_get_product_or_400_fail(self):
-        with self.assertRaises(ProblemDetails) as context:
-            validated_data: dict = self.cat_det_serializer_data
-            invalid_id_product_data = self.get_mock_product_api(self.test_product_1)
-            invalid_id_product_data['id'] = 1000
-            validated_data['products'] = [invalid_id_product_data]
-            cds = CategoryDetailSerializer()
-            cds.products_check(validated_data)
-
-        self.assertRaises(ProblemDetails)
-        self.assertEqual(context.exception.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(context.exception.detail, "Product was not Found")
 
     def test_product_check_retired_product_fail(self):
         with self.assertRaises(ProblemDetails) as context:
