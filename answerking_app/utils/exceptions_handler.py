@@ -7,10 +7,7 @@ from rest_framework import status
 from rest_framework.exceptions import ParseError
 from rest_framework.serializers import ValidationError
 
-from answerking_app.utils.mixins.ApiExceptions import (
-    ProblemDetails,
-    BadInputParameter,
-)
+from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 
 def wrapper(exc, context):
@@ -33,12 +30,6 @@ def wrapper(exc, context):
             detail="Validation Error",
             title="Invalid input.",
             extensions={"errors": exc.detail},
-        )
-    elif isinstance(exc, BadInputParameter):
-        exc = ProblemDetails(
-            status=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid parameters",
-            title="Request has invalid parameters",
         )
     elif isinstance(exc, ParseError):
         exc = ProblemDetails(
