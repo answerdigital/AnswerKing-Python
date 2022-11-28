@@ -1,7 +1,7 @@
 import datetime
 
 from django.db.models.query import QuerySet
-from django.test import Client, TransactionTestCase
+from django.test import Client
 
 from answerking_app.models.models import Category
 from answerking_app.tests.BaseTestClass import TestBase
@@ -73,7 +73,7 @@ class CategoryTests(TestBase):
 
         # Assert
         self.assertJSONErrorResponse(
-            self.expected_base_404, actual, response, 404
+            self.expected_invalid_url_parameters, actual, response, 400
         )
 
     def test_post_valid_with_products_returns_ok(self):
@@ -223,7 +223,7 @@ class CategoryTests(TestBase):
 
         # Assert
         self.assertJSONErrorResponse(
-            self.expected_base_404, actual, response, 404
+            self.expected_invalid_url_parameters, actual, response, 400
         )
 
     def test_put_invalid_json_returns_bad_request(self):
@@ -316,7 +316,7 @@ class CategoryTests(TestBase):
 
         # Assert
         self.assertJSONErrorResponse(
-            self.expected_base_404, actual, response, 404
+            self.expected_invalid_url_parameters, actual, response, 400
         )
 
     def test_put_add_duplicated_product_in_body_to_category_return_one(self):

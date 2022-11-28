@@ -1,5 +1,5 @@
 from django.db.models.query import QuerySet
-from django.test import Client, TransactionTestCase
+from django.test import Client
 
 from answerking_app.models.models import Product
 from answerking_app.tests.BaseTestClass import TestBase
@@ -54,7 +54,7 @@ class ProductTests(TestBase):
 
         # Assert
         self.assertJSONErrorResponse(
-            self.expected_base_404, actual, response, 404
+            self.expected_invalid_url_parameters, actual, response, 400
         )
 
     def test_post_valid_returns_ok(self):
@@ -202,7 +202,7 @@ class ProductTests(TestBase):
 
         # Assert
         self.assertJSONErrorResponse(
-            self.expected_base_404, actual, response, 404
+            self.expected_invalid_url_parameters, actual, response, 400
         )
 
     def test_post_duplicated_name_returns_400(self):

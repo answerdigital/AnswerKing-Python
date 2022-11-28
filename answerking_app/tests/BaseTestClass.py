@@ -39,6 +39,12 @@ class TestBase(TransactionTestCase):
         "title": "Resource not found",
         "type": "http://testserver/problems/not_found/",
     }
+    expected_invalid_url_parameters: DetailError = {
+        "detail": "Invalid parameters",
+        "status": 400,
+        "title": "Request has invalid parameters",
+        "type": "http://testserver/problems/error/",
+    }
     expected_duplicated_name_error: DetailError = {
         "detail": "This name already exists",
         "status": 400,
@@ -55,7 +61,7 @@ class TestBase(TransactionTestCase):
     expected_nonexistent_product_error: DetailError = {
         "detail": "Product was not Found",
         "status": 400,
-        "title": "Product not found.",
+        "title": "Product not found",
         "type": "http://testserver/problems/error/",
         "errors": ["Product matching query does not exist."],
     }

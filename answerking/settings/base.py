@@ -2,9 +2,6 @@
 Django base settings for answerking project.
 """
 import os
-from os.path import join
-from dotenv import load_dotenv
-
 from pathlib import Path
 
 from os.path import join

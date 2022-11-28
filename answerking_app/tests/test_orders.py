@@ -61,7 +61,7 @@ class OrderTests(TestBase):
 
         # Assert
         self.assertJSONErrorResponse(
-            self.expected_base_404, actual, response, 404
+            self.expected_invalid_url_parameters, actual, response, 400
         )
 
     def test_post_valid_without_products_returns_ok(self):
@@ -287,7 +287,7 @@ class OrderTests(TestBase):
 
         # Assert
         self.assertJSONErrorResponse(
-            self.expected_base_404, actual, response, 404
+            self.expected_invalid_url_parameters, actual, response, 400
         )
 
     def test_put_invalid_products_return_empty_order(self):
@@ -327,5 +327,5 @@ class OrderTests(TestBase):
 
         # Assert
         self.assertJSONErrorResponse(
-            self.expected_base_404, actual, response, 404
+            self.expected_invalid_url_parameters, actual, response, 400
         )
