@@ -1,12 +1,41 @@
 version: '3.3'
 services:
-  db:
+  database:
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_DATABASE: 'answerking_app'
-      MYSQL_ROOT_PASSWORD: 'Admin123'
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_PASS}
     ports:
-      - '3306:3306'
+      - '${DATABASE_PORT}:${DATABASE_PORT}'
     expose:
-      - '3306'
+      - ${DATABASE_PORT} 
+    networks:
+      - mynet
+
+
+  django:
+    build:
+      dockerfile: DockerFile
+      args:
+        - DATABASE_NAME=${DATABASE_NAME}
+        - DATABASE_USER=${DATABASE_USER}
+        - DATABASE_PASS=${DATABASE_PASS}
+        - DATABASE_HOST=${DATABASE_HOST}
+        - DATABASE_PORT=${DATABASE_PORT}
+        - SECRET_KEY=${SECRET_KEY}
+        - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+    ports:
+      - "8080:8080"
+    expose:
+      - '8080'
+    networks:
+      - mynet
+
+
+
+networks:
+  mynet:
+    driver: bridge
+    ipam:
+      driver: default
