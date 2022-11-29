@@ -17,7 +17,6 @@ django-json-404-middleware = { git = "https://github.com/Axeltherabbit/django-js
 python-dotenv = "^0.21.0"
 drf-problems = { git = "https://github.com/Axeltherabbit/drf-problems" }
 typing-extensions = "^4.4.0"
-django-stubs = {extras = ["compatible-mypy"], version = "^1.13.0"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
