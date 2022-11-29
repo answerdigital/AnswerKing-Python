@@ -7,6 +7,7 @@ from answerking_app.tests.BaseTestClass import TestBase
 
 client = Client()
 
+
 @ddt
 class GetTests(TestBase, TestCase):
     def test_get_all_without_products_returns_no_content(self):
@@ -145,7 +146,6 @@ class PutTests(TestBase, TestCase):
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
-
     def test_put_invalid_id_returns_bad_request(self):
         response = client.put("/api/products/invalid-id")
         self.assertJSONErrorResponse(response.json())
@@ -158,7 +158,9 @@ class PutTests(TestBase, TestCase):
 
     def test_put_duplicated_name_returns_400(self):
         self.seedFixture("products", "basic-1.json")
-        seededData2 = self.seedFixture("products", "basic-1-different-name.json")
+        seededData2 = self.seedFixture(
+            "products", "basic-1-different-name.json"
+        )
         putData = self.getFixture("products", "basic-1-update-dup-name.json")
         response = client.put(
             f"/api/products/{seededData2['id']}",

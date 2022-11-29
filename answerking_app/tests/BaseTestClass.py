@@ -79,7 +79,7 @@ class TestBase:
         # )
 
         # self.test_cat_1.products.add(self.test_product_1)
-        #self.test_cat_1.products.add(self.test_product_2)
+        # self.test_cat_1.products.add(self.test_product_2)
         # self.test_cat_2.products.add(self.test_product_3)
 
         # self.test_order_empty: Order = Order.objects.create()
