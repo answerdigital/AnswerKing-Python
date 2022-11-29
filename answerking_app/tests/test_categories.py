@@ -145,7 +145,6 @@ class CategoryTests(TestBase):
         # Assert
         self.assertNotIn(actual, old_list)
         self.assertIn(created_product, updated_list)
-        # self.assertJSONResponse(expected, actual, response, 200)
         self.assertCreateUpdateTime(expected, actual, response, 201)
 
     def test_post_invalid_json_returns_bad_request(self):
