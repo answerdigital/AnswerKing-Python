@@ -1,23 +1,12 @@
 from datetime import datetime, timedelta
 import json
+from django.test import TransactionTestCase
+from snapshottest import TestCase
 
 from answerking_app.models.models import Category, Product, Order, LineItem
-from answerking_app.utils.model_types import (
-    CategoryType,
-    DetailError,
-    ProductType,
-    OrderType,
-    OrderProductType,
-    CategoryProductType,
-)
 
 
-class TestBase:
-    def setUp(self):
-        Product.objects.all().delete()
-        Category.objects.all().delete()
-        Order.objects.all().delete()
-
+class TestBase(TransactionTestCase, TestCase):
     def seedFixture(self, type, fixtureName):
         if type == "products":
             data = self.getFixture(type, fixtureName)
@@ -108,92 +97,87 @@ class TestBase:
         # )
         # self.test_order_1.calculate_total()
 
-    def tearDown(self):
-        Product.objects.all().delete()
-        Category.objects.all().delete()
-        Order.objects.all().delete()
-
     def assertJSONErrorResponse(self, response):
         self.assertIsInstance(response.pop("traceId"), str)  # type: ignore[reportGeneralTypeIssues]
         self.assertMatchSnapshot(response)
 
-    def get_mock_category_api(
-        self, category: Category, products: list[CategoryProductType]
-    ) -> CategoryType:
-        return {
-            "id": category.id,
-            "name": category.name,
-            "description": category.description,
-            "createdOn": category.created_on.strftime(self.time_format),
-            "lastUpdated": category.last_updated.strftime(self.time_format),
-            "products": products,
-            "retired": category.retired,
-        }
+    # def get_mock_category_api(
+    #     self, category: Category, products: list[CategoryProductType]
+    # ) -> CategoryType:
+    #     return {
+    #         "id": category.id,
+    #         "name": category.name,
+    #         "description": category.description,
+    #         "createdOn": category.created_on.strftime(self.time_format),
+    #         "lastUpdated": category.last_updated.strftime(self.time_format),
+    #         "products": products,
+    #         "retired": category.retired,
+    #     }
 
-    def get_category_and_product_for_order(
-        self, product: Product
-    ) -> ProductType:
-        categories: list[CategoryType] = self.get_mock_product_categories(
-            product
-        )
-        return {
-            "id": product.id,
-            "name": product.name,
-            "description": product.description,
-            "price": float(product.price),
-            "categories": categories,
-        }
+    # def get_category_and_product_for_order(
+    #     self, product: Product
+    # ) -> ProductType:
+    #     categories: list[CategoryType] = self.get_mock_product_categories(
+    #         product
+    #     )
+    #     return {
+    #         "id": product.id,
+    #         "name": product.name,
+    #         "description": product.description,
+    #         "price": float(product.price),
+    #         "categories": categories,
+    #     }
 
-    def get_lineitem_for_order(self, order_line: LineItem) -> OrderProductType:
-        return {
-            "product": self.get_category_and_product_for_order(
-                order_line.product
-            ),
-            "quantity": order_line.quantity,
-            "subTotal": float(order_line.sub_total),
-        }
+    # def get_lineitem_for_order(self, order_line: LineItem) -> OrderProductType:
+    #     return {
+    #         "product": self.get_category_and_product_for_order(
+    #             order_line.product
+    #         ),
+    #         "quantity": order_line.quantity,
+    #         "subTotal": float(order_line.sub_total),
+    #     }
 
-    def get_mock_order_api(self, order: Order) -> OrderType:
-        order_lines = [
-            self.get_lineitem_for_order(order_line)
-            for order_line in LineItem.objects.filter(order=order)
-        ]
-        return {
-            "id": order.id,
-            "createdOn": order.created_on.strftime(self.time_format),
-            "lastUpdated": order.last_updated.strftime(self.time_format),
-            "orderStatus": order.order_status,
-            "orderTotal": float(order.order_total),
-            "lineItems": order_lines,
-        }
+    # def get_mock_order_api(self, order: Order) -> OrderType:
+    #     order_lines = [
+    #         self.get_lineitem_for_order(order_line)
+    #         for order_line in LineItem.objects.filter(order=order)
+    #     ]
+    #     return {
+    #         "id": order.id,
+    #         "createdOn": order.created_on.strftime(self.time_format),
+    #         "lastUpdated": order.last_updated.strftime(self.time_format),
+    #         "orderStatus": order.order_status,
+    #         "orderTotal": float(order.order_total),
+    #         "lineItems": order_lines,
+    #     }
 
-    def expected_order_after_put_request(
-        self, order: Order, post_data: list
-    ) -> OrderType:
-        old_order: OrderType = self.get_mock_order_api(order)
-        expected_order: OrderType = old_order
-        expected_order["lastUpdated"] = datetime.now()
-        order_total: float = 0
-        line_items: list = []
-        for product_post_data in post_data:
-            product: Product = Product.objects.get(
-                id=product_post_data["product"]["id"]
-            )
-            quantity: int = product_post_data["quantity"]
-            if product.retired or quantity < 1:
-                continue
-            sub_total: float = float(product.price * quantity)
-            line_items.append(
-                {
-                    "product": self.get_category_and_product_for_order(
-                        product
-                    ),
-                    "quantity": quantity,
-                    "subTotal": sub_total,
-                }
-            )
-            order_total += sub_total
+    # def expected_order_after_put_request(
+    #     self, order: Order, post_data: list
+    # ) -> OrderType:
+    #     old_order: OrderType = self.get_mock_order_api(order)
+    #     expected_order: OrderType = old_order
+    #     expected_order["lastUpdated"] = datetime.now()
+    #     order_total: float = 0
+    #     line_items: list = []
+    #     for product_post_data in post_data:
+    #         product: Product = Product.objects.get(
+    #             id=product_post_data["product"]["id"]
+    #         )
+    #         quantity: int = product_post_data["quantity"]
+    #         if product.retired or quantity < 1:
+    #             continue
+    #         sub_total: float = float(product.price * quantity)
+    #         line_items.append(
+    #             {
+    #                 "product": self.get_category_and_product_for_order(
+    #                     product
+    #                 ),
+    #                 "quantity": quantity,
+    #                 "subTotal": sub_total,
+    #             }
+    #         )
+    #         order_total += sub_total
 
-        expected_order["lineItems"] = line_items
-        expected_order["orderTotal"] = float(order_total)
-        return expected_order
+    #     expected_order["lineItems"] = line_items
+    #     expected_order["orderTotal"] = float(order_total)
+    #     return expected_order

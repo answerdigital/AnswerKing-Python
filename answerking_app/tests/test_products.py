@@ -1,6 +1,8 @@
+from typing import Any, Dict
+from typing_extensions import reveal_type
+from django.core.handlers.wsgi import WSGIHandler, WSGIRequest
 from django.test import Client
 from assertpy import assert_that
-from snapshottest import TestCase
 from ddt import ddt, data
 
 from answerking_app.tests.BaseTestClass import TestBase
@@ -9,7 +11,7 @@ client = Client()
 
 
 @ddt
-class GetTests(TestBase, TestCase):
+class GetTests(TestBase):
     def test_get_all_without_products_returns_no_content(self):
         response = client.get("/api/products")
         assert_that(response.json()).is_equal_to([])
@@ -40,7 +42,7 @@ class GetTests(TestBase, TestCase):
 
 
 @ddt
-class PostTests(TestBase, TestCase):
+class PostTests(TestBase):
     # @data(
     #     "basic-1.json",
     #     "boundry-name.json",
@@ -95,7 +97,7 @@ class PostTests(TestBase, TestCase):
 
 
 @ddt
-class PutTests(TestBase, TestCase):
+class PutTests(TestBase):
     # @data(
     #     "basic-1-update.json",
     #     "boundry-name.json",
@@ -128,7 +130,7 @@ class PutTests(TestBase, TestCase):
         seededData = self.seedFixture("products", "basic-1.json")
         putData = self.getFixture("products", data)
         response = client.put(
-            f"/api/products/{seededData['id']}",
+            f"/api/products/{seededData['id']}", # type: ignore[GeneralTypeIssue]
             putData,
             content_type="application/json",
         )
@@ -163,7 +165,7 @@ class PutTests(TestBase, TestCase):
         )
         putData = self.getFixture("products", "basic-1-update-dup-name.json")
         response = client.put(
-            f"/api/products/{seededData2['id']}",
+            f"/api/products/{seededData2['id']}", # type: ignore[GeneralTypeIssue]
             putData,
             content_type="application/json",
         )
@@ -171,11 +173,11 @@ class PutTests(TestBase, TestCase):
         assert_that(response.status_code).is_equal_to(400)
 
 
-class DeleteTests(TestBase, TestCase):
+class DeleteTests(TestBase):
     def test_delete_with_products_returns_ok(self):
         seededData = self.seedFixture("products", "basic-1.json")
-        response = client.delete(f"/api/products/{seededData['id']}")
-        getResponse = client.get(f"/api/products/{seededData['id']}")
+        response = client.delete(f"/api/products/{seededData['id']}") # type: ignore[GeneralTypeIssue]
+        getResponse = client.get(f"/api/products/{seededData['id']}") # type: ignore[GeneralTypeIssue]
         assert_that(response.status_code).is_equal_to(200)
         assert_that(str(getResponse.json())).contains("'retired': True")
 
