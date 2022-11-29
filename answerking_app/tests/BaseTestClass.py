@@ -14,19 +14,18 @@ from answerking_app.utils.model_types import (
 
 class TestBase:
     def setUp(self):
-        Item.objects.all().delete()
+        Product.objects.all().delete()
         Category.objects.all().delete()
-        Status.objects.all().delete()
         Order.objects.all().delete()
 
     def seedFixture(self, type, fixtureName):
-        if type == "items":
+        if type == "products":
             data = self.getFixture(type, fixtureName)
             if isinstance(data, list):
                 for item in data:
-                    Item.objects.create(**item)
+                    Product.objects.create(**item)
             elif isinstance(data, dict):
-                Item.objects.create(**data)
+                Product.objects.create(**data)
             else:
                 raise Exception(f"{data} is not valid json")
             return data

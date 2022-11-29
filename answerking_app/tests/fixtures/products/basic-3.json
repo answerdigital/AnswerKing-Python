@@ -2,29 +2,26 @@
     {
         "id": 1,
         "name": "Burger",
-        "price": "1.20",
         "description": "desc",
-        "stock": 100,
-        "calories": 100,
+        "price": 1.2,
+        "category": [],
         "retired": false
     },
     {
         "id": 2,
         "name": "Coke",
-        "price": "1.50",
         "description": "desc",
-        "stock": 100,
-        "calories": 100,
+        "price": 1.5,
+        "category": [],
         "retired": false
 
     },
     {
         "id": 3,
         "name": "Chips",
-        "price": "1.50",
         "description": "desc",
-        "stock": 100,
-        "calories": 100,
+        "price": 1.5,
+        "category": [],
         "retired": false
     }
 ]
