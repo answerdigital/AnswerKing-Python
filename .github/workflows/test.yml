@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "main", "develop" ]
 permissions:
-  pull-requests: read
+  pull-requests: write
 
 jobs:
   test_and_sonar_cloud_report:
