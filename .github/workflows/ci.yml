@@ -8,9 +8,7 @@ on:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
 
- 
 jobs:
-
   black_test:
     runs-on: ubuntu-latest
     steps:
@@ -18,8 +16,6 @@ jobs:
       - uses: ./.github/actions/dependencies
       - name: Run Black Test
         run: poetry run black . --line-length=78 --check
-
-
   pycodestyle_test:
     runs-on: ubuntu-latest
     steps:
@@ -27,8 +23,6 @@ jobs:
       - uses: ./.github/actions/dependencies
       - name: Run Pycodestyle Test
         run: poetry run pycodestyle . --ignore=E500
-
-
   pyright_test:
     runs-on: ubuntu-latest
     steps:
