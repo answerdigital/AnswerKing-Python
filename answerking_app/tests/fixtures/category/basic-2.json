@@ -1,0 +1,14 @@
+[
+    {
+        "id": 1,
+        "name": "Burgers",
+        "description": "desc",
+        "retired": false
+    },
+    {
+        "id": 2,
+        "name": "Sides",
+        "description": "desc",
+        "retired": false
+    }
+]

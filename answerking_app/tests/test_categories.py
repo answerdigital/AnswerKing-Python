@@ -1,54 +1,33 @@
-# import datetime
+import datetime
 
-# from django.db.models.query import QuerySet
-# from django.test import Client
+from django.db.models.query import QuerySet
+from django.test import Client
+from assertpy import assert_that
+from ddt import ddt, data
 
-# from answerking_app.models.models import Category
-# from answerking_app.tests.BaseTestClass import TestBase
-# from answerking_app.utils.model_types import (
-#     CategoryType,
-#     DetailError,
-#     CategoryProductType,
-# )
+from answerking_app.models.models import Category
+from answerking_app.tests.BaseTestClass import TestBase
+from answerking_app.utils.model_types import (
+    CategoryType,
+    DetailError,
+    CategoryProductType,
+)
 
-# client = Client()
+client = Client()
 
+@ddt
+class CategoryTests(TestBase):
+    def test_get_all_without_categories_returns_no_content(self):
+        response = client.get("/api/categories")
+        assert_that(response.json()).is_equal_to([])
+        assert_that(response.status_code).is_equal_to(200)
 
-# class CategoryTests(TestBase):
-#     def test_get_all_without_categories_returns_no_content(self):
-#         # Arrange
-#         Category.objects.all().delete()
-#         expected: list = []
-
-#         # Act
-#         response = client.get("/api/categories")
-#         actual = response.json()
-
-#         # Assert
-#         self.assertJSONResponse(expected, actual, response, 200)
-
-#     def test_get_all_with_categories_returns_ok(self):
-#         # Arrange
-#         expected: list[CategoryType] = [
-#             self.get_mock_category_api(
-#                 self.test_cat_1,
-#                 [
-#                     self.get_mock_category_product_api(self.test_product_1),
-#                     self.get_mock_category_product_api(self.test_product_2),
-#                 ],
-#             ),
-#             self.get_mock_category_api(
-#                 self.test_cat_2,
-#                 [self.get_mock_category_product_api(self.test_product_3)],
-#             ),
-#         ]
-
-#         # Act
-#         response = client.get("/api/categories")
-#         actual = response.json()
-
-#         # Assert
-#         self.assertJSONResponse(expected, actual, response, 200)
+    @data("basic-1.json", "basic-2.json")
+    def test_get_all_with_categories_returns_ok(self, seed):
+        self.seedFixture("category", seed)
+        response = client.get("/api/categories")
+        self.assertJSONCategoryResponse(response.json())
+        assert_that(response.status_code).is_equal_to(200)
 
 #     def test_get_valid_id_returns_ok(self):
 #         # Arrange

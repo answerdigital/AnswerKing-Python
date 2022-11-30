@@ -8,52 +8,33 @@ from answerking_app.models.models import Category, Product, Order, LineItem
 
 class TestBase(TransactionTestCase, TestCase):
     def seedFixture(self, type, fixtureName):
-        if type == "products":
-            data = self.getFixture(type, fixtureName)
-            if isinstance(data, list):
-                for item in data:
-                    Product.objects.create(**item)
-            elif isinstance(data, dict):
-                Product.objects.create(**data)
-            else:
-                raise Exception(f"{data} is not valid json")
-            return data
-        else:
-            raise Exception(f"{type} is not a valid data seeding type")
+        match type:
+            case "product":
+                data = self.getFixture(type, fixtureName)
+                if isinstance(data, list):
+                    for item in data:
+                        Product.objects.create(**item)
+                elif isinstance(data, dict):
+                    Product.objects.create(**data)
+                else:
+                    raise Exception(f"{data} is not valid json")
+                return data
+            case "category":
+                data = self.getFixture(type, fixtureName)
+                if isinstance(data, list):
+                    for item in data:
+                        Category.objects.create(**item)
+                elif isinstance(data, dict):
+                    Category.objects.create(**data)
+                else:
+                    raise Exception(f"{data} is not valid json")
+                return data
+            case _:
+                raise Exception(f"{type} is not a valid data seeding type")        
 
     def getFixture(self, type, fixtureName):
         fixturePath = "answerking_app/tests/fixtures"
         return json.load(open(f"{fixturePath}/{type}/{fixtureName}"))
-
-        # Item.objects.create(**data)
-
-        # self.test_item_1: Item = Item.objects.create(
-        #     id="1",
-        #     name="Burger",
-        #     price=1.20,
-        #     description="desc",
-        #     stock=100,
-        #     calories=100,
-        # )
-        # self.test_item_2: Item = Item.objects.create(
-        #     id="2",
-        #     name="Coke",
-        #     price=1.50,
-        #     description="desc",
-        #     stock=100,
-        #     calories=100,
-        # )
-        # self.test_item_3: Item = Item.objects.create(
-        #     id="3",
-        #     name="Chips",
-        #     price=1.50,
-        #     description="desc",
-        #     stock=100,
-        #     calories=100,
-        # )
-
-        # self.test_cat_1: Category = Category.objects.create(name="Burgers")
-        # self.test_cat_2: Category = Category.objects.create(name="Sides")
 
         # self.test_cat_1.items.add(self.test_item_1)
         # self.test_cat_1.items.add(self.test_item_2)
@@ -100,6 +81,12 @@ class TestBase(TransactionTestCase, TestCase):
     def assertJSONErrorResponse(self, response):
         self.assertIsInstance(response.pop("traceId"), str)  # type: ignore[reportGeneralTypeIssues]
         self.assertMatchSnapshot(response)
+
+    def assertJSONCategoryResponse(self, response):
+        for category in response:
+            self.assertIsInstance(category.pop("createdOn"), str)  # type: ignore[reportGeneralTypeIssues]
+            self.assertIsInstance(category.pop("lastUpdated"), str)  # type: ignore[reportGeneralTypeIssues]
+            self.assertMatchSnapshot(category)
 
     # def get_mock_category_api(
     #     self, category: Category, products: list[CategoryProductType]

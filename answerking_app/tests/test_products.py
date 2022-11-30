@@ -19,13 +19,13 @@ class GetTests(TestBase):
 
     # @data("basic-3.json", "basic-1-list.json", "extreme-5.json")
     # def test_get_all_with_products_returns_ok(self, seed):
-    #     seededData = self.seedFixture("products", seed)
+    #     seededData = self.seedFixture("product", seed)
     #     response = client.get("/api/products")
     #     assert_that(response.json()).is_equal_to(seededData)
     #     assert_that(response.status_code).is_equal_to(200)
 
     # def test_get_id_valid_returns_ok(self):
-    #     seededData = self.seedFixture("products", "basic-1.json")
+    #     seededData = self.seedFixture("product", "basic-1.json")
     #     response = client.get(f"/api/products/{seededData['id']}")
     #     assert_that(response.json()).is_equal_to(seededData)
     #     assert_that(response.status_code).is_equal_to(200)
@@ -50,7 +50,7 @@ class PostTests(TestBase):
     #     "boundry-price.json",
     # )
     # def test_post_valid_returns_ok(self, data):
-    #     postData = self.getFixture("products", data)
+    #     postData = self.getFixture("product", data)
     #     response = client.post(
     #         "/api/products", postData, content_type="application/json"
     #     )
@@ -68,7 +68,7 @@ class PostTests(TestBase):
         "invalid-missing-fields-2.json",
     )
     def test_post_invalid_data_returns_bad_request(self, data):
-        postData = self.getFixture("products", data)
+        postData = self.getFixture("product", data)
         response = client.post(
             "/api/products",
             postData,
@@ -87,8 +87,8 @@ class PostTests(TestBase):
         self.assertJSONErrorResponse(response.json())
 
     def test_post_duplicated_name_returns_400(self):
-        self.seedFixture("products", "basic-1.json")
-        postData = self.getFixture("products", "basic-1.json")
+        self.seedFixture("product", "basic-1.json")
+        postData = self.getFixture("product", "basic-1.json")
         response = client.post(
             "/api/products", postData, content_type="application/json"
         )
@@ -105,8 +105,8 @@ class PutTests(TestBase):
     #     "boundry-price.json",
     # )
     # def test_put_valid_returns_ok(self, data):
-    #     seededData = self.seedFixture("products", "basic-1.json")
-    #     putData = self.getFixture("products", data)
+    #     seededData = self.seedFixture("product", "basic-1.json")
+    #     putData = self.getFixture("product", data)
     #     response = client.put(
     #         f"/api/products/{seededData['id']}",
     #         putData,
@@ -127,8 +127,8 @@ class PutTests(TestBase):
         "invalid-missing-fields-2.json",
     )
     def test_put_invalid_data_returns_bad_request(self, data):
-        seededData = self.seedFixture("products", "basic-1.json")
-        putData = self.getFixture("products", data)
+        seededData = self.seedFixture("product", "basic-1.json")
+        putData = self.getFixture("product", data)
         response = client.put(
             f"/api/products/{seededData['id']}",  # type: ignore[GeneralTypeIssue]
             putData,
@@ -138,7 +138,7 @@ class PutTests(TestBase):
         assert_that(response.status_code).is_equal_to(400)
 
     def test_put_invalid_json_returns_bad_request(self):
-        self.seedFixture("products", "basic-1.json")
+        self.seedFixture("product", "basic-1.json")
         invalid_json_data: str = '{"invalid": }'
         response = client.put(
             "/api/products/1",
@@ -159,11 +159,11 @@ class PutTests(TestBase):
         assert_that(response.status_code).is_equal_to(404)
 
     def test_put_duplicated_name_returns_400(self):
-        self.seedFixture("products", "basic-1.json")
+        self.seedFixture("product", "basic-1.json")
         seededData2 = self.seedFixture(
-            "products", "basic-1-different-name.json"
+            "product", "basic-1-different-name.json"
         )
-        putData = self.getFixture("products", "basic-1-update-dup-name.json")
+        putData = self.getFixture("product", "basic-1-update-dup-name.json")
         response = client.put(
             f"/api/products/{seededData2['id']}",  # type: ignore[GeneralTypeIssue]
             putData,
@@ -175,7 +175,7 @@ class PutTests(TestBase):
 
 class DeleteTests(TestBase):
     def test_delete_with_products_returns_ok(self):
-        seededData = self.seedFixture("products", "basic-1.json")
+        seededData = self.seedFixture("product", "basic-1.json")
         response = client.delete(f"/api/products/{seededData['id']}")  # type: ignore[GeneralTypeIssue]
         getResponse = client.get(f"/api/products/{seededData['id']}")  # type: ignore[GeneralTypeIssue]
         assert_that(response.status_code).is_equal_to(200)
