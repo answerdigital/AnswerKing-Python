@@ -22,7 +22,7 @@ jobs:
       - uses : actions/checkout@v3
       - uses: ./.github/actions/dependencies
       - name: Run Pycodestyle Test
-        run: poetry run pycodestyle . --ignore=E500
+        run: poetry run pycodestyle . --ignore=E501
   pyright_test:
     runs-on: ubuntu-latest
     steps:
