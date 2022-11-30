@@ -5,7 +5,7 @@ on:
     branches: [ "main", "develop" ]
   pull_request:
     branches: [ "main", "develop" ]
-permissions: read-all 
+permissions: write-all 
 
 jobs:
   test_and_sonar_cloud_report:
