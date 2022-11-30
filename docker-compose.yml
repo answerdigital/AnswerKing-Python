@@ -1,17 +1,13 @@
 version: '3.3'
 services:
   database:
-    image: mysql:5.7
+    image: mysql:latest
     restart: always
     environment:
       - MYSQL_DATABASE=${DATABASE_NAME}
       - MYSQL_ROOT_PASSWORD=${DATABASE_PASS}
-    ports:
-      - '3306:${DATABASE_PORT}'
     networks:
       - mynet
-
-
   django:
     build:
       dockerfile: DockerFile
@@ -24,15 +20,15 @@ services:
         - SECRET_KEY=${SECRET_KEY}
         - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
     env_file: ".env_deploy"
-    entrypoint: "poetry run python manage.py runserver"
+    command: "poetry run python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - database
     ports:
-      - "8087:8087"
+      - "8000:8000"
     expose:
-      - '8087'
+      - '8000'
     networks:
       - mynet
-
-
 
 networks:
   mynet: 
