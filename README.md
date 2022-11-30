@@ -11,6 +11,8 @@ Answer King Python App
 - #### Docker
   - Used to set up a disposable local MySQL database quickly.
     - Install Docker following the docs [here](https://docs.docker.com/get-docker/).
+- ### Ubuntu
+    - dependencies:  python3.10 git curl libmysqlclient-dev build-essential python3.10-dev
 
 ***
 ### Installation:
@@ -43,3 +45,17 @@ Commands for maintaining consistency and PEP8 standards across codebase, as well
   - Test using coverage `poetry run coverage run manage.py test`
     - View coverage report in the terminal `poetry run coverage report`
     - Generate interactive coverage file to view in a browser `poetry run coverage html`, then open `htmlcov/index.html`
+
+***
+### Docker:
+- create a .env_deploy file:
+```
+DATABASE_NAME=
+DATABASE_USER=
+DATABASE_PASS=
+DATABASE_HOST=
+DATABASE_PORT=
+SECRET_KEY=
+DJANGO_SETTINGS_MODULE=
+```
+- run : `docker compose --env-file .env_deploy up`
