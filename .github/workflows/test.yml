@@ -5,7 +5,9 @@ on:
     branches: [ "main", "develop" ]
   pull_request:
     branches: [ "main", "develop" ]
-permissions: write-all 
+permissions:
+  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
+
 
 jobs:
   test_and_sonar_cloud_report:
