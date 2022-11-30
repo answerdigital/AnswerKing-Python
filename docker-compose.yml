@@ -7,9 +7,7 @@ services:
       - MYSQL_DATABASE=${DATABASE_NAME}
       - MYSQL_ROOT_PASSWORD=${DATABASE_PASS}
     ports:
-      - '${DATABASE_PORT}:${DATABASE_PORT}'
-    expose:
-      - ${DATABASE_PORT} 
+      - '3306:${DATABASE_PORT}'
     networks:
       - mynet
 
@@ -25,17 +23,19 @@ services:
         - DATABASE_PORT=${DATABASE_PORT}
         - SECRET_KEY=${SECRET_KEY}
         - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
+    env_file: ".env_deploy"
+    entrypoint: "poetry run python manage.py runserver"
     ports:
-      - "8080:8080"
+      - "8087:8087"
     expose:
-      - '8080'
+      - '8087'
     networks:
       - mynet
 
 
 
 networks:
-  mynet:
+  mynet: 
     driver: bridge
     ipam:
       driver: default
