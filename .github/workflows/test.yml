@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ "main", "develop" ]
 
+permissions:
+  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
+
 jobs:
   unit_test_and_sonar_cloud_report:
     runs-on: ubuntu-latest
