@@ -37,7 +37,6 @@ jobs:
       - uses: SonarSource/sonarcloud-github-action@master
       - name: Run Migrations
         run: |
-          poetry run python manage.py makemigrations
           poetry run python manage.py migrate
       - name: Run Unit Tests
         run: poetry run python manage.py test
