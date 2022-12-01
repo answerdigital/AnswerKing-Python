@@ -1,4 +1,4 @@
-name: CI
+name: linting
 
 on:
   push:
@@ -8,10 +8,6 @@ on:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
 
-permissions:
-  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
-
- 
 jobs:
   black_test:
     runs-on: ubuntu-latest
@@ -20,8 +16,6 @@ jobs:
       - uses: ./.github/actions/dependencies
       - name: Run Black Test
         run: poetry run black . --line-length=79 --check
-
-
   pycodestyle_test:
     runs-on: ubuntu-latest
     steps:
@@ -29,14 +23,10 @@ jobs:
       - uses: ./.github/actions/dependencies
       - name: Run Pycodestyle Test
         run: poetry run pycodestyle . --ignore=E501
-
-
   pyright_test:
     runs-on: ubuntu-latest
     steps:
       - uses : actions/checkout@v3
       - uses: ./.github/actions/dependencies
       - name: Run Pyright Test
-        run: poetry run pyright
-  
-
+        run: poetry run pyright .
