@@ -10,6 +10,8 @@ services:
       - mynet
   django:
     build:
+      args:
+        - BRANCH=${BRANCH}
       dockerfile: DockerFile
     env_file: ".env_deploy"
     command: "poetry run python manage.py runserver 0.0.0.0:8000"
