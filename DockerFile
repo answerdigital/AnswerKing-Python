@@ -1,16 +1,5 @@
 FROM ubuntu:latest
 
-
-
-ARG DATABASE_NAME
-ARG DATABASE_USER
-ARG DATABASE_PASS
-ARG DATABASE_HOST
-ARG DATABASE_PORT
-ARG SECRET_KEY
-ARG DJANGO_SETTINGS_MODULE
-
-
 RUN apt update && apt upgrade -y
 RUN apt install software-properties-common -y
 RUN add-apt-repository ppa:deadsnakes/ppa

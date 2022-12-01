@@ -11,14 +11,6 @@ services:
   django:
     build:
       dockerfile: DockerFile
-      args:
-        - DATABASE_NAME=${DATABASE_NAME}
-        - DATABASE_USER=${DATABASE_USER}
-        - DATABASE_PASS=${DATABASE_PASS}
-        - DATABASE_HOST=${DATABASE_HOST}
-        - DATABASE_PORT=${DATABASE_PORT}
-        - SECRET_KEY=${SECRET_KEY}
-        - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
     env_file: ".env_deploy"
     command: "poetry run python manage.py runserver 0.0.0.0:8000"
     depends_on:
