@@ -23,18 +23,6 @@ class SerializerTests(UnitTestBase):
     )
     test_cat_det_serializer: CategoryDetailSerializer = CategoryDetailSerializer(test_cat_det_serializer_data)
 
-    # def setUp(self):
-    #     Product.objects.create(**self.test_prod_1_data)
-    #     Product.objects.create(**self.test_prod_2_data)
-    #     Category.objects.create(**self.test_cat_1_data)
-    #     retired_cat = Category.objects.create(**self.test_retired_cat_2_data)
-    #     retired_cat.retired = True
-    #     retired_cat.save()
-    #
-    # def tearDown(self):
-    #     Product.objects.all().delete()
-    #     Category.objects.all().delete()
-
     def test_cat_det_serializer_contains_correct_fields(self):
         data: ReturnDict = self.test_cat_det_serializer.data
         self.assertCountEqual(data.keys(), ['id', 'name', 'description'])
