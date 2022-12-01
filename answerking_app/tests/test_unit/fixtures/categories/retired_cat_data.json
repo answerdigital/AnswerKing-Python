@@ -1,4 +1,5 @@
 {
   "name": "Old Burgers",
-  "description": "Burgers that have been retired."
+  "description": "Burgers that have been retired.",
+  "retired": true
 }

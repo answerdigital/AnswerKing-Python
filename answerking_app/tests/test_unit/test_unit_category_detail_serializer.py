@@ -188,23 +188,18 @@ class SerializerTests(UnitTestBase):
     @mock.patch(
         serializer_path + 'CategoryDetailSerializer.products_check',
     )
-    @mock.patch(
-        models_path + 'Category.objects'
-    )
     def test_cat_det_update_fn_retired_category_fail(
         self,
         products_check_mock,
-        category_objects_mock
     ):
-        category_objects_mock.retired.return_value = True
-        category_objects_mock.get.return_value = category_objects_mock
+        to_seed = {"retired_cat_data.json": "categories"}
+        self.seed_data(to_seed)
         with self.assertRaises(ProblemDetails) as context:
-            retired_cat = Category.objects.get(pk=2)
+            retired_cat = Category.objects.get(pk=1)
             cds = CategoryDetailSerializer()
             cds.update(retired_cat, self.test_cat_det_serializer_data)
 
         products_check_mock.assert_not_called()
-        self.assertEqual(category_objects_mock.call_count, 2)
         self.assertRaises(ProblemDetails)
         self.assertEqual(context.exception.detail, "This category has been retired")
         self.assertEqual(context.exception.status_code, status.HTTP_410_GONE)
