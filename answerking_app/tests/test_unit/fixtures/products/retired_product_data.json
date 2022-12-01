@@ -1,0 +1,6 @@
+{
+  "name": "Old Pizza",
+  "description": "Pizza that is now retired.",
+  "price": 7.00,
+  "retired": true
+}

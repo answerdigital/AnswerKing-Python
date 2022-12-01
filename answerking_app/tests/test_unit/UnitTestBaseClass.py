@@ -20,6 +20,7 @@ class UnitTestBase(TransactionTestCase, TestCase):
         return data
 
     def seedFixture(self, fixture_type: str, fixture_name: str):
+        num_fixtures_seeded = 0
         data = self.get_fixture(fixture_type, fixture_name)
         if fixture_type == "products":
             self.input_data(Product, data)

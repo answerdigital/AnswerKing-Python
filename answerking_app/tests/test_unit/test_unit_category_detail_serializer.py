@@ -171,8 +171,8 @@ class SerializerTests(UnitTestBase):
                    }
         seeded_data = self.seed_data(to_seed)
         products_check_mock.return_value = [
-            Product.objects.get(pk=1),
-            Product.objects.get(pk=2)
+            Product.objects.get(name="Margarita pizza"),
+            Product.objects.get(name="Pepperoni pizza")
         ]
         cds: CategoryDetailSerializer = CategoryDetailSerializer()
         new_cat: Category = cds.create(self.test_cat_det_serializer_data)
@@ -195,7 +195,7 @@ class SerializerTests(UnitTestBase):
         to_seed = {"retired_cat_data.json": "categories"}
         self.seed_data(to_seed)
         with self.assertRaises(ProblemDetails) as context:
-            retired_cat = Category.objects.get(pk=1)
+            retired_cat = Category.objects.get(name="Old Burgers")
             cds = CategoryDetailSerializer()
             cds.update(retired_cat, self.test_cat_det_serializer_data)
 
@@ -204,25 +204,72 @@ class SerializerTests(UnitTestBase):
         self.assertEqual(context.exception.detail, "This category has been retired")
         self.assertEqual(context.exception.status_code, status.HTTP_410_GONE)
 
-    def test_product_check_only_needs_products_pass(self):
-        prod_1 = Product.objects.get(pk=1).values()
+    @mock.patch(
+        serializer_path + 'CategoryDetailSerializer.products_check',
+    )
+    def test_cat_det_update_fn_pass(
+        self,
+        products_check_mock,
+    ):
+        to_seed = {"margarita_pizza_data.json": "products",
+                   "pepperoni_pizza_data.json": "products",
+                   "pizzas_cat_data.json": "categories"
+                   }
+        seeded_data = self.seed_data(to_seed)
+        serialized_data = CategoryDetailSerializer(seeded_data[2])
+        all_products = Product.objects.all()
+        products_check_mock.return_value = [
+            Product.objects.get(name="Margarita pizza"),
+            Product.objects.get(name="Pepperoni pizza")
+        ]
+        cat = Category.objects.get(name="Pizza")
+        cds = CategoryDetailSerializer()
+        updated_cat = cds.update(cat, seeded_data[2])
+
+        products_check_mock.assert_called_once()
+        self.assertEqual(updated_cat.name, serialized_data.data['name'])
+        self.assertEqual(updated_cat.description, serialized_data.data['description'])
+        self.assertEqual(list(updated_cat.products.all()), products_check_mock.return_value)
+
+    def test_products_check_return_empty_list_when_products_not_in_validated_data_pass(self):
+        validated_data = self.test_cat_det_serializer_data
+        cds = CategoryDetailSerializer()
+        expected = []
+        actual = cds.products_check(validated_data)
+
+        self.assertEqual(actual, expected)
+
+    def test_products_check_only_needs_product_ids_pass(self):
+        to_seed = {
+            "margarita_pizza_data.json": "products",
+            "pepperoni_pizza_data.json": "products"
+        }
+        seeded_data = self.seed_data(to_seed)
+        prod_1 = Product.objects.get(name="Margarita pizza")
+        prod_2 = Product.objects.get(name="Pepperoni pizza")
         validated_data: dict = {'products': [
-            self.get_mock_product_api(self.prod_1),
-            self.get_mock_product_api(self.prod_1),
+            {"id": prod_1.id},
+            {"id": prod_2.id},
         ]}
         cds = CategoryDetailSerializer()
-        expected: list[Product] = [
-            self.test_product_1,
-            self.test_product_2,
+        expected: list[str] = [
+            prod_1,
+            prod_2
         ]
         actual: list[Product] = cds.products_check(validated_data)
 
         self.assertEqual(actual, expected)
 
-    def test_product_check_retired_product_fail(self):
+    def test_products_check_retired_product_fail(self):
+        to_seed = {
+            "retired_product_data.json": "products"
+        }
+        seeded_data = self.seed_data(to_seed)
         with self.assertRaises(ProblemDetails) as context:
-            validated_data: dict = self.test_cat_det_serializer_data
-            validated_data['products'] = [self.get_mock_product_api(self.test_product_retired)]
+            product_data = seeded_data[0]
+            product_data['id'] = Product.objects.get(name="Old Pizza").id
+            validated_data: dict = copy.deepcopy(self.test_cat_det_serializer_data)
+            validated_data['products'] = [product_data]
             cds = CategoryDetailSerializer()
             cds.products_check(validated_data)
 
