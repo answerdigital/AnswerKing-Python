@@ -1,0 +1,12 @@
+FROM python:3.10.8-buster AS build-env
+COPY . /app
+WORKDIR /app
+RUN pip install 'poetry==1.2.2'
+COPY poetry.lock pyproject.toml /app
+#RUN poetry config virtualenvs.create false
+RUN poetry install
+
+#FROM gcr.io/distroless/python3
+#COPY --from=build-env /app /app
+#WORKDIR /app
+#CMD [".venv/bin/python3.10", "manage.py", "runserver"]
