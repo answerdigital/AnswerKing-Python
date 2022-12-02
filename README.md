@@ -50,6 +50,7 @@ Commands for maintaining consistency and PEP8 standards across codebase, as well
 ### Docker:
 - create a .env_deploy file:
 ```
+BRANCH=
 DATABASE_NAME=
 DATABASE_USER=
 DATABASE_PASS=
