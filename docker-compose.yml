@@ -21,9 +21,6 @@ services:
       - DATABASE_PORT=${DATABASE_PORT}
       - SECRET_KEY=${SECRET_KEY}
       - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE}
-    command: "poetry run python manage.py runserver 0.0.0.0:8000"
-    depends_on:
-      - database
     ports:
       - "8000:8000"
     expose:
