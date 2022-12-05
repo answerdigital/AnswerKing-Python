@@ -60,3 +60,4 @@ SECRET_KEY=
 DJANGO_SETTINGS_MODULE=
 ```
 - run : `docker compose --env-file .env_deploy up`
+
