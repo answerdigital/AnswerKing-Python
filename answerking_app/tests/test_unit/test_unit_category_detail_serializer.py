@@ -12,7 +12,7 @@ from answerking_app.tests.test_unit.UnitTestBaseClass import UnitTestBase
 from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 
-class SerializerTests(UnitTestBase):
+class CategoryDetailSerializerUnitTests(UnitTestBase):
     UTB = UnitTestBase()
 
     serializer_path: str = 'answerking_app.models.serializers.'
@@ -25,7 +25,9 @@ class SerializerTests(UnitTestBase):
 
     def test_cat_det_serializer_contains_correct_fields(self):
         data: ReturnDict = self.test_cat_det_serializer.data
-        self.assertCountEqual(data.keys(), ['id', 'name', 'description'])
+        expected = ['id', 'name', 'description']
+        actual = list(data.keys())
+        self.assertEqual(actual, expected)
 
     def test_cat_det_serializer_id_field_content(self):
         data: ReturnDict = self.test_cat_det_serializer.data
