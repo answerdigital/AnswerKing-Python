@@ -5,7 +5,6 @@ from answerking_app.tests.BaseTestClass import TestBase
 
 
 class SerializerTests(TestBase):
-
     def test_compress_white_spaces_fn(self):
         test_str: str = "  White   Spaces    "
         expected: str = "White Spaces"

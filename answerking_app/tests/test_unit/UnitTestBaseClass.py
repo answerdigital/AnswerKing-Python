@@ -9,7 +9,6 @@ from answerking_app.models.models import Category, Product, Order, LineItem
 
 
 class UnitTestBase(TransactionTestCase, TestCase):
-
     @staticmethod
     def input_data(model, data):
         if isinstance(data, list):
@@ -35,7 +34,7 @@ class UnitTestBase(TransactionTestCase, TestCase):
         fixture_path = "answerking_app/tests/test_unit/fixtures"
         return json.load(open(f"{fixture_path}/{fixture_type}/{fixture_name}"))
 
-    def seed_data(self, list_fixtures: dict):
+    def seed_data(self, list_fixtures: dict) -> list[dict]:
         loaded_fixtures = []
         for fixture_name, fixture_type in list_fixtures.items():
             self.seedFixture(fixture_type, fixture_name)
@@ -45,6 +44,7 @@ class UnitTestBase(TransactionTestCase, TestCase):
             elif isinstance(loaded_fixture, dict):
                 loaded_fixtures.append(loaded_fixture)
             else:
-                raise Exception(f"{type(loaded_fixture)} for is not a valid data seeding type")
+                raise Exception(
+                    f"{type(loaded_fixture)} for is not a valid data seeding type"
+                )
         return loaded_fixtures
-

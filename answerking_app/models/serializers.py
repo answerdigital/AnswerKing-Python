@@ -90,8 +90,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(
-        required=False,
-        validators=[MinValueValidator(0)]
+        required=False, validators=[MinValueValidator(0)]
     )
     name = serializers.CharField(
         max_length=50,
