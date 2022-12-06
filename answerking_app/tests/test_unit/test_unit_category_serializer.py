@@ -1,3 +1,6 @@
+import datetime
+
+from freezegun import freeze_time
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from answerking_app.models.models import Category, Product
@@ -6,16 +9,18 @@ from answerking_app.tests.test_unit.UnitTestBaseClass import UnitTestBase
 
 
 class CategorySerializerUnitTests(UnitTestBase):
-    UBT = UnitTestBase()
-    test_cat_data: dict = UBT.get_fixture(
+    UTB = UnitTestBase()
+    test_cat_data: dict = UTB.get_fixture(
         "categories",
         "burgers_cat_data.json"
     )
-    test_prod_data: dict = UBT.get_fixture(
+    test_prod_data: dict = UTB.get_fixture(
         "products",
         "plain_burger_data.json"
     )
+    frozen_time: datetime = '2022-01-01T01:02:03.000000Z'
 
+    @freeze_time(frozen_time)
     def setUp(self):
         cat = Category.objects.create(**self.test_cat_data)
         prod = Product.objects.create(**self.test_prod_data)
@@ -73,4 +78,19 @@ class CategorySerializerUnitTests(UnitTestBase):
         test_serializer_data: ReturnDict = CategorySerializer(test_cat).data
         expected: int = test_cat.retired
         actual: int = test_serializer_data['retired']
+        self.assertEqual(actual, expected)
+
+    @freeze_time(frozen_time)
+    def test_cat_serializer_created_on_field_content(self):
+        test_cat = Category.objects.get(name=self.test_cat_data['name'])
+        test_serializer_data: ReturnDict = CategorySerializer(test_cat).data
+        expected: str = self.frozen_time
+        actual: str = test_serializer_data['createdOn']
+        self.assertEqual(actual, expected)
+
+    def test_cat_serializer_last_updated_field_content(self):
+        test_cat = Category.objects.get(name=self.test_cat_data['name'])
+        test_serializer_data: ReturnDict = CategorySerializer(test_cat).data
+        expected: str = self.frozen_time
+        actual: str = test_serializer_data['createdOn']
         self.assertEqual(actual, expected)

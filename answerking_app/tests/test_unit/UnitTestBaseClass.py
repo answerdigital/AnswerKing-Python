@@ -3,6 +3,8 @@ import json
 from django.test import TransactionTestCase
 from snapshottest import TestCase
 
+from django.db import models
+
 from answerking_app.models.models import Category, Product, Order, LineItem
 
 
@@ -45,3 +47,4 @@ class UnitTestBase(TransactionTestCase, TestCase):
             else:
                 raise Exception(f"{type(loaded_fixture)} for is not a valid data seeding type")
         return loaded_fixtures
+
