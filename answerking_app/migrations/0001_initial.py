@@ -24,8 +24,11 @@ class Migration(migrations.Migration):
                  ),
                 ('order_status',
                  models.CharField(
-                    choices=[('Created', 'Created'), ('Paid', 'Paid'), ('Cancelled', 'Cancelled')
-                             ],
+                    choices=[
+                        ('Created', 'Created'),
+                        ('Paid', 'Paid'),
+                        ('Cancelled', 'Cancelled')
+                    ],
                     default='Created',
                     max_length=10)
                  ),
