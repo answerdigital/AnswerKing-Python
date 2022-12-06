@@ -24,13 +24,13 @@ class Migration(migrations.Migration):
                  ),
                 ('order_status',
                  models.CharField(
-                    choices=[
-                        ('Created', 'Created'),
-                        ('Paid', 'Paid'),
-                        ('Cancelled', 'Cancelled')
-                    ],
-                    default='Created',
-                    max_length=10)
+                     choices=[
+                         ('Created', 'Created'),
+                         ('Paid', 'Paid'),
+                         ('Cancelled', 'Cancelled')
+                     ],
+                     default='Created',
+                     max_length=10)
                  ),
                 ('order_total',
                  models.DecimalField(decimal_places=2,
