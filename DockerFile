@@ -12,5 +12,6 @@ WORKDIR AnswerKing-Python
 ENV PATH="${PATH}:/root/.local/bin"
 RUN poetry install --only main
 
+CMD [ "/root/.local/bin/poetry", "run", "python", "manage.py", "migrate", "0.0.0.0:8000"]
 CMD [ "/root/.local/bin/poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
 
