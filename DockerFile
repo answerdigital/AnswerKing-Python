@@ -1,17 +1,13 @@
-FROM ubuntu:latest
 
-ARG BRANCH
 
-RUN apt update && apt upgrade -y
-RUN apt install software-properties-common -y
-RUN add-apt-repository ppa:deadsnakes/ppa
-RUN apt install python3.10 git curl libmysqlclient-dev build-essential python3.10-dev -y
-RUN curl -sSL https://install.python-poetry.org | python3.10  -
-RUN git clone https://github.com/AnswerConsulting/AnswerKing-Python --branch ${BRANCH}
-WORKDIR AnswerKing-Python
-ENV PATH="${PATH}:/root/.local/bin"
+FROM python:3.10.8-buster
+
+RUN pip install poetry
+COPY . /AnswerKing-Python
+WORKDIR /AnswerKing-Python
+#ENV PATH="${PATH}:/root/.local/bin"
 RUN poetry install --only main
 
-CMD [ "/root/.local/bin/poetry", "run", "python", "manage.py", "migrate", "0.0.0.0:8000"]
-CMD [ "/root/.local/bin/poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
-
+CMD [ "/usr/local/bin/poetry", "run", "python", "manage.py", "migrate", "0.0.0.0:8000"]
+CMD [ "/usr/local/bin/poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8000"]
+EXPOSE 8000
