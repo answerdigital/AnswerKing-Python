@@ -2,11 +2,8 @@ name: Docker
 
 on:
   push:
-    branches: ['release']
-  pull_request:
-    branches: ['release']
-  workflow_dispatch:
-    
+    branches: ['RELEASE*']
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}

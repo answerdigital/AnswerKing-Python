@@ -1,4 +1,5 @@
 version: '3.3'
+
 services:
   database:
     image: mysql:latest
@@ -10,8 +11,6 @@ services:
       - mynet
   django:
     build:
-      args:
-        - BRANCH=${BRANCH}
       dockerfile: DockerFile
     environment:
       - DATABASE_NAME=${DATABASE_NAME}
@@ -29,7 +28,7 @@ services:
       - mynet
 
 networks:
-  mynet: 
+  mynet:
     driver: bridge
     ipam:
       driver: default
