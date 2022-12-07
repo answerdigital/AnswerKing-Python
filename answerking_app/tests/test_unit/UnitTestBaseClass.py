@@ -1,9 +1,6 @@
-from datetime import datetime, timedelta
 import json
 from django.test import TransactionTestCase
 from snapshottest import TestCase
-
-from django.db import models
 
 from answerking_app.models.models import Category, Product, Order, LineItem
 

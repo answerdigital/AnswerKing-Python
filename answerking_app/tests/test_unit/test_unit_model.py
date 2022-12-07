@@ -1,9 +1,6 @@
 from decimal import Decimal
 
-from django.test import TestCase
-
 from answerking_app.models.models import Order, Product, LineItem
-from answerking_app.tests.BaseTestClass import TestBase
 from answerking_app.tests.test_unit.UnitTestBaseClass import UnitTestBase
 
 

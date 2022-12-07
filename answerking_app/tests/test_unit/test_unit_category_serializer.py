@@ -1,5 +1,3 @@
-import datetime
-
 from freezegun import freeze_time
 from rest_framework.utils.serializer_helpers import ReturnDict
 
