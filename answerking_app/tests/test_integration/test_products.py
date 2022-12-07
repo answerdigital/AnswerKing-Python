@@ -176,8 +176,9 @@ class PutTests(TestBase):
 class DeleteTests(TestBase):
     def test_delete_with_products_returns_ok(self):
         seededData = self.seedFixture("products", "basic-1.json")
-        response = client.delete(f"/api/products/{seededData['id']}")  # type: ignore[GeneralTypeIssue]
-        getResponse = client.get(f"/api/products/{seededData['id']}")  # type: ignore[GeneralTypeIssue]
+        prod_url = f"/api/products/{seededData['id']}"  # type: ignore[GeneralTypeIssue]
+        response = client.delete(prod_url)
+        getResponse = client.get(prod_url)
         assert_that(response.status_code).is_equal_to(200)
         assert_that(str(getResponse.json())).contains("'retired': True")
 

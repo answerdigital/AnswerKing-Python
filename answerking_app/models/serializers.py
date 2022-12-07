@@ -21,7 +21,7 @@ MAXNUMBERSIZE = 2147483647
 
 
 def compress_white_spaces(value: str) -> str:
-    return re.sub(" +", " ", value)
+    return re.sub(" +", " ", value.strip())
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
@@ -89,7 +89,9 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(required=False)
+    id = serializers.IntegerField(
+        required=False, validators=[MinValueValidator(0)]
+    )
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,

@@ -1,6 +1,3 @@
-"""
-Django base settings for answerking project.
-"""
 import os
 from pathlib import Path
 
@@ -83,6 +80,7 @@ REST_FRAMEWORK = {
     ],
     "EXCEPTION_HANDLER": "answerking_app.utils.exceptions_handler.wrapper",
     "COERCE_DECIMAL_TO_STRING": False,
+    "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S.%fZ",
 }
 
 # Database
