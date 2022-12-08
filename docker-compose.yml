@@ -11,7 +11,7 @@ services:
       - mynet
   django:
     build:
-      dockerfile: DockerFile
+      dockerfile: Dockerfile
     environment:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_USER=${DATABASE_USER}
