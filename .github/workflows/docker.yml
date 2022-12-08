@@ -3,6 +3,7 @@ name: Docker
 on:
   push:
     branches: ['RELEASE*']
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
