@@ -112,6 +112,30 @@ class ProductSerializerTests(UnitTestBase):
         self.assertFalse(serializer.is_valid())
         self.assertEqual(set(serializer.errors), {"name"})
 
+    def test_product_serializer_price_max_length_fail(self):
+        serializer_data = self.test_product_serializer.data
+        serializer_data["price"] = "1" * 19
+        serializer: ProductSerializer = ProductSerializer(data=serializer_data)
+
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(set(serializer.errors), {"price"})
+
+    def test_product_serializer_price_decimal_fail(self):
+        serializer_data = self.test_product_serializer.data
+        serializer_data["price"] = "1.111"
+        serializer: ProductSerializer = ProductSerializer(data=serializer_data)
+
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(set(serializer.errors), {"price"})
+
+    def test_product_serializer_price_negative_number_fail(self):
+        serializer_data = self.test_product_serializer.data
+        serializer_data["price"] = "-1"
+        serializer: ProductSerializer = ProductSerializer(data=serializer_data)
+
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(set(serializer.errors), {"price"})
+
     def test_product_serializer_desc_max_length_fail(self):
         serializer_data = self.test_product_serializer.data
         serializer_data["description"] = "e" * 201
