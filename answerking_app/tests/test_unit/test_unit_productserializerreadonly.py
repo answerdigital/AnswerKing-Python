@@ -21,7 +21,6 @@ class ProductSerializerTests(UnitTestBase):
         prod: Product = Product.objects.create(**self.test_prod_data)
         cat.products.add(prod)
 
-
     def tearDown(self):
         Category.objects.all().delete()
         Product.objects.all().delete()
@@ -30,7 +29,9 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        test_serializer_data: ReturnDict = ProductSerializerReadOnly(test_prod).data
+        test_serializer_data: ReturnDict = ProductSerializerReadOnly(
+            test_prod
+        ).data
         expected: list[str] = [
             "id",
             "name",
@@ -45,7 +46,9 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        test_serializer_data: ReturnDict = ProductSerializerReadOnly(test_prod).data
+        test_serializer_data: ReturnDict = ProductSerializerReadOnly(
+            test_prod
+        ).data
         expected: int = test_prod.id
         actual: int = test_serializer_data["id"]
         self.assertEqual(actual, expected)
@@ -54,7 +57,9 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        test_serializer_data: ReturnDict = ProductSerializerReadOnly(test_prod).data
+        test_serializer_data: ReturnDict = ProductSerializerReadOnly(
+            test_prod
+        ).data
         expected: str = test_prod.name
         actual: str = test_serializer_data["name"]
         self.assertEqual(actual, expected)
@@ -63,7 +68,9 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        test_serializer_data: ReturnDict = ProductSerializerReadOnly(test_prod).data
+        test_serializer_data: ReturnDict = ProductSerializerReadOnly(
+            test_prod
+        ).data
         expected: str = test_prod.description
         actual: str = test_serializer_data["description"]
         self.assertEqual(actual, expected)
@@ -72,7 +79,9 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        test_serializer_data: ReturnDict = ProductSerializerReadOnly(test_prod).data
+        test_serializer_data: ReturnDict = ProductSerializerReadOnly(
+            test_prod
+        ).data
         expected: Decimal = test_prod.price
         actual: Decimal = test_serializer_data["price"]
         self.assertEqual(actual, expected)
@@ -82,8 +91,10 @@ class ProductSerializerTests(UnitTestBase):
             name=self.test_prod_data["name"]
         )
         category = test_prod.category_set.first()
-        test_serializer_data: ReturnDict = ProductSerializerReadOnly(test_prod).data
-        actual_category = test_serializer_data["categories"][0]
+        test_serializer_data: ReturnDict = ProductSerializerReadOnly(
+            test_prod
+        ).data
+        actual_category: dict = test_serializer_data["categories"][0]
 
         self.assertEqual(actual_category["id"], category.id)
         self.assertEqual(actual_category["name"], category.name)
@@ -94,7 +105,9 @@ class ProductSerializerTests(UnitTestBase):
             name=self.test_prod_data["name"]
         )
         test_prod.price = "1" * 19
-        serializer = ProductSerializerReadOnly(data=test_prod)
+        serializer: ProductSerializerReadOnly = ProductSerializerReadOnly(
+            data=test_prod
+        )
 
         self.assertFalse(serializer.is_valid())
 
@@ -103,7 +116,9 @@ class ProductSerializerTests(UnitTestBase):
             name=self.test_prod_data["name"]
         )
         test_prod.price = "1.111"
-        serializer = ProductSerializerReadOnly(data=test_prod)
+        serializer: ProductSerializerReadOnly = ProductSerializerReadOnly(
+            data=test_prod
+        )
 
         self.assertFalse(serializer.is_valid())
 
@@ -112,6 +127,8 @@ class ProductSerializerTests(UnitTestBase):
             name=self.test_prod_data["name"]
         )
         test_prod.price = "-1"
-        serializer = ProductSerializerReadOnly(data=test_prod)
+        serializer: ProductSerializerReadOnly = ProductSerializerReadOnly(
+            data=test_prod
+        )
 
         self.assertFalse(serializer.is_valid())

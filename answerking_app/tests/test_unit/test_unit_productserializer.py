@@ -28,7 +28,6 @@ class ProductSerializerTests(UnitTestBase):
         prod: Product = Product.objects.create(**self.test_prod_data)
         cat.products.add(prod)
 
-
     def tearDown(self):
         Category.objects.all().delete()
         Product.objects.all().delete()
@@ -44,7 +43,7 @@ class ProductSerializerTests(UnitTestBase):
             "description",
             "price",
             "categories",
-            "retired"
+            "retired",
         ]
         actual: list[str] = list(test_serializer_data.keys())
         self.assertCountEqual(actual, expected)
@@ -89,9 +88,9 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        category = test_prod.category_set.first()
+        category: Category = test_prod.category_set.first()
         test_serializer_data: ReturnDict = ProductSerializer(test_prod).data
-        actual_category = test_serializer_data["categories"][0]
+        actual_category: dict = test_serializer_data["categories"][0]
 
         self.assertEqual(actual_category["id"], category.id)
         self.assertEqual(actual_category["name"], category.name)
@@ -107,9 +106,7 @@ class ProductSerializerTests(UnitTestBase):
         self.assertEqual(actual, expected)
 
     def test_product_serializer_name_max_length_fail(self):
-        serializer_data: dict = copy.deepcopy(
-            self.test_prod_data
-        )
+        serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["name"] = "e" * 51
         serializer: ProductSerializer = ProductSerializer(data=serializer_data)
 
@@ -117,9 +114,7 @@ class ProductSerializerTests(UnitTestBase):
         self.assertEqual(set(serializer.errors), {"name"})
 
     def test_product_serializer_name_blank_fail(self):
-        serializer_data: dict = copy.deepcopy(
-            self.test_prod_data
-        )
+        serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["name"] = ""
         serializer: ProductSerializer = ProductSerializer(data=serializer_data)
 
@@ -128,9 +123,7 @@ class ProductSerializerTests(UnitTestBase):
 
     def test_product_serializer_name_regex_validator_pass_1(self):
         allowed_characters: str = "abcdefghijklm nopqrstuvwxyz"
-        serializer_data: dict = copy.deepcopy(
-            self.test_prod_data
-        )
+        serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["name"] = allowed_characters
         serializer = ProductSerializer(data=serializer_data)
 
@@ -139,9 +132,7 @@ class ProductSerializerTests(UnitTestBase):
 
     def test_product_serializer_name_regex_validator_pass_2(self):
         allowed_characters: str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!"
-        serializer_data: dict = copy.deepcopy(
-            self.test_prod_data
-        )
+        serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["name"] = allowed_characters
         serializer = ProductSerializer(data=serializer_data)
 
@@ -150,9 +141,7 @@ class ProductSerializerTests(UnitTestBase):
 
     def test_product_serializer_name_regex_validator_fail(self):
         allowed_characters: str = "abcdefghijklmnopqrstuvwxyz "
-        serializer_data: dict = copy.deepcopy(
-            self.test_prod_data
-        )
+        serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["name"] = allowed_characters + "#"
         serializer: ProductSerializer = ProductSerializer(data=serializer_data)
 
@@ -160,9 +149,7 @@ class ProductSerializerTests(UnitTestBase):
         self.assertEqual(set(serializer.errors), {"name"})
 
     def test_product_serializer_price_max_length_fail(self):
-        serializer_data: dict = copy.deepcopy(
-            self.test_prod_data
-        )
+        serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["price"] = "1" * 19
         serializer: ProductSerializer = ProductSerializer(data=serializer_data)
 
@@ -170,9 +157,7 @@ class ProductSerializerTests(UnitTestBase):
         self.assertEqual(set(serializer.errors), {"price"})
 
     def test_product_serializer_price_decimal_fail(self):
-        serializer_data: dict = copy.deepcopy(
-            self.test_prod_data
-        )
+        serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["price"] = "1.111"
         serializer: ProductSerializer = ProductSerializer(data=serializer_data)
 
@@ -180,9 +165,7 @@ class ProductSerializerTests(UnitTestBase):
         self.assertEqual(set(serializer.errors), {"price"})
 
     def test_product_serializer_price_negative_number_fail(self):
-        serializer_data: dict = copy.deepcopy(
-            self.test_prod_data
-        )
+        serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["price"] = "-1"
         serializer: ProductSerializer = ProductSerializer(data=serializer_data)
 
@@ -190,9 +173,7 @@ class ProductSerializerTests(UnitTestBase):
         self.assertEqual(set(serializer.errors), {"price"})
 
     def test_product_serializer_desc_max_length_fail(self):
-        serializer_data: dict = copy.deepcopy(
-            self.test_prod_data
-        )
+        serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["description"] = "e" * 201
         serializer: ProductSerializer = ProductSerializer(data=serializer_data)
 
@@ -200,9 +181,7 @@ class ProductSerializerTests(UnitTestBase):
         self.assertEqual(set(serializer.errors), {"description"})
 
     def test_product_serializer_desc_blank_pass(self):
-        serializer_data: dict = copy.deepcopy(
-            self.test_prod_data
-        )
+        serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["description"] = ""
         serializer: ProductSerializer = ProductSerializer(data=serializer_data)
 
@@ -213,9 +192,7 @@ class ProductSerializerTests(UnitTestBase):
         allowed_characters: str = (
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .!"
         )
-        serializer_data: dict = copy.deepcopy(
-            self.test_prod_data
-        )
+        serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["description"] = allowed_characters
         serializer: ProductSerializer = ProductSerializer(data=serializer_data)
 
@@ -226,9 +203,7 @@ class ProductSerializerTests(UnitTestBase):
         allowed_characters: str = (
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .!"
         )
-        serializer_data: dict = copy.deepcopy(
-            self.test_prod_data
-        )
+        serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["description"] = allowed_characters + "*"
         serializer: ProductSerializer = ProductSerializer(data=serializer_data)
 

@@ -9,7 +9,7 @@ class ProductDetailSerializerTests(UnitTestBase):
     utb = UnitTestBase()
 
     serializer_path: str = "answerking_app.models.serializers."
-    test_product_serializer_data: dict[str | None] = utb.get_fixture(
+    test_product_serializer_data: dict = utb.get_fixture(
         "products", "prod_id_only.json"
     )
     test_product_serializer: ProductDetailSerializer = ProductDetailSerializer(
