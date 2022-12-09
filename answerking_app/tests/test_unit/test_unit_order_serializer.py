@@ -128,3 +128,20 @@ class OrderSerializerUnitTests(UnitTestBase):
         actual: list[str] = list(test_serializer_data.keys())
         self.assertEqual(actual, expected)
         self.assertEqual(test_serializer_data['lineItems'], list(new_order_object.lineitem_set.values()))
+
+    def test_valid_order_update(self):
+        order: Order = Order.objects.all().get()
+        updated_order_data = OrderSerializer(data=self.test_order_data)
+        updated_order_data.is_valid()
+        serializer = OrderSerializer()
+        new_order_object = serializer.update(order, updated_order_data.validated_data)
+        test_serializer_data = self.test_order_data["lineItems"][0]
+
+        expected_product_id: dict = new_order_object.lineitem_set.values('product_id')[0]
+        actual_product_id: dict = {'product_id': test_serializer_data['product']['id']}
+
+        expected_quantity: dict = new_order_object.lineitem_set.values('quantity')[0]
+        actual_quantity: dict = {'quantity': test_serializer_data['quantity']}
+
+        self.assertEqual(actual_product_id, expected_product_id)
+        self.assertEqual(actual_quantity, expected_quantity)
