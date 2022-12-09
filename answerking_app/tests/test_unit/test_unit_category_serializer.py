@@ -41,7 +41,7 @@ class CategorySerializerUnitTests(UnitTestBase):
             "retired",
         ]
         actual: list[str] = list(test_serializer_data.keys())
-        self.assertCountEqual(actual, expected)
+        self.assertEqual(actual, expected)
 
     def test_cat_serializer_id_field_content(self):
         test_cat: Category = Category.objects.get(

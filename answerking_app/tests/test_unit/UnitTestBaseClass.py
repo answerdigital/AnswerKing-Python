@@ -2,7 +2,7 @@ import json
 from django.test import TransactionTestCase
 from snapshottest import TestCase
 
-from answerking_app.models.models import Category, Product, Order, LineItem
+from answerking_app.models.models import Category, Product
 
 
 class UnitTestBase(TransactionTestCase, TestCase):

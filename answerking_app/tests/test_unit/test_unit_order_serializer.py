@@ -10,10 +10,14 @@ from answerking_app.tests.test_unit.UnitTestBaseClass import UnitTestBase
 
 class OrderSerializerUnitTests(UnitTestBase):
     UBT = UnitTestBase()
-
+    serializer_path: str = "answerking_app.models.serializers."
     test_prod_data: dict = UBT.get_fixture(
         "products",
         "plain_burger_data.json"
+    )
+    test_order_data: dict = UBT.get_fixture(
+        "orders",
+        "order_data.json"
     )
     frozen_time: str = "2022-01-01T01:02:03.000000Z"
 
@@ -42,7 +46,7 @@ class OrderSerializerUnitTests(UnitTestBase):
             "lineItems",
         ]
         actual: list[str] = list(test_serializer_data.keys())
-        self.assertCountEqual(actual, expected)
+        self.assertEqual(actual, expected)
 
     def test_order_serializer_id_field_content(self):
         order: Order = Order.objects.all().get()
@@ -91,3 +95,36 @@ class OrderSerializerUnitTests(UnitTestBase):
         actual_updated: str = test_serializer_data["lastUpdated"]
         self.assertEqual(actual_created, expected)
         self.assertEqual(actual_updated, expected)
+
+    def test_valid_order_create(self):
+        new_order_data = OrderSerializer(data=self.test_order_data)
+        new_order_data.is_valid()
+        serializer = OrderSerializer()
+        new_order_object = serializer.create(new_order_data.validated_data)
+        test_serializer_data = self.test_order_data["lineItems"][0]
+
+        expected_product_id: dict = new_order_object.lineitem_set.values('product_id')[0]
+        actual_product_id: dict = {'product_id': test_serializer_data['product']['id']}
+
+        expected_quantity: dict = new_order_object.lineitem_set.values('quantity')[0]
+        actual_quantity: dict = {'quantity': test_serializer_data['quantity']}
+
+        self.assertEqual(actual_product_id, expected_product_id)
+        self.assertEqual(actual_quantity, expected_quantity)
+
+    def test_empty_order_create(self):
+        serializer = OrderSerializer()
+        new_order_object = serializer.create(validated_data={})
+        test_serializer_data: ReturnDict = OrderSerializer(new_order_object).data
+        expected: list[str] = [
+            "id",
+            "createdOn",
+            "lastUpdated",
+            "orderStatus",
+            "orderTotal",
+            "lineItems",
+        ]
+
+        actual: list[str] = list(test_serializer_data.keys())
+        self.assertEqual(actual, expected)
+        self.assertEqual(test_serializer_data['lineItems'], list(new_order_object.lineitem_set.values()))
