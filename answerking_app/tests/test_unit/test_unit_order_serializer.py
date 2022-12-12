@@ -181,12 +181,45 @@ class OrderSerializerUnitTests(UnitTestBase):
 
         products_check_mock.assert_not_called()
         self.assertEqual(actual_total, expected_total)
-        self.assertEqual(actual_total, expected_total)
         self.assertEqual(actual_created, expected_time)
         self.assertEqual(actual_updated, expected_time)
         self.assertEqual(actual_status, expected_status)
         self.assertEqual(actual_fields, expected_fields)
         self.assertEqual(new_order_serializer_data['lineItems'], list(new_order_object.lineitem_set.values()))
+
+    @freeze_time(frozen_time)
+    @mock.patch(
+        serializer_path + "OrderSerializer.products_check",
+        return_value=[],
+    )
+    def test_order_create_with_retired_product(self, products_check_mock):
+        existing_product: Product = Product.objects.get(name='Plain Burger')
+        existing_product.retired = True
+        existing_product.save()
+        new_order_data = OrderSerializer(data=self.test_order_1_data)
+        new_order_data.is_valid()
+        serializer = OrderSerializer()
+        new_order_object = serializer.create(new_order_data.validated_data)
+        new_order_serializer_data: ReturnDict = OrderSerializer(new_order_object).data
+
+        expected_time: str = self.frozen_time
+        actual_created: str = new_order_serializer_data["createdOn"]
+        actual_updated: str = new_order_serializer_data["lastUpdated"]
+
+        expected_status: str = "Created"
+        actual_status: str = new_order_object.order_status
+
+        expected_total: Decimal = Decimal(0.00)
+        actual_total: Decimal = new_order_object.order_total
+
+        products_check_mock.assert_called_once()
+        new_line_item = LineItem.objects.filter(order=new_order_object, product=existing_product)
+
+        self.assertEqual(new_line_item.count(), 0)
+        self.assertEqual(actual_total, expected_total)
+        self.assertEqual(actual_created, expected_time)
+        self.assertEqual(actual_updated, expected_time)
+        self.assertEqual(actual_status, expected_status)
 
     @freeze_time(frozen_time_update)
     @mock.patch(
@@ -264,7 +297,7 @@ class OrderSerializerUnitTests(UnitTestBase):
         serializer_path + "OrderSerializer.products_check",
         return_value=[],
     )
-    def test_empty_order_update(self, products_check_mock):
+    def test_empty_order_update_with_product(self, products_check_mock):
         empty_order: Order = Order.objects.create()
         updated_order_data = OrderSerializer(data=self.test_order_2_data)
         updated_order_data.is_valid()
@@ -300,6 +333,40 @@ class OrderSerializerUnitTests(UnitTestBase):
         self.assertEqual(actual_updated, expected_update_time)
         self.assertEqual(actual_status, expected_status)
 
+    @freeze_time(frozen_time)
+    @mock.patch(
+        serializer_path + "OrderSerializer.products_check",
+        return_value=[],
+    )
+    def test_order_update_with_retired_product(self, products_check_mock):
+        old_order: Order = Order.objects.first()
+        existing_product: Product = Product.objects.get(name='Margarita pizza')
+        existing_product.retired = True
+        existing_product.save()
+        new_order_data = OrderSerializer(data=self.test_order_2_data)
+        new_order_data.is_valid()
+        serializer = OrderSerializer()
+        new_order_object = serializer.update(old_order, new_order_data.validated_data)
+        new_order_serializer_data: ReturnDict = OrderSerializer(new_order_object).data
+
+        expected_time: str = self.frozen_time
+        actual_created: str = new_order_serializer_data["createdOn"]
+        actual_updated: str = new_order_serializer_data["lastUpdated"]
+
+        expected_status: str = "Created"
+        actual_status: str = new_order_object.order_status
+
+        expected_total: Decimal = Decimal(0.00)
+        actual_total: Decimal = new_order_object.order_total
+
+        products_check_mock.assert_called_once()
+        new_line_item = LineItem.objects.filter(order=new_order_object, product=existing_product)
+
+        self.assertEqual(new_line_item.count(), 0)
+        self.assertEqual(actual_total, expected_total)
+        self.assertEqual(actual_created, expected_time)
+        self.assertEqual(actual_updated, expected_time)
+        self.assertEqual(actual_status, expected_status)
     def test_create_order_line_items(self):
         existing_order: Order = Order.objects.first()
         existing_product: Product = Product.objects.get(name='Margarita pizza')
@@ -334,4 +401,3 @@ class OrderSerializerUnitTests(UnitTestBase):
 
         new_line_item = LineItem.objects.filter(order=existing_order, product=existing_product)
         self.assertEqual(new_line_item.count(), 0)
-
