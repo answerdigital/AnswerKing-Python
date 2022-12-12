@@ -5,6 +5,8 @@
 
 version: 2
 updates:
+  env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
