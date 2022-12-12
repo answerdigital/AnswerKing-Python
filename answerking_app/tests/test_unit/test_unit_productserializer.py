@@ -1,6 +1,7 @@
 from decimal import Decimal
 import copy
 
+from django.db.models import QuerySet
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from answerking_app.models.models import Category, Product
@@ -18,9 +19,6 @@ class ProductSerializerTests(UnitTestBase):
     )
     test_prod_data: dict = utb.get_fixture(
         "products", "plain_burger_data.json"
-    )
-    test_product_serializer: ProductSerializer = ProductSerializer(
-        test_prod_data
     )
 
     def setUp(self):
@@ -46,7 +44,7 @@ class ProductSerializerTests(UnitTestBase):
             "retired",
         ]
         actual: list[str] = list(test_serializer_data.keys())
-        self.assertCountEqual(actual, expected)
+        self.assertEqual(actual, expected)
 
     def test_product_serializer_id_field_content(self):
         test_prod: Product = Product.objects.get(
@@ -88,10 +86,12 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        category: Category = test_prod.category_set.first()
+        categories: QuerySet[Category] = test_prod.category_set.all()
+        category: Category = categories[0]
         test_serializer_data: ReturnDict = ProductSerializer(test_prod).data
         actual_category: dict = test_serializer_data["categories"][0]
 
+        self.assertEqual(len(categories), 1)
         self.assertEqual(actual_category["id"], category.id)
         self.assertEqual(actual_category["name"], category.name)
         self.assertEqual(actual_category["description"], category.description)
@@ -148,7 +148,7 @@ class ProductSerializerTests(UnitTestBase):
         self.assertFalse(serializer.is_valid())
         self.assertEqual(set(serializer.errors), {"name"})
 
-    def test_product_serializer_price_max_length_fail(self):
+    def test_product_serializer_price_max_value_fail(self):
         serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["price"] = "1" * 19
         serializer: ProductSerializer = ProductSerializer(data=serializer_data)
@@ -159,14 +159,6 @@ class ProductSerializerTests(UnitTestBase):
     def test_product_serializer_price_decimal_fail(self):
         serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["price"] = "1.111"
-        serializer: ProductSerializer = ProductSerializer(data=serializer_data)
-
-        self.assertFalse(serializer.is_valid())
-        self.assertEqual(set(serializer.errors), {"price"})
-
-    def test_product_serializer_price_negative_number_fail(self):
-        serializer_data: dict = copy.deepcopy(self.test_prod_data)
-        serializer_data["price"] = "-1"
         serializer: ProductSerializer = ProductSerializer(data=serializer_data)
 
         self.assertFalse(serializer.is_valid())

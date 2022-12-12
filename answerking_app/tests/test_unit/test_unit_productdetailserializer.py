@@ -18,8 +18,8 @@ class ProductDetailSerializerTests(UnitTestBase):
 
     def test_product_detail_serializer_contains_correct_fields(self):
         data: ReturnDict = self.test_product_serializer.data
-        self.assertCountEqual(
-            data.keys(),
+        self.assertEqual(
+            list(data.keys()),
             [
                 "id",
             ],

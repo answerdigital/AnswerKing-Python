@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.db.models import QuerySet
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from answerking_app.models.models import Category, Product
@@ -34,13 +35,13 @@ class ProductSerializerTests(UnitTestBase):
         ).data
         expected: list[str] = [
             "id",
+            "categories",
+            "price",
             "name",
             "description",
-            "price",
-            "categories",
         ]
         actual: list[str] = list(test_serializer_data.keys())
-        self.assertCountEqual(actual, expected)
+        self.assertEqual(actual, expected)
 
     def test_product_read_only_serializer_id_field_content(self):
         test_prod: Product = Product.objects.get(
@@ -64,7 +65,7 @@ class ProductSerializerTests(UnitTestBase):
         actual: str = test_serializer_data["name"]
         self.assertEqual(actual, expected)
 
-    def test_product_read_only_serializer_name_description_content(self):
+    def test_product_read_only_serializer_description_content(self):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
@@ -75,7 +76,7 @@ class ProductSerializerTests(UnitTestBase):
         actual: str = test_serializer_data["description"]
         self.assertEqual(actual, expected)
 
-    def test_product_read_only_serializer_name_price_content(self):
+    def test_product_read_only_serializer_price_content(self):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
@@ -86,16 +87,18 @@ class ProductSerializerTests(UnitTestBase):
         actual: Decimal = test_serializer_data["price"]
         self.assertEqual(actual, expected)
 
-    def test_product_read_only_serializer_name_categories_content(self):
+    def test_product_read_only_serializer_categories_content(self):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        category = test_prod.category_set.first()
+        categories: QuerySet[Category] = test_prod.category_set.all()
+        category: Category = categories[0]
         test_serializer_data: ReturnDict = ProductSerializerReadOnly(
             test_prod
         ).data
         actual_category: dict = test_serializer_data["categories"][0]
 
+        self.assertEqual(len(categories), 1)
         self.assertEqual(actual_category["id"], category.id)
         self.assertEqual(actual_category["name"], category.name)
         self.assertEqual(actual_category["description"], category.description)
@@ -116,17 +119,6 @@ class ProductSerializerTests(UnitTestBase):
             name=self.test_prod_data["name"]
         )
         test_prod.price = "1.111"
-        serializer: ProductSerializerReadOnly = ProductSerializerReadOnly(
-            data=test_prod
-        )
-
-        self.assertFalse(serializer.is_valid())
-
-    def test_product_read_only_serializer_price_negative_number_fail(self):
-        test_prod: Product = Product.objects.get(
-            name=self.test_prod_data["name"]
-        )
-        test_prod.price = "-1"
         serializer: ProductSerializerReadOnly = ProductSerializerReadOnly(
             data=test_prod
         )
