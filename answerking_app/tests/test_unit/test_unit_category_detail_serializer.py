@@ -71,7 +71,9 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
             self.test_cat_det_serializer_data
         )
         serializer_data["name"] = allowed_characters
-        serializer = CategoryDetailSerializer(data=serializer_data)
+        serializer: CategoryDetailSerializer = CategoryDetailSerializer(
+            data=serializer_data
+        )
 
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.data["name"], allowed_characters)
@@ -82,7 +84,9 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
             self.test_cat_det_serializer_data
         )
         serializer_data["name"] = allowed_characters
-        serializer = CategoryDetailSerializer(data=serializer_data)
+        serializer: CategoryDetailSerializer = CategoryDetailSerializer(
+            data=serializer_data
+        )
 
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.data["name"], allowed_characters)
@@ -93,7 +97,9 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
             self.test_cat_det_serializer_data
         )
         serializer_data["name"] = allowed_characters + "#"
-        serializer = CategoryDetailSerializer(data=serializer_data)
+        serializer: CategoryDetailSerializer = CategoryDetailSerializer(
+            data=serializer_data
+        )
 
         self.assertFalse(serializer.is_valid())
         self.assertEqual(set(serializer.errors), {"name"})
@@ -148,7 +154,9 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
             self.test_cat_det_serializer_data
         )
         serializer_data["description"] = allowed_characters
-        serializer = CategoryDetailSerializer(data=serializer_data)
+        serializer: CategoryDetailSerializer = CategoryDetailSerializer(
+            data=serializer_data
+        )
 
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.data["description"], allowed_characters)
@@ -161,7 +169,9 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
             self.test_cat_det_serializer_data
         )
         serializer_data["description"] = allowed_characters + "*"
-        serializer = CategoryDetailSerializer(data=serializer_data)
+        serializer: CategoryDetailSerializer = CategoryDetailSerializer(
+            data=serializer_data
+        )
 
         self.assertFalse(serializer.is_valid())
         self.assertEqual(set(serializer.errors), {"description"})
