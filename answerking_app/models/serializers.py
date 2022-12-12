@@ -215,7 +215,8 @@ class OrderSerializer(serializers.ModelSerializer):
         order: Order = Order.objects.create()
         if "lineitem_set" in validated_data:
             line_items_data: list[OrderedDict] = validated_data["lineitem_set"]
-            self.create_and_add_products_to_order(
+            self.products_check(line_items_data)
+            self.create_order_line_items(
                 order=order, line_items_data=line_items_data
             )
         order.calculate_total()
@@ -224,9 +225,9 @@ class OrderSerializer(serializers.ModelSerializer):
     def update(self, order_to_update: Order, validated_data: dict) -> Order:
         if "lineitem_set" in validated_data:
             line_items_data: list[OrderedDict] = validated_data["lineitem_set"]
-            self.check_products(line_items_data)
+            self.products_check(line_items_data)
             LineItem.objects.filter(order_id=order_to_update.id).delete()
-            self.create_and_add_products_to_order(
+            self.create_order_line_items(
                 order=order_to_update, line_items_data=line_items_data
             )
         else:
@@ -235,11 +236,11 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return order_to_update
 
-    def check_products(self, line_items_data: list[OrderedDict]):
+    def products_check(self, line_items_data: list[OrderedDict]):
         for order_item in line_items_data:
             get_product_or_400(Product, pk=order_item["product"]["id"])
 
-    def create_and_add_products_to_order(
+    def create_order_line_items(
         self, order: Order, line_items_data: list[OrderedDict]
     ):
         for order_item in line_items_data:
