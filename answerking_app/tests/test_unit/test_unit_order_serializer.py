@@ -106,8 +106,6 @@ class OrderSerializerUnitTests(UnitTestBase):
         self.assertEqual(orders.count(), 1)
         self.assertEqual(order.lineitem_set.count(), 1)
 
-
-
     def test_order_serializer_order_status_field_content(self):
         orders: QuerySet[Order] = Order.objects.all()
         order: Order = orders.first()
@@ -126,7 +124,6 @@ class OrderSerializerUnitTests(UnitTestBase):
         self.assertEqual(actual_total, expected_total)
         self.assertEqual(orders.count(), 1)
 
-
     @freeze_time(frozen_time)
     def test_order_serializer_created_on_and_last_updated_field_content(self):
         orders: QuerySet[Order] = Order.objects.all()
@@ -138,7 +135,6 @@ class OrderSerializerUnitTests(UnitTestBase):
         self.assertEqual(actual_created, expected)
         self.assertEqual(actual_updated, expected)
         self.assertEqual(orders.count(), 1)
-
 
     @freeze_time(frozen_time)
     @mock.patch(
@@ -186,7 +182,6 @@ class OrderSerializerUnitTests(UnitTestBase):
         self.assertEqual(actual_updated, expected_time)
         self.assertEqual(actual_status, expected_status)
 
-
     @freeze_time(frozen_time)
     @mock.patch(
         serializer_path + "OrderSerializer.products_check",
@@ -228,7 +223,6 @@ class OrderSerializerUnitTests(UnitTestBase):
             new_order_serializer_data["lineItems"],
             list(new_order_object.lineitem_set.values()),
         )
-
 
     @freeze_time(frozen_time)
     @mock.patch(
@@ -321,7 +315,6 @@ class OrderSerializerUnitTests(UnitTestBase):
         self.assertEqual(actual_status, expected_status)
         self.assertEqual(orders.count(), 1)
 
-
     @freeze_time(frozen_time_update)
     @mock.patch(
         serializer_path + "OrderSerializer.products_check",
@@ -355,7 +348,6 @@ class OrderSerializerUnitTests(UnitTestBase):
         self.assertEqual(actual_updated, expected_update_time)
         self.assertEqual(actual_status, expected_status)
         self.assertEqual(orders.count(), 1)
-
 
     @freeze_time(frozen_time_update)
     @mock.patch(
@@ -451,7 +443,6 @@ class OrderSerializerUnitTests(UnitTestBase):
         self.assertEqual(actual_status, expected_status)
         self.assertEqual(orders.count(), 1)
 
-
     def test_create_order_line_items(self):
         orders: QuerySet[Order] = Order.objects.all()
         existing_order: Order = orders.first()
@@ -481,7 +472,6 @@ class OrderSerializerUnitTests(UnitTestBase):
         self.assertEqual(expected_sub_total, actual_sub_total)
         self.assertEqual(orders.count(), 1)
 
-
     def test_create_order_line_items_with_retired_product(self):
         orders: QuerySet[Order] = Order.objects.all()
         existing_order: Order = orders.first()
@@ -501,4 +491,3 @@ class OrderSerializerUnitTests(UnitTestBase):
         )
         self.assertEqual(new_line_item.count(), 0)
         self.assertEqual(orders.count(), 1)
-
