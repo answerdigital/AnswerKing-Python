@@ -88,7 +88,7 @@ REST_FRAMEWORK = {
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": os.environ.get("DATABASE_ENGINE"),
         "NAME": os.environ.get("DATABASE_NAME"),
         "HOST": os.environ.get("DATABASE_HOST"),
         "PORT": os.environ.get("DATABASE_PORT"),
