@@ -19,10 +19,6 @@ services:
     restart: unless-stopped
     image: answerking_python:latest
 #    image: ghcr.io/answerconsulting/answerking-python:pr-44    # working docker image (NOT LATEST)
-#    command: >
-#      sh -c "poetry run python manage.py waitForDB &&
-#      poetry run python manage.py migrate &&
-#      poetry run python manage.py runserver"
     environment:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_HOST=${DATABASE_HOST}
