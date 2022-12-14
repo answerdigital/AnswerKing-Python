@@ -25,6 +25,7 @@ jobs:
         DATABASE_PASS: ${{ secrets.DATABASE_PASS }}
         DATABASE_HOST: 127.0.0.1
         DATABASE_PORT: 3306
+        DATABASE_ENGINE: django.db.backends.settings.development
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         DJANGO_SETTINGS_MODULE: answerking.settings.development
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
