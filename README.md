@@ -48,17 +48,21 @@ Commands for maintaining consistency and PEP8 standards across codebase, as well
 
 ***
 ### Docker:
-- create a .env_deploy file:
+To view the python backend application we can spin up the app on docker. To do this ensure docker is installed then:
+- create a .env.production file containing (filling out the database password with your chosen password):
 ```
-BRANCH=
-DATABASE_NAME=
-DATABASE_USER=
+DATABASE_NAME=answerking_app
+DATABASE_HOST=host.docker.internal
+DATABASE_PORT=3306
+DATABASE_USER=root
 DATABASE_PASS=
-DATABASE_HOST=
-DATABASE_PORT=
-SECRET_KEY=
-DJANGO_SETTINGS_MODULE=
+SECRET_KEY="django-insecure-x977=v5a2q-e%_5$b9ge@jzk%s_nhk2l8_use&h@*m$w33dopr"
+DJANGO_SETTINGS_MODULE=answerking.settings.base
+DATABASE_ENGINE = "django.db.backends.mysql"
 ```
-- run : `docker compose --env-file .env_deploy up`
+- run in git bash :
+  - `docker build -t answerking_python .` (this builds your local app and tags it with answerking_python)
+  - `docker compose --env-file .env.production up` (this runs your built image with the .env.production variables)
 
+- send HTTP requests to 127.0.0.1:8000
 
