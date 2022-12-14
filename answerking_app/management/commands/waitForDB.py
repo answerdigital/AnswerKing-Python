@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         start = time.time()
-        self.stdout.write('Waiting for database...')
+        self.stdout.write("Waiting for database...")
         while True:
             try:
                 connection.ensure_connection()
@@ -19,4 +19,8 @@ class Command(BaseCommand):
                 time.sleep(1)
 
         end = time.time()
-        self.stdout.write(self.style.SUCCESS(f'Database available! Time taken: {end-start:.4f} second(s)'))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Database available! Time taken: {end-start:.4f} second(s)"
+            )
+        )

@@ -143,7 +143,9 @@ class ProductDetailSerializer(ProductSerializer):
 
 class CategorySerializer(CategoryDetailSerializer):
     createdOn = serializers.DateTimeField(source="created_on", read_only=True)
-    lastUpdated = serializers.DateTimeField(source="last_updated", read_only=True)
+    lastUpdated = serializers.DateTimeField(
+        source="last_updated", read_only=True
+    )
     products = ProductDetailSerializer(many=True)
     retired = serializers.BooleanField(required=False)
 
@@ -165,7 +167,9 @@ class ProductSerializerReadOnly(serializers.ModelSerializer):
     categories = CategoryDetailSerializer(
         source="category_set", read_only=True, many=True
     )
-    price = serializers.DecimalField(max_digits=18, decimal_places=2, read_only=True)
+    price = serializers.DecimalField(
+        max_digits=18, decimal_places=2, read_only=True
+    )
 
     class Meta:
         model = Product
@@ -193,7 +197,9 @@ class LineItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     createdOn = serializers.DateTimeField(source="created_on", read_only=True)
-    lastUpdated = serializers.DateTimeField(source="last_updated", read_only=True)
+    lastUpdated = serializers.DateTimeField(
+        source="last_updated", read_only=True
+    )
     orderStatus = serializers.CharField(source="order_status", read_only=True)
     orderTotal = serializers.DecimalField(
         source="order_total",
@@ -201,7 +207,9 @@ class OrderSerializer(serializers.ModelSerializer):
         decimal_places=2,
         max_digits=18,
     )
-    lineItems = LineItemSerializer(source="lineitem_set", many=True, required=False)
+    lineItems = LineItemSerializer(
+        source="lineitem_set", many=True, required=False
+    )
 
     def create(self, validated_data: dict) -> Order:
         order: Order = Order.objects.create()
@@ -235,7 +243,9 @@ class OrderSerializer(serializers.ModelSerializer):
         self, order: Order, line_items_data: list[OrderedDict]
     ):
         for order_item in line_items_data:
-            product: Product = Product.objects.get(pk=order_item["product"]["id"])
+            product: Product = Product.objects.get(
+                pk=order_item["product"]["id"]
+            )
             if product.retired or order_item["quantity"] < 1:
                 continue
             new_line_item = LineItem.objects.create(
