@@ -28,7 +28,9 @@ class Order(models.Model):
     order_status = models.CharField(
         max_length=10, choices=Status.choices, default=Status.CREATED
     )
-    order_total = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
+    order_total = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.00
+    )
     created_on = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
@@ -48,7 +50,9 @@ class LineItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField()
-    sub_total = models.DecimalField(max_digits=18, decimal_places=2, default=0.00)
+    sub_total = models.DecimalField(
+        max_digits=18, decimal_places=2, default=0.00
+    )
 
     def calculate_sub_total(self):
         self.sub_total = self.quantity * self.product.price

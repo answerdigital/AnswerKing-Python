@@ -160,7 +160,9 @@ class PutTests(TestBase):
 
     def test_put_duplicated_name_returns_400(self):
         self.seedFixture("products", "basic-1.json")
-        seededData2 = self.seedFixture("products", "basic-1-different-name.json")
+        seededData2 = self.seedFixture(
+            "products", "basic-1-different-name.json"
+        )
         putData = self.getFixture("products", "basic-1-update-dup-name.json")
         response = client.put(
             f"/api/products/{seededData2['id']}",  # type: ignore[GeneralTypeIssue]

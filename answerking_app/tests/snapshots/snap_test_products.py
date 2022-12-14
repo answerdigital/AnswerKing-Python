@@ -130,7 +130,9 @@ snapshots["PutTests::test_put_duplicated_name_returns_400 1"] = {
     "type": "http://testserver/problems/error/",
 }
 
-snapshots["PutTests::test_put_invalid_data_returns_bad_request_1_invalid_id_json 1"] = {
+snapshots[
+    "PutTests::test_put_invalid_data_returns_bad_request_1_invalid_id_json 1"
+] = {
     "detail": "Validation Error",
     "errors": {"id": ["A valid integer is required."]},
     "status": 400,
