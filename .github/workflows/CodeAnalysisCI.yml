@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   black_test:
+    name: Black Test
     runs-on: ubuntu-latest
     steps:
       - uses : actions/checkout@v3
@@ -19,6 +20,7 @@ jobs:
       - name: Run Black Test
         run: poetry run black . --line-length=79 --check
   pycodestyle_test:
+    name: Pycodestyle Test
     runs-on: ubuntu-latest
     steps:
       - uses : actions/checkout@v3
@@ -26,13 +28,15 @@ jobs:
       - name: Run Pycodestyle Test
         run: poetry run pycodestyle . --ignore=E501
   pyright_test:
+    name: Pyright Test
     runs-on: ubuntu-latest
     steps:
       - uses : actions/checkout@v3
       - uses: ./.github/actions/dependencies
       - name: Run Pyright Test
         run: poetry run pyright .
-  test_and_sonar_cloud_report:
+  unit_test_and_sonar_cloud_report:
+    name: Unit Test and SonarCloud Test
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -59,8 +63,7 @@ jobs:
       - uses: ./.github/actions/dependencies
       - uses: SonarSource/sonarcloud-github-action@master
       - name: Run Migrations
-        run: |
-          poetry run python manage.py migrate
+        run: poetry run python manage.py migrate
       - name: Run Unit Tests
         run: poetry run python manage.py test
       - name: generate coverage tests

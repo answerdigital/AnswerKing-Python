@@ -9,6 +9,7 @@ on:
 
 jobs:
   integration_tests:
+    name: Integration Test
     runs-on: ubuntu-latest
     services:
       mysql:
