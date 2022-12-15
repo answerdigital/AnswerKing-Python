@@ -1,0 +1,16 @@
+name: Integration Test
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  integration_tests:
+    runs-on: ubuntu-latest
+    step:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/dependencies
+      - name: Run Integration Tests
+        run: poetry run python manage.py test answerking_app.tests.test_integration
