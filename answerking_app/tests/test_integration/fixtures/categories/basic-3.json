@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "name": "Burgers",
+        "description": "desc"
+    },
+    {
+        "id": 2,
+        "name": "Drinks",
+        "description": "desc"
+    },
+    {
+        "id": 3,
+        "name": "Sides",
+        "description": "desc"
+    }
+]

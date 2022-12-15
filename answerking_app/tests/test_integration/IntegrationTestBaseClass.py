@@ -5,15 +5,26 @@ from snapshottest import TestCase
 import json
 
 
-class TestBase(TransactionTestCase, TestCase):
-    def seedFixture(self, fixture_type, fixture_name):
-        if fixture_type == "products":
-            data = self.getFixture(fixture_type, fixture_name)
+class IntegrationTestBase(TransactionTestCase, TestCase):
+
+    def seedFixture(self, type, fixtureName):
+        data = self.getFixture(type, fixtureName)
+        if type in ["products", "categories"]:
             if isinstance(data, list):
                 for item in data:
-                    Product.objects.create(**item)
+                    if type == "products":
+                        Product.objects.create(**item)
+                    elif type == "categories":
+                        Category. objects.create(**item)
+                    else:
+                        raise Exception(f"Unrecognised seeding type {type}")
             elif isinstance(data, dict):
-                Product.objects.create(**data)
+                if type == "products":
+                    Product.objects.create(**data)
+                elif type == "categories":
+                    Category.objects.create(**data)
+                else:
+                    raise Exception(f"Unrecognised seeding type {type}")
             else:
                 raise ValueError(f"{data} is not valid json")
             return data

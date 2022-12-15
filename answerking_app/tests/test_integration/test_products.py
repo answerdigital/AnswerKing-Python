@@ -1,34 +1,31 @@
-from typing import Any, Dict
-from typing_extensions import reveal_type
-from django.core.handlers.wsgi import WSGIHandler, WSGIRequest
 from django.test import Client
 from assertpy import assert_that
 from ddt import ddt, data
 
-from answerking_app.tests.BaseTestClass import TestBase
+from answerking_app.tests.test_integration.IntegrationTestBaseClass import IntegrationTestBase
 
 client = Client()
 
 
 @ddt
-class GetTests(TestBase):
+class GetTests(IntegrationTestBase):
     def test_get_all_without_products_returns_no_content(self):
         response = client.get("/api/products")
         assert_that(response.json()).is_equal_to([])
         assert_that(response.status_code).is_equal_to(200)
 
-    # @data("basic-3.json", "basic-1-list.json", "extreme-5.json")
-    # def test_get_all_with_products_returns_ok(self, seed):
-    #     seededData = self.seedFixture("products", seed)
-    #     response = client.get("/api/products")
-    #     assert_that(response.json()).is_equal_to(seededData)
-    #     assert_that(response.status_code).is_equal_to(200)
+    @data("basic-3.json", "basic-1-list.json", "extreme-5.json")
+    def test_get_all_with_products_returns_ok(self, seed):
+        self.seedFixture("products", seed)
+        response = client.get("/api/products")
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
 
-    # def test_get_id_valid_returns_ok(self):
-    #     seededData = self.seedFixture("products", "basic-1.json")
-    #     response = client.get(f"/api/products/{seededData['id']}")
-    #     assert_that(response.json()).is_equal_to(seededData)
-    #     assert_that(response.status_code).is_equal_to(200)
+    def test_get_id_valid_returns_ok(self):
+        seededData = self.seedFixture("products", "basic-1.json")
+        response = client.get(f"/api/products/{seededData['id']}")
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
 
     def test_get_invalid_id_returns_bad_request(self):
         response = client.get("/api/products/invalid-id")
@@ -42,22 +39,21 @@ class GetTests(TestBase):
 
 
 @ddt
-class PostTests(TestBase):
-    # @data(
-    #     "basic-1.json",
-    #     "boundry-name.json",
-    #     "boundry-description.json",
-    #     "boundry-price.json",
-    # )
-    # def test_post_valid_returns_ok(self, data):
-    #     postData = self.getFixture("products", data)
-    #     response = client.post(
-    #         "/api/products", postData, content_type="application/json"
-    #     )
-    #     getResponse = client.get("/api/products")
-    #     assert_that(response.json()).is_equal_to(postData)
-    #     assert_that(response.status_code).is_equal_to(201)
-    #     assert_that(getResponse.json()).contains(postData)
+class PostTests(IntegrationTestBase):
+    @data(
+        "basic-1.json",
+        "boundry-name.json",
+        "boundry-description.json",
+        "boundry-price.json",
+    )
+    def test_post_valid_returns_ok(self, data):
+        postData = self.getFixture("products", data)
+        response = client.post(
+            "/api/products", postData, content_type="application/json"
+        )
+        getResponse = client.get("/api/products")
+        self.assertMatchSnapshot(getResponse.json())
+        assert_that(response.status_code).is_equal_to(201)
 
     @data(
         "invalid-id.json",
@@ -97,26 +93,24 @@ class PostTests(TestBase):
 
 
 @ddt
-class PutTests(TestBase):
-    # @data(
-    #     "basic-1-update.json",
-    #     "boundry-name.json",
-    #     "boundry-description.json",
-    #     "boundry-price.json",
-    # )
-    # def test_put_valid_returns_ok(self, data):
-    #     seededData = self.seedFixture("products", "basic-1.json")
-    #     putData = self.getFixture("products", data)
-    #     response = client.put(
-    #         f"/api/products/{seededData['id']}",
-    #         putData,
-    #         content_type="application/json",
-    #     )
-    #     getResponse = client.get("/api/products")
-    #     assert_that(response.json()).is_equal_to(putData)
-    #     assert_that(response.status_code).is_equal_to(200)
-    #     assert_that(getResponse.json()).contains(putData)
-    #     assert_that(getResponse.json()).does_not_contain(seededData)
+class PutTests(IntegrationTestBase):
+    @data(
+        "basic-1-update.json",
+        "boundry-name.json",
+        "boundry-description.json",
+        "boundry-price.json",
+    )
+    def test_put_valid_returns_ok(self, data):
+        seededData = self.seedFixture("products", "basic-1.json")
+        putData = self.getFixture("products", data)
+        response = client.put(
+            f"/api/products/{seededData['id']}",
+            putData,
+            content_type="application/json",
+        )
+        getResponse = client.get("/api/products")
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertMatchSnapshot(getResponse.json())
 
     @data(
         "invalid-id.json",
@@ -173,7 +167,7 @@ class PutTests(TestBase):
         assert_that(response.status_code).is_equal_to(400)
 
 
-class DeleteTests(TestBase):
+class DeleteTests(IntegrationTestBase):
     def test_delete_with_products_returns_ok(self):
         seeded_data = self.seedFixture("products", "basic-1.json")
         prod_url = f"/api/products/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]

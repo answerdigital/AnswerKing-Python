@@ -4,7 +4,6 @@
         "name": "Burger",
         "description": "desc",
         "price": 1.2,
-        "category": [],
         "retired": false
     },
     {
@@ -12,16 +11,13 @@
         "name": "Coke",
         "description": "desc",
         "price": 1.5,
-        "category": [],
         "retired": false
-
     },
     {
         "id": 3,
         "name": "Chips",
         "description": "desc",
         "price": 1.5,
-        "category": [],
         "retired": false
     }
 ]

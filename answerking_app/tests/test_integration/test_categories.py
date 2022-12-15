@@ -1,5 +1,28 @@
-"""
-import datetime
+from django.test import Client
+from assertpy import assert_that
+from ddt import ddt, data
+
+from answerking_app.tests.test_integration.IntegrationTestBaseClass import IntegrationTestBase
+
+client = Client()
+
+@ddt()
+class GetTests(IntegrationTestBase):
+    def test_get_all_without_categories_returns_no_content(self):
+        response = client.get("/api/categories")
+        assert_that(response.json()).is_equal_to([])
+        assert_that(response.status_code).is_equal_to(200)
+
+    @data("basic-3.json", "basic-1-list.json", "extreme-5.json")
+    def test_get_all_with_products_returns_ok(self, seed):
+        self.seedFixture("categories", seed)
+        response = client.get("/api/products")
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
+
+
+
+# import datetime
 
 from django.db.models.query import QuerySet
 from django.test import Client
