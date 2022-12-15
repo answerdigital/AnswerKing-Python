@@ -9,6 +9,15 @@ on:
 jobs:
   integration_tests:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_NAME: answerking_app
+      DATABASE_USER: ${{ secrets.DATABASE_USER }}
+      DATABASE_PASS: ${{ secrets.DATABASE_PASS }}
+      DATABASE_HOST: 127.0.0.1
+      DATABASE_PORT: 3306
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DJANGO_SETTINGS_MODULE: answerking.settings.development
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/dependencies
