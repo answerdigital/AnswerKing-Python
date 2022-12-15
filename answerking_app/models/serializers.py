@@ -1,4 +1,3 @@
-import re
 from typing import OrderedDict
 
 from django.core.validators import (
@@ -14,14 +13,13 @@ from answerking_app.models.models import (
     Order,
     LineItem,
 )
-from answerking_app.utils.get_object_or_400 import get_product_or_400
+from answerking_app.utils.serializer_data_functions import (
+    products_check,
+    compress_white_spaces,
+)
 from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 MAXNUMBERSIZE = 2147483647
-
-
-def compress_white_spaces(value: str) -> str:
-    return re.sub(" +", " ", value.strip())
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
@@ -43,7 +41,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
     )
 
     def create(self, validated_data: dict) -> Category:
-        products: list[Product] = self.products_check(validated_data)
+        products: list[Product] = products_check(validated_data)
         category: Category = Category.objects.create(
             name=validated_data["name"],
             description=validated_data["description"],
@@ -57,28 +55,12 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
                 status=status.HTTP_410_GONE,
                 detail="This category has been retired",
             )
-        products: list[Product] = self.products_check(validated_data)
+        products: list[Product] = products_check(validated_data)
         category.name = validated_data["name"]
         category.description = validated_data["description"]
         category.save()
         category.products.set(objs=products)
         return category
-
-    def products_check(self, validated_data: dict) -> list[Product]:
-        products: list[Product] = []
-        if "products" in validated_data:
-            products_id_list: list[int] = [
-                prod["id"] for prod in validated_data["products"]
-            ]
-            for product_id in products_id_list:
-                product: Product = get_product_or_400(Product, pk=product_id)
-                if product.retired:
-                    raise ProblemDetails(
-                        status=status.HTTP_410_GONE,
-                        detail="This product has been retired",
-                    )
-                products.append(product)
-        return products
 
     class Meta:
         model = Category
@@ -214,8 +196,7 @@ class OrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data: dict) -> Order:
         order: Order = Order.objects.create()
         if "lineitem_set" in validated_data:
-            line_items_data: list[OrderedDict] = validated_data["lineitem_set"]
-            self.products_check(line_items_data)
+            line_items_data = validated_data["lineitem_set"]
             self.create_order_line_items(
                 order=order, line_items_data=line_items_data
             )
@@ -225,7 +206,6 @@ class OrderSerializer(serializers.ModelSerializer):
     def update(self, order_to_update: Order, validated_data: dict) -> Order:
         if "lineitem_set" in validated_data:
             line_items_data: list[OrderedDict] = validated_data["lineitem_set"]
-            self.products_check(line_items_data)
             LineItem.objects.filter(order_id=order_to_update.id).delete()
             self.create_order_line_items(
                 order=order_to_update, line_items_data=line_items_data
@@ -236,18 +216,17 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return order_to_update
 
-    def products_check(self, line_items_data: list[OrderedDict]):
-        for order_item in line_items_data:
-            get_product_or_400(Product, pk=order_item["product"]["id"])
-
     def create_order_line_items(
-        self, order: Order, line_items_data: list[OrderedDict]
+        self,
+        order: Order,
+        line_items_data: list[OrderedDict],
     ):
-        for order_item in line_items_data:
-            product: Product = Product.objects.get(
-                pk=order_item["product"]["id"]
-            )
-            if product.retired or order_item["quantity"] < 1:
+        products_id_list = []
+        for product in line_items_data:
+            products_id_list.append(product["product"])
+        products = products_check({"products": products_id_list})
+        for order_item, product in zip(line_items_data, products):
+            if order_item["quantity"] < 1:
                 continue
             new_line_item = LineItem.objects.create(
                 order=order, product=product, quantity=order_item["quantity"]
