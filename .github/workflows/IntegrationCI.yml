@@ -9,7 +9,7 @@ on:
 jobs:
   integration_tests:
     runs-on: ubuntu-latest
-    step:
+    steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/dependencies
       - name: Run Integration Tests
