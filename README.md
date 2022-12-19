@@ -61,8 +61,8 @@ DJANGO_SETTINGS_MODULE=answerking.settings.base
 DATABASE_ENGINE = "django.db.backends.mysql"
 ```
 - run in git bash :
-  - `docker build -t answerking_python .` (this builds your local app and tags it with answerking_python)
-  - `docker compose --env-file .env.production up` (this runs your built image with the .env.production variables)
+  - `docker compose build`
+  - `docker compose --env-file .env.production up` (This runs your built image with the .env.production variables)
 
 - send HTTP requests to 127.0.0.1:8000
 
