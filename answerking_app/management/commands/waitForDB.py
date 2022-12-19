@@ -30,7 +30,7 @@ class Command(BaseCommand):
         if connected:
             self.stdout.write(
                 self.style.SUCCESS(
-                    f"Database available! Time taken: {end-start:.4f} second(s)"
+                    f"Database available! Time taken: {end-start:.4f} second(s). Number of tries: {num_connection_trys}"
                 )
             )
         else:
