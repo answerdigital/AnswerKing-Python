@@ -19,8 +19,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-#    restart: unless-stopped
-#    image: answerking_python:latest
 #    image: ghcr.io/answerconsulting/answerking-python:latest
     environment:
       - DATABASE_NAME=${DATABASE_NAME}
