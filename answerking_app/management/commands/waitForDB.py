@@ -30,14 +30,16 @@ class Command(BaseCommand):
         if connected:
             self.stdout.write(
                 self.style.SUCCESS(
-                    f"Database available! Time taken: {end-start:.4f} second(s). Number of tries: {num_connection_trys}"
+                    f"Database available! "
+                    f"Time taken: {end-start:.4f} second(s). "
+                    f"Number of tries: {num_connection_trys}"
                 )
             )
         else:
             self.stdout.write(
                 self.style.ERROR(
-                    f"Could not connect to database. Tried {MAX_NUM_CONNECTION_TRYS} times."
+                    f"Could not connect to database. "
+                    f"Tried {MAX_NUM_CONNECTION_TRYS} times."
                 )
             )
             raise django.db.DatabaseError(f"Could not connect to database.")
-
