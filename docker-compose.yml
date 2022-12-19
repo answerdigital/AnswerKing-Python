@@ -36,3 +36,5 @@ services:
     expose:
       - "8000"
     tty: true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
