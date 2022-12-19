@@ -16,9 +16,12 @@ services:
   app:
     depends_on:
       - database
-    restart: unless-stopped
-    image: answerking_python:latest
-#    image: ghcr.io/answerconsulting/answerking-python:pr-44    # working docker image (NOT LATEST)
+    build:
+      context: .
+      dockerfile: Dockerfile
+#    restart: unless-stopped
+#    image: answerking_python:latest
+#    image: ghcr.io/answerconsulting/answerking-python:latest
     environment:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_HOST=${DATABASE_HOST}

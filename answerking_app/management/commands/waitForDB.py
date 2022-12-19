@@ -1,6 +1,7 @@
 import time
 import os
 
+import django.db
 from django.db import connection
 from django.db.utils import OperationalError
 from django.core.management.base import BaseCommand
@@ -14,9 +15,9 @@ class Command(BaseCommand):
 
         start = time.time()
         self.stdout.write("Waiting for database...")
-        num_connection_trys = 0
+        num_connection_trys = 1
         connected = False
-        while num_connection_trys < MAX_NUM_CONNECTION_TRYS:
+        while num_connection_trys <= MAX_NUM_CONNECTION_TRYS:
             try:
                 connection.ensure_connection()
                 connected = True
@@ -38,3 +39,5 @@ class Command(BaseCommand):
                     f"Could not connect to database. Tried {MAX_NUM_CONNECTION_TRYS} times."
                 )
             )
+            raise django.db.DatabaseError(f"Could not connect to database.")
+
