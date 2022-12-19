@@ -1,4 +1,5 @@
 import time
+import os
 
 from django.db import connection
 from django.db.utils import OperationalError
@@ -9,18 +10,31 @@ class Command(BaseCommand):
     """Wait to connect to db until db is initialised"""
 
     def handle(self, *args, **options):
+        MAX_NUM_CONNECTION_TRYS = 20
+
         start = time.time()
         self.stdout.write("Waiting for database...")
-        while True:
+        num_connection_trys = 0
+        connected = False
+        while num_connection_trys < MAX_NUM_CONNECTION_TRYS:
             try:
                 connection.ensure_connection()
+                connected = True
                 break
             except OperationalError:
+                num_connection_trys += 1
                 time.sleep(1)
 
         end = time.time()
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"Database available! Time taken: {end-start:.4f} second(s)"
+        if connected:
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Database available! Time taken: {end-start:.4f} second(s)"
+                )
             )
-        )
+        else:
+            self.stdout.write(
+                self.style.ERROR(
+                    f"Could not connect to database. Tried {MAX_NUM_CONNECTION_TRYS} times."
+                )
+            )
