@@ -18,16 +18,18 @@ python-dotenv = "^0.21.0"
 drf-problems = { git = "https://github.com/Axeltherabbit/drf-problems" }
 typing-extensions = "^4.4.0"
 freezegun = "^1.2.2"
+pytz = "^2022.6"
+tzdata = "^2022.7"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
 pyright = "^1.1.278"
-coverage = "^6.5.0"
 pycodestyle = "^2.9.1"
-drf-yasg = "^1.21.4"
 assertpy = "^1.1"
 snapshottest = "^0.6.0"
 ddt = "^1.6.0"
+coverage = "^6.5.0"
+drf-yasg = "^1.21.4"
 
 [build-system]
 requires = ["poetry-core"]
