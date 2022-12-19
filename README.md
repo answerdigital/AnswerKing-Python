@@ -58,7 +58,7 @@ DATABASE_USER=root
 DATABASE_PASS=
 SECRET_KEY="django-insecure-x977=v5a2q-e%_5$b9ge@jzk%s_nhk2l8_use&h@*m$w33dopr"
 DJANGO_SETTINGS_MODULE=answerking.settings.base
-DATABASE_ENGINE = "django.db.backends.mysql"
+DATABASE_ENGINE="django.db.backends.mysql"
 ```
 - run in git bash :
   - `docker compose build`
