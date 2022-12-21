@@ -59,7 +59,7 @@ class UtilsTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        data = {'products': [{'id': test_prod.id}]}
+        data = {"products": [{"id": test_prod.id}]}
         actual_prod = products_check(data)
         expected_prod = test_prod
 
@@ -71,14 +71,16 @@ class UtilsTests(UnitTestBase):
         )
 
         self.assertRaises(
-            ProblemDetails, products_check, {'products': [{'id': test_prod.id + 1}]}
+            ProblemDetails,
+            products_check,
+            {"products": [{"id": test_prod.id + 1}]},
         )
 
     def test_get_product_check_invalid_correct_exception_info(self):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        data = {'products': [{'id': test_prod.id + 1}]}
+        data = {"products": [{"id": test_prod.id + 1}]}
 
         with self.assertRaises(ProblemDetails) as error:
             products_check(data)
@@ -184,7 +186,8 @@ class UtilsTests(UnitTestBase):
             "https://127.0.0.1:8000/problems/not_found/",
         )
         self.assertEqual(
-            response.headers["Content-Type"], "application/problem+json")
+            response.headers["Content-Type"], "application/problem+json"
+        )
 
     def test_products_check_return_empty_list_when_products_not_in_validated_data_pass(
         self,
