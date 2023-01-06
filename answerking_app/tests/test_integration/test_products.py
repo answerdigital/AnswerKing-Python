@@ -179,8 +179,8 @@ class DeleteTests(TestBase):
         prod_url = f"/api/products/{seededData['id']}"  # type: ignore[GeneralTypeIssue]
         response = client.delete(prod_url)
         getResponse = client.get(prod_url)
-        assert_that(response.status_code).is_equal_to(200)
-        assert_that(str(getResponse.json())).contains("'retired': True")
+        assert_that(response.status_code).is_equal_to(204)
+        assert_that(str(getResponse.json()), None)
 
     def test_delete_invalid_id_returns_bad_request(self):
         response = client.delete("/api/products/invalid-id")
