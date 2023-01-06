@@ -1,6 +1,6 @@
 # from datetime import datetime, timedelta
 from django.test import TransactionTestCase
-from answerking_app.models.models import Category, Product, Order, LineItem
+from answerking_app.models.models import Product
 
 # from answerking_app.utils.model_types import (
 #     CategoryType,

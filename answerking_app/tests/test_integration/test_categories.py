@@ -301,13 +301,11 @@
 #         # Act
 #         response = client.delete(f"/api/categories/{self.test_cat_1.id}")
 #         actual = response.json()
-#
-#         expected["createdOn"] = actual["createdOn"]
-#         expected["lastUpdated"] = actual["lastUpdated"]
-#
+##
 #         # Assert
-#         self.assertEqual(response.status_code, 200)
-#         self.assertJSONResponse(expected, actual, response, 200)
+#         self.assertEqual(response.status_code, 204)
+#         self.assertEqual(actual, None)
+
 #
 #     def test_delete_invalid_id_returns_not_found(self):
 #         # Act

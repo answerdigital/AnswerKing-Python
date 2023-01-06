@@ -309,15 +309,12 @@
 #     def test_delete_order_valid_returns_ok(self):
 #         # Arrange
 #         old_order_status: str = self.test_order_1.order_status
-#         expected_order_status: str = "Cancelled"
 #         # Act
 #         response = client.delete(f"/api/orders/{self.test_order_1.id}")
-#         updated_order_status = response.json()["orderStatus"]
 
 #         # Assert
-#         self.assertEqual(response.status_code, 200)
-#         self.assertNotEqual(old_order_status, updated_order_status)
-#         self.assertEqual(expected_order_status, updated_order_status)
+#         self.assertEqual(response.status_code, 204)
+#         self.assertEqual(response.json, None)
 
 #     def test_delete_invalid_id_returns_not_found(self):
 #         # Arrange
