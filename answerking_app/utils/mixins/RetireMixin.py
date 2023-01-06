@@ -14,7 +14,7 @@ class RetireMixin(GenericAPIView):
         instance: Category | Product = self.get_object()
         if instance.retired:
             raise ProblemDetails(
-                status=status.HTTP_404_NOT_FOUND,
+                status=status.HTTP_410_GONE,
                 detail="This object has already been retired",
             )
         if isinstance(instance, Category):
