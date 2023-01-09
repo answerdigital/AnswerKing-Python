@@ -24,7 +24,9 @@ class UnitTestBase(TransactionTestCase, TestCase):
         elif fixture_type == "categories":
             self.input_data(Category, data)
         else:
-            raise ValueError(f"{fixture_type} is not a valid data seeding type")
+            raise ValueError(
+                f"{fixture_type} is not a valid data seeding type"
+            )
 
     def get_fixture(self, fixture_type: str, fixture_name: str):
         fixture_path = "answerking_app/tests/test_unit/fixtures"

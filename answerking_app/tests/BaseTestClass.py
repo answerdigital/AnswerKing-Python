@@ -18,7 +18,9 @@ class TestBase(TransactionTestCase, TestCase):
                 raise ValueError(f"{data} is not valid json")
             return data
         else:
-            raise ValueError(f"{fixture_type} is not a valid data seeding type")
+            raise ValueError(
+                f"{fixture_type} is not a valid data seeding type"
+            )
 
     def getFixture(self, fixture_type, fixture_name):
         fixture_path = "answerking_app/tests/fixtures"
