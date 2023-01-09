@@ -67,7 +67,7 @@ jobs:
       - name: Run Unit Tests
         run: poetry run python manage.py test answerking_app.tests.test_unit
       - name: generate coverage tests
-        run: poetry run coverage run --omit=*/migrations/*,*/answerking/* manage.py test --noinput
+        run: poetry run coverage run --omit=*/migrations/*,*/answerking/*,*/tests/* manage.py test --noinput
       - name: generate report
         run: poetry run coverage xml
       - name: SonarCloud Scan
