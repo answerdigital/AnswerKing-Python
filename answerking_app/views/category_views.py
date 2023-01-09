@@ -57,6 +57,6 @@ class CategoryProductListView(
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
 
-    def get(self, request: Request, cat_id, *args, **kwargs) -> Response:
+    def get(self, cat_id) -> Response:
         check_url_parameter(cat_id)
-        return self.list(request, cat_id, *args, **kwargs)
+        return self.list(cat_id)
