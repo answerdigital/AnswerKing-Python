@@ -1,15 +1,15 @@
 """
 Django development settings for answerking project.
 """
-from answerking.settings.base import *
+import answerking.settings.base as akb
 
 DEBUG = True
 
-INSTALLED_APPS += (
+akb.INSTALLED_APPS += (
     "coverage",
     "drf_yasg",
 )
 
-MIDDLEWARE.remove("django.middleware.csrf.CsrfViewMiddleware")
+akb.MIDDLEWARE.remove("django.middleware.csrf.CsrfViewMiddleware")
 
 TEST_RUNNER = "snapshottest.django.TestRunner"

@@ -14,18 +14,17 @@ class UnitTestBase(TransactionTestCase, TestCase):
         elif isinstance(data, dict):
             model.objects.create(**data)
         else:
-            raise Exception(f"{data} is not valid json")
+            raise ValueError(f"{data} is not valid json")
         return data
 
     def seedFixture(self, fixture_type: str, fixture_name: str):
-        num_fixtures_seeded = 0
         data = self.get_fixture(fixture_type, fixture_name)
         if fixture_type == "products":
             self.input_data(Product, data)
         elif fixture_type == "categories":
             self.input_data(Category, data)
         else:
-            raise Exception(f"{fixture_type} is not a valid data seeding type")
+            raise ValueError(f"{fixture_type} is not a valid data seeding type")
 
     def get_fixture(self, fixture_type: str, fixture_name: str):
         fixture_path = "answerking_app/tests/test_unit/fixtures"
@@ -41,7 +40,7 @@ class UnitTestBase(TransactionTestCase, TestCase):
             elif isinstance(loaded_fixture, dict):
                 loaded_fixtures.append(loaded_fixture)
             else:
-                raise Exception(
-                    f"{type(loaded_fixture)} for is not a valid data seeding type"
+                raise ValueError(
+                    f"The type {type(loaded_fixture)} is not a valid data seeding type"
                 )
         return loaded_fixtures
