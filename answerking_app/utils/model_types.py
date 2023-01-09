@@ -17,6 +17,13 @@ class ProductType(TypedDict):
     retired: NotRequired[bool]
 
 
+class ProductBodyType(TypedDict):
+    name: str
+    price: str | float
+    description: str
+    categories: NotRequired["list[int]"]
+
+
 class CategoryProductType(TypedDict):
     id: int
 
@@ -28,7 +35,16 @@ class CategoryType(TypedDict):
     createdOn: NotRequired[datetime.datetime | str]
     lastUpdated: NotRequired[datetime.datetime | str]
     retired: NotRequired[bool]
-    products: NotRequired["list[CategoryProductType]"]
+    products: NotRequired["list[int]"]
+
+
+class ProductCategoryIdType(TypedDict):
+    id: NotRequired[int]
+    name: str
+    price: str | float
+    description: str
+    categories: NotRequired["list[int]"]
+    retired: NotRequired[bool]
 
 
 class OrderProductType(TypedDict):
@@ -46,7 +62,7 @@ class OrderType(TypedDict):
     lineItems: NotRequired["list[OrderProductType]"]
 
 
-class DetailError(TypedDict):
+class ProblemDetails(TypedDict):
     detail: NotRequired[str]
     type: str
     title: str

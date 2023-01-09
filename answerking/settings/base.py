@@ -1,3 +1,6 @@
+"""
+Django base settings for answerking project.
+"""
 import os
 from pathlib import Path
 
@@ -80,7 +83,6 @@ REST_FRAMEWORK = {
     ],
     "EXCEPTION_HANDLER": "answerking_app.utils.exceptions_handler.wrapper",
     "COERCE_DECIMAL_TO_STRING": False,
-    "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S.%fZ",
 }
 
 # Database
@@ -88,7 +90,7 @@ REST_FRAMEWORK = {
 
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("DATABASE_ENGINE"),
+        "ENGINE": "django.db.backends.mysql",
         "NAME": os.environ.get("DATABASE_NAME"),
         "HOST": os.environ.get("DATABASE_HOST"),
         "PORT": os.environ.get("DATABASE_PORT"),

@@ -1,0 +1,836 @@
+openapi: 3.0.3
+info:
+  title: Answerking Python API
+  version: 1.0.0
+  description: Django API schema for Answerking Python project
+paths:
+  /api/categories:
+    get:
+      operationId: api_categories_list
+      summary: Get all categories.
+      tags:
+      - Inventory
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: When all the categories have been returned.
+    post:
+      operationId: api_categories_create
+      summary: Create a new category.
+      tags:
+      - Inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+            examples:
+              RequestBody:
+                value:
+                  name: string
+                  description: string
+                summary: Request body
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              examples:
+                CategoryResponse:
+                  value:
+                    id: 0
+                    name: string
+                    description: string
+                    createdOn: '2022-11-23T10:15:36.622Z'
+                    lastUpdated: '2022-11-23T10:15:36.622Z'
+                    products:
+                    - id: 0
+                    retired: true
+                  summary: Category response
+          description: When the category has been created.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When invalid parameters are provided.
+  /api/categories/{id}:
+    get:
+      operationId: api_categories_retrieve
+      summary: Get a single category.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this category.
+        required: true
+      tags:
+      - Inventory
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              examples:
+                CategoryResponse:
+                  value:
+                    id: 0
+                    name: string
+                    description: string
+                    createdOn: '2022-11-23T10:15:36.622Z'
+                    lastUpdated: '2022-11-23T10:15:36.622Z'
+                    products:
+                    - id: 0
+                    retired: true
+                  summary: Category response
+          description: When the category with the provided id has been found.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When the category with the given id does not exist.
+    put:
+      operationId: api_categories_update
+      summary: Update an existing category
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this category.
+        required: true
+      tags:
+      - Inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+            examples:
+              RequestBody:
+                value:
+                  name: string
+                  description: string
+                  products:
+                  - id: 0
+                summary: Request body
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              examples:
+                CategoryResponse:
+                  value:
+                    id: 0
+                    name: string
+                    description: string
+                    createdOn: '2022-11-23T10:15:36.622Z'
+                    lastUpdated: '2022-11-23T10:15:36.622Z'
+                    products:
+                    - id: 0
+                    retired: true
+                  summary: Category response
+          description: When the category with the provided id has been found.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When invalid parameters are provided.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When the category with the given id does not exist.
+    delete:
+      operationId: api_categories_destroy
+      summary: Retire an existing category
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this category.
+        required: true
+      tags:
+      - Inventory
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              examples:
+                CategoryResponse:
+                  value:
+                    id: 0
+                    name: string
+                    description: string
+                    createdOn: '2022-11-23T10:15:36.622Z'
+                    lastUpdated: '2022-11-23T10:15:36.622Z'
+                    products:
+                    - id: 0
+                    retired: true
+                  summary: Category response
+          description: When the category has been retired.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When invalid parameters are provided.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When the category with the given id does not exist.
+        '410':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When the category with the given id is already retired.
+  /api/categories/{id}/products:
+    get:
+      operationId: api_categories_products_retrieve
+      summary: Get all products in a category.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this category.
+        required: true
+      tags:
+      - Inventory
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              examples:
+                CategoryResponse:
+                  value:
+                    id: 0
+                    name: string
+                    description: string
+                    createdOn: '2022-11-23T10:15:36.622Z'
+                    lastUpdated: '2022-11-23T10:15:36.622Z'
+                    products:
+                    - id: 0
+                    retired: true
+                  summary: Category response
+          description: When all the products have been returned.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When the category with the given id does not exist.
+  /api/orders:
+    get:
+      operationId: api_orders_list
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+          description: ''
+    post:
+      operationId: api_orders_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /api/orders/{id}:
+    get:
+      operationId: api_orders_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this order.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    put:
+      operationId: api_orders_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this order.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    delete:
+      operationId: api_orders_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this order.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/products:
+    get:
+      operationId: api_products_list
+      summary: Get all products.
+      tags:
+      - Inventory
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: When all the products have been returned.
+    post:
+      operationId: api_products_create
+      summary: Create a new product.
+      tags:
+      - Inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+            examples:
+              RequestBody:
+                value:
+                  name: string
+                  description: string
+                  price: 0
+                summary: Request body
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+              examples:
+                ProductResponse:
+                  value:
+                    id: 0
+                    name: string
+                    price: 0
+                    description: string
+                    categories:
+                    - id: 0
+                    retired: true
+                  summary: Product response
+          description: When the product has been created.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When invalid parameters are provided.
+  /api/products/{id}:
+    get:
+      operationId: api_products_retrieve
+      summary: Get a single product.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product.
+        required: true
+      tags:
+      - Inventory
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+              examples:
+                ProductResponse:
+                  value:
+                    id: 0
+                    name: string
+                    price: 0
+                    description: string
+                    categories:
+                    - id: 0
+                    retired: true
+                  summary: product response
+          description: When the product with the provided id has been found.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When the product with the given id does not exist.
+    put:
+      operationId: api_products_update
+      summary: Update an existing product
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product.
+        required: true
+      tags:
+      - Inventory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+            examples:
+              RequestBody:
+                value:
+                  name: string
+                  description: string
+                  price: 0
+                  categories:
+                  - id: 0
+                summary: Request body
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+              examples:
+                ProductResponse:
+                  value:
+                    id: 0
+                    name: string
+                    price: 0
+                    description: string
+                    categories:
+                    - id: 0
+                    retired: true
+                  summary: product response
+          description: When the product with the provided id has been found.
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When invalid parameters are provided.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When the product with the given id does not exist.
+    delete:
+      operationId: api_products_destroy
+      summary: Retire an existing product
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this product.
+        required: true
+      tags:
+      - Inventory
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+              examples:
+                ProductResponse:
+                  value:
+                    id: 0
+                    name: string
+                    price: 0
+                    description: string
+                    categories:
+                    - id: 0
+                    retired: true
+                  summary: product response
+          description: When the product has been retired.
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When the product with the given id does not exist.
+        '410':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+          description: When the product with the given id is already retired.
+  /problems/{code}/:
+    get:
+      operationId: problems_retrieve
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - problems
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDescription'
+          description: ''
+components:
+  schemas:
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          pattern: ^[a-zA-Z !]+$
+          maxLength: 50
+        description:
+          type: string
+          nullable: true
+          pattern: ^[a-zA-Z .!,#]+$
+          maxLength: 200
+        createdOn:
+          type: string
+          format: date-time
+          readOnly: true
+        lastUpdated:
+          type: string
+          format: date-time
+          readOnly: true
+        products:
+          type: array
+          items:
+            type: integer
+        retired:
+          type: boolean
+      required:
+      - createdOn
+      - description
+      - lastUpdated
+      - name
+      - products
+    CategoryDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          pattern: ^[a-zA-Z !]+$
+          maxLength: 50
+        description:
+          type: string
+          nullable: true
+          pattern: ^[a-zA-Z .!,#]+$
+          maxLength: 200
+      required:
+      - description
+      - name
+    CodeEnum:
+      enum:
+      - error
+      - invalid
+      - parse_error
+      - authentication_failed
+      - not_authenticated
+      - permission_denied
+      - not_found
+      - method_not_allowed
+      - not_acceptable
+      - unsupported_media_type
+      - throttled
+      type: string
+    ErrorDescription:
+      type: object
+      properties:
+        status:
+          type: integer
+          maximum: 500
+          minimum: 300
+        code:
+          $ref: '#/components/schemas/CodeEnum'
+        title:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+      required:
+      - code
+      - description
+      - status
+      - title
+    ErrorDetail:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
+    LineItem:
+      type: object
+      properties:
+        product:
+          $ref: '#/components/schemas/LineItemProduct'
+        quantity:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        subTotal:
+          type: number
+          format: double
+          maximum: 10000000000000000
+          minimum: -10000000000000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          readOnly: true
+      required:
+      - product
+      - quantity
+      - subTotal
+    LineItemProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryDetail'
+          readOnly: true
+        price:
+          type: number
+          format: double
+          maximum: 10000000000000000
+          minimum: -10000000000000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          readOnly: true
+          nullable: true
+      required:
+      - categories
+      - description
+      - id
+      - name
+      - price
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        createdOn:
+          type: string
+          format: date-time
+          readOnly: true
+        lastUpdated:
+          type: string
+          format: date-time
+          readOnly: true
+        orderStatus:
+          type: string
+          readOnly: true
+        orderTotal:
+          type: number
+          format: double
+          maximum: 10000000000000000
+          minimum: -10000000000000000
+          exclusiveMaximum: true
+          exclusiveMinimum: true
+          readOnly: true
+        lineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineItem'
+      required:
+      - createdOn
+      - id
+      - lastUpdated
+      - orderStatus
+      - orderTotal
+    ProblemDetail:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        traceID:
+          type: string
+      required:
+      - errors
+      - status
+      - title
+      - traceID
+      - type
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+          pattern: ^[a-zA-Z !]+$
+          maxLength: 50
+        description:
+          type: string
+          nullable: true
+          pattern: ^[a-zA-Z .!,#]+$
+          maxLength: 200
+        price:
+          type: number
+          format: double
+          maximum: 2147483647
+          minimum: 0
+        categories:
+          type: array
+          items:
+            type: integer
+        retired:
+          type: boolean
+      required:
+      - description
+      - name
+      - price
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

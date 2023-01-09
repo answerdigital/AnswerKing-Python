@@ -9,10 +9,9 @@ from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 
 class CategoryProductListMixin:
-    def list(self, request: Request, cat_id: int, *args, **kwargs) -> Response:
-
+    def list(self, request: Request, *args, **kwargs) -> Response:
         products: QuerySet[Product] = Product.objects.filter(
-            category__id=cat_id
+            category__id=kwargs["pk"]
         )
         if not products:
             raise ProblemDetails(status=status.HTTP_404_NOT_FOUND)

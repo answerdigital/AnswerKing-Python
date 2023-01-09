@@ -9,7 +9,7 @@ clean:
 
 lint:
 	poetry run black . --line-length=79
-	poetry run pycodestyle . --max-line-length=100
+	poetry run pycodestyle --ignore=E501 .
 	poetry run pyright
 
 test: clean
@@ -20,10 +20,5 @@ test: clean
 migrate:
 	poetry run python manage.py makemigrations
 	poetry run python manage.py migrate
-
-dockerRunserver:
-	poetry run python manage.py waitForDB
-	poetry run python manage.py migrate
-	poetry run python manage.py runserver 0:8000
 
 prepare: lint test
