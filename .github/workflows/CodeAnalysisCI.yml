@@ -61,14 +61,16 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/dependencies
-      - uses: SonarSource/sonarcloud-github-action@master
       - name: Run Migrations
         run: poetry run python manage.py migrate
       - name: Run Unit Tests
         run: poetry run python manage.py test answerking_app.tests.test_unit
       - name: generate coverage tests
-        run: poetry run coverage run --omit=*/migrations/*,*/answerking/* manage.py test --noinput
+        run: poetry run coverage run manage.py test --noinput
       - name: generate report
         run: poetry run coverage xml
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.python.coverage.reportPaths=coverage.xml

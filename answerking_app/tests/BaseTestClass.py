@@ -1,37 +1,30 @@
-# from datetime import datetime, timedelta
 from django.test import TransactionTestCase
 from answerking_app.models.models import Product
 
-# from answerking_app.utils.model_types import (
-#     CategoryType,
-#     DetailError,
-#     ProductType,
-#     OrderType,
-#     OrderProductType,
-#     CategoryProductType,
-# )
 from snapshottest import TestCase
 import json
 
 
 class TestBase(TransactionTestCase, TestCase):
-    def seedFixture(self, type, fixtureName):
-        if type == "products":
-            data = self.getFixture(type, fixtureName)
+    def seedFixture(self, fixture_type, fixture_name):
+        if fixture_type == "products":
+            data = self.getFixture(fixture_type, fixture_name)
             if isinstance(data, list):
                 for item in data:
                     Product.objects.create(**item)
             elif isinstance(data, dict):
                 Product.objects.create(**data)
             else:
-                raise Exception(f"{data} is not valid json")
+                raise ValueError(f"{data} is not valid json")
             return data
         else:
-            raise Exception(f"{type} is not a valid data seeding type")
+            raise ValueError(
+                f"{fixture_type} is not a valid data seeding type"
+            )
 
-    def getFixture(self, type, fixtureName):
-        fixturePath = "answerking_app/tests/fixtures"
-        return json.load(open(f"{fixturePath}/{type}/{fixtureName}"))
+    def getFixture(self, fixture_type, fixture_name):
+        fixture_path = "answerking_app/tests/fixtures"
+        return json.load(open(f"{fixture_path}/{fixture_type}/{fixture_name}"))
 
     def assertJSONErrorResponse(self, response):
         self.assertIsInstance(response.pop("traceId"), str)  # type: ignore[reportGeneralTypeIssues]

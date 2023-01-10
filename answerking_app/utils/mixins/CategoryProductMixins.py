@@ -9,7 +9,7 @@ from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 
 class CategoryProductListMixin:
-    def list(self, request: Request, cat_id: int, *args, **kwargs) -> Response:
+    def list(self, cat_id: int) -> Response:
 
         products: QuerySet[Product] = Product.objects.filter(
             category__id=cat_id

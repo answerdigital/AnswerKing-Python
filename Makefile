@@ -13,7 +13,7 @@ lint:
 	poetry run pyright
 
 test: clean
-	poetry run coverage run --omit=*/migrations/*,*answerking/* manage.py test --noinput
+	poetry run coverage run --omit=*/migrations/*,*answerking/*,*/tests/*,*manage.py manage.py test --noinput
 	poetry run coverage report
 	poetry run coverage html
 
