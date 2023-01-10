@@ -26,25 +26,6 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
 
-    # from django.db import connections
-    # conn = connections['default']
-    # no_host_available = True
-    # retry_count = 0
-    # sleep_time = 1
-    #
-    # while no_host_available:
-    #     try:
-    #         conn.connect()
-    #     except OperationalError:
-    #         if retry_count == MAX_RETRIES_NUM:
-    #             sys.exit()
-    #         sleep(sleep_time)
-    #     else:
-    #         no_host_available = False
-    #
-    #     sleep_time *= 1.5
-    #     retry_count += 1
-
     execute_from_command_line(sys.argv)
 
 
