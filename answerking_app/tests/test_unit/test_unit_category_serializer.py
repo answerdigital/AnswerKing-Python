@@ -75,8 +75,8 @@ class CategorySerializerUnitTests(UnitTestBase):
             name=self.test_cat_data["name"]
         )
         test_serializer_data: ReturnDict = CategorySerializer(test_cat).data
-        expected: dict = dict(*test_cat.products.values("id"))
-        actual: dict = dict(*test_serializer_data["products"])
+        expected: int = dict(*test_cat.products.values("id"))["id"]
+        actual: int = test_serializer_data["products"][0]
         self.assertEqual(actual, expected)
 
     def test_cat_serializer_retired_field_content(self):

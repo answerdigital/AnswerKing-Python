@@ -117,18 +117,14 @@ class ProductSerializer(serializers.ModelSerializer):
         return compress_white_spaces(value)
 
 
-class ProductDetailSerializer(ProductSerializer):
-    class Meta:
-        model = Product
-        fields = ["id"]
-
-
 class CategorySerializer(CategoryDetailSerializer):
     createdOn = serializers.DateTimeField(source="created_on", read_only=True)
     lastUpdated = serializers.DateTimeField(
         source="last_updated", read_only=True
     )
-    products = ProductDetailSerializer(many=True)
+    products = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Product.objects.all()
+    )
     retired = serializers.BooleanField(required=False)
 
     class Meta:
@@ -144,7 +140,7 @@ class CategorySerializer(CategoryDetailSerializer):
         )
 
 
-class ProductSerializerReadOnly(serializers.ModelSerializer):
+class LineItemProductSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
     categories = CategoryDetailSerializer(
         source="category_set", read_only=True, many=True
@@ -160,7 +156,7 @@ class ProductSerializerReadOnly(serializers.ModelSerializer):
 
 
 class LineItemSerializer(serializers.ModelSerializer):
-    product = ProductSerializerReadOnly()
+    product = LineItemProductSerializer()
     quantity = serializers.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
     )
@@ -244,3 +240,18 @@ class OrderSerializer(serializers.ModelSerializer):
             "lineItems",
         )
         depth = 3
+
+
+class ErrorDetailSerializer(serializers.Serializer):
+    name = serializers.CharField()
+
+
+class ProblemDetailSerializer(serializers.Serializer):
+    errors = ErrorDetailSerializer(many=True)
+    type = serializers.CharField()
+    title = serializers.CharField()
+    status = serializers.IntegerField()
+    traceID = serializers.CharField()
+
+    class Meta:
+        fields = ("errors", "type", "title", "status", "traceID")

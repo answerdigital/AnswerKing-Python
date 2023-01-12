@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 from rest_framework.utils.serializer_helpers import ReturnDict
 
 from answerking_app.models.models import Category, Product
-from answerking_app.models.serializers import ProductSerializerReadOnly
+from answerking_app.models.serializers import LineItemProductSerializer
 from answerking_app.tests.test_unit.UnitTestBaseClass import UnitTestBase
 
 
@@ -30,7 +30,7 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        test_serializer_data: ReturnDict = ProductSerializerReadOnly(
+        test_serializer_data: ReturnDict = LineItemProductSerializer(
             test_prod
         ).data
         expected: list[str] = [
@@ -47,7 +47,7 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        test_serializer_data: ReturnDict = ProductSerializerReadOnly(
+        test_serializer_data: ReturnDict = LineItemProductSerializer(
             test_prod
         ).data
         expected: int = test_prod.id
@@ -58,7 +58,7 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        test_serializer_data: ReturnDict = ProductSerializerReadOnly(
+        test_serializer_data: ReturnDict = LineItemProductSerializer(
             test_prod
         ).data
         expected: str = test_prod.name
@@ -69,7 +69,7 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        test_serializer_data: ReturnDict = ProductSerializerReadOnly(
+        test_serializer_data: ReturnDict = LineItemProductSerializer(
             test_prod
         ).data
         expected: str = test_prod.description
@@ -80,7 +80,7 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        test_serializer_data: ReturnDict = ProductSerializerReadOnly(
+        test_serializer_data: ReturnDict = LineItemProductSerializer(
             test_prod
         ).data
         expected: Decimal = test_prod.price
@@ -93,7 +93,7 @@ class ProductSerializerTests(UnitTestBase):
         )
         categories: QuerySet[Category] = test_prod.category_set.all()
         category: Category = categories[0]
-        test_serializer_data: ReturnDict = ProductSerializerReadOnly(
+        test_serializer_data: ReturnDict = LineItemProductSerializer(
             test_prod
         ).data
         actual_category: dict = test_serializer_data["categories"][0]
@@ -109,7 +109,7 @@ class ProductSerializerTests(UnitTestBase):
         )
         max_number_size: int = 2147483647
         test_prod.price = max_number_size + 1
-        serializer: ProductSerializerReadOnly = ProductSerializerReadOnly(
+        serializer: LineItemProductSerializer = LineItemProductSerializer(
             data=test_prod
         )
 
@@ -120,7 +120,7 @@ class ProductSerializerTests(UnitTestBase):
             name=self.test_prod_data["name"]
         )
         test_prod.price = "1.111"
-        serializer: ProductSerializerReadOnly = ProductSerializerReadOnly(
+        serializer: LineItemProductSerializer = LineItemProductSerializer(
             data=test_prod
         )
 

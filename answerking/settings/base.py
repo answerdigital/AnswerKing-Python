@@ -1,3 +1,6 @@
+"""
+Django base settings for answerking project.
+"""
 import os
 from pathlib import Path
 

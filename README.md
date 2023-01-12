@@ -66,3 +66,8 @@ DATABASE_ENGINE="django.db.backends.mysql"
 
 - send HTTP requests to 127.0.0.1:8000
 
+***
+### Swagger:
+To view the AnswerKing Python API documentation in Swagger as per OpenAPI specification, visit the following URL while
+ your local server is running: http://127.0.0.1:8000/api/schema/swagger-ui/
+
