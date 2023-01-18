@@ -20,6 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile
 #    image: ghcr.io/answerconsulting/answerking-python:latest
+
     environment:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_HOST=${DATABASE_HOST}
