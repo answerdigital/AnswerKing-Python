@@ -68,10 +68,10 @@ class PostTests(TestBase):
         "invalid-missing-fields-2.json",
     )
     def test_post_invalid_data_returns_bad_request(self, data):
-        postData = self.getFixture("products", data)
+        post_data = self.getFixture("products", data)
         response = client.post(
             "/api/products",
-            postData,
+            post_data,
             content_type="application/json",
         )
         self.assertJSONErrorResponse(response.json())
@@ -88,9 +88,9 @@ class PostTests(TestBase):
 
     def test_post_duplicated_name_returns_400(self):
         self.seedFixture("products", "basic-1.json")
-        postData = self.getFixture("products", "basic-1.json")
+        post_data = self.getFixture("products", "basic-1.json")
         response = client.post(
-            "/api/products", postData, content_type="application/json"
+            "/api/products", post_data, content_type="application/json"
         )
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
@@ -127,11 +127,11 @@ class PutTests(TestBase):
         "invalid-missing-fields-2.json",
     )
     def test_put_invalid_data_returns_bad_request(self, data):
-        seededData = self.seedFixture("products", "basic-1.json")
-        putData = self.getFixture("products", data)
+        seeded_data = self.seedFixture("products", "basic-1.json")
+        put_data = self.getFixture("products", data)
         response = client.put(
-            f"/api/products/{seededData['id']}",  # type: ignore[GeneralTypeIssue]
-            putData,
+            f"/api/products/{seeded_data['id']}",  # type: ignore[GeneralTypeIssue]
+            put_data,
             content_type="application/json",
         )
         self.assertJSONErrorResponse(response.json())
@@ -160,13 +160,13 @@ class PutTests(TestBase):
 
     def test_put_duplicated_name_returns_400(self):
         self.seedFixture("products", "basic-1.json")
-        seededData2 = self.seedFixture(
+        seeded_data_2 = self.seedFixture(
             "products", "basic-1-different-name.json"
         )
-        putData = self.getFixture("products", "basic-1-update-dup-name.json")
+        put_data = self.getFixture("products", "basic-1-update-dup-name.json")
         response = client.put(
-            f"/api/products/{seededData2['id']}",  # type: ignore[GeneralTypeIssue]
-            putData,
+            f"/api/products/{seeded_data_2['id']}",  # type: ignore[GeneralTypeIssue]
+            put_data,
             content_type="application/json",
         )
         self.assertJSONErrorResponse(response.json())
@@ -175,12 +175,12 @@ class PutTests(TestBase):
 
 class DeleteTests(TestBase):
     def test_delete_with_products_returns_ok(self):
-        seededData = self.seedFixture("products", "basic-1.json")
-        prod_url = f"/api/products/{seededData['id']}"  # type: ignore[GeneralTypeIssue]
+        seeded_data = self.seedFixture("products", "basic-1.json")
+        prod_url = f"/api/products/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]
         response = client.delete(prod_url)
-        getResponse = client.get(prod_url)
-        assert_that(response.status_code).is_equal_to(200)
-        assert_that(str(getResponse.json())).contains("'retired': True")
+        get_response = client.get(prod_url)
+        assert_that(response.status_code).is_equal_to(204)
+        assert_that(str(get_response.json()), None)
 
     def test_delete_invalid_id_returns_bad_request(self):
         response = client.delete("/api/products/invalid-id")

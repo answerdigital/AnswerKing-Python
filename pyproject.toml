@@ -8,7 +8,7 @@ packages = [{include = "answerking_app"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-django = "^4.1.4"
+django = "^4.1.5"
 djangorestframework = "^3.14.0"
 mysqlclient = "^2.1.1"
 django-cors-headers = "^3.13.0"
@@ -18,8 +18,9 @@ python-dotenv = "^0.21.0"
 drf-problems = { git = "https://github.com/Axeltherabbit/drf-problems" }
 typing-extensions = "^4.4.0"
 freezegun = "^1.2.2"
-pytz = "^2022.6"
+pytz = "^2022.7"
 tzdata = "^2022.7"
+drf-spectacular = "^0.25.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"

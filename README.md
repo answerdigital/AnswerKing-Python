@@ -58,11 +58,16 @@ DATABASE_USER=root
 DATABASE_PASS=
 SECRET_KEY="django-insecure-x977=v5a2q-e%_5$b9ge@jzk%s_nhk2l8_use&h@*m$w33dopr"
 DJANGO_SETTINGS_MODULE=answerking.settings.base
-DATABASE_ENGINE = "django.db.backends.mysql"
+
+DATABASE_ENGINE="django.db.backends.mysql"
 ```
 - run in git bash :
-  - `docker build -t answerking_python .` (this builds your local app and tags it with answerking_python)
-  - `docker compose --env-file .env.production up` (this runs your built image with the .env.production variables)
+  - `docker compose build`
+  - `docker compose --env-file .env.production up` (This runs your built image with the .env.production variables)
 
 - send HTTP requests to 127.0.0.1:8000
 
+***
+### Swagger:
+To view the AnswerKing Python API documentation in Swagger as per OpenAPI specification, visit the following URL while
+ your local server is running: http://127.0.0.1:8000/api/schema/swagger-ui/

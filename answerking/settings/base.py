@@ -1,3 +1,6 @@
+"""
+Django base settings for answerking project.
+"""
 import os
 from pathlib import Path
 
@@ -141,10 +144,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOW_METHODS = default_methods
 CORS_ALLOW_HEADERS = default_headers + ("Access-Control-Allow-Origin",)
 CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",
-#     "http://127.0.0.1:3000"
-# ]
 
 CORS_REPLACE_HTTPS_REFERER = False
 

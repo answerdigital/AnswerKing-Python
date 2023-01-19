@@ -8,19 +8,6 @@ from typing_extensions import (  # for Python <3.11 with (Not)Required
 from typing import Any
 
 
-class ProductType(TypedDict):
-    id: NotRequired[int]
-    name: str
-    price: str | float
-    description: str
-    categories: NotRequired["list[CategoryType]"]
-    retired: NotRequired[bool]
-
-
-class CategoryProductType(TypedDict):
-    id: int
-
-
 class CategoryType(TypedDict):
     id: NotRequired[int]
     name: NotRequired[str]
@@ -28,7 +15,36 @@ class CategoryType(TypedDict):
     createdOn: NotRequired[datetime.datetime | str]
     lastUpdated: NotRequired[datetime.datetime | str]
     retired: NotRequired[bool]
-    products: NotRequired["list[CategoryProductType]"]
+    products: NotRequired[list[int]]
+
+
+class ProductType(TypedDict):
+    id: NotRequired[int]
+    name: str
+    price: str | float
+    description: str
+    categories: NotRequired[list[CategoryType]]
+    retired: NotRequired[bool]
+
+
+class ProductBodyType(TypedDict):
+    name: str
+    price: str | float
+    description: str
+    categories: NotRequired[list[int]]
+
+
+class CategoryProductType(TypedDict):
+    id: int
+
+
+class ProductCategoryIdType(TypedDict):
+    id: NotRequired[int]
+    name: str
+    price: str | float
+    description: str
+    categories: NotRequired[list[int]]
+    retired: NotRequired[bool]
 
 
 class OrderProductType(TypedDict):
@@ -43,10 +59,10 @@ class OrderType(TypedDict):
     orderTotal: NotRequired[float]
     createdOn: NotRequired[datetime.datetime | str]
     lastUpdated: NotRequired[datetime.datetime | str]
-    lineItems: NotRequired["list[OrderProductType]"]
+    lineItems: NotRequired[list[OrderProductType]]
 
 
-class DetailError(TypedDict):
+class ProblemDetails(TypedDict):
     detail: NotRequired[str]
     type: str
     title: str

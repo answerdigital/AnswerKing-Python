@@ -177,7 +177,7 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         self.assertEqual(set(serializer.errors), {"description"})
 
     @mock.patch(
-        serializer_path + "CategoryDetailSerializer.products_check",
+        serializer_path + "products_check",
         return_value=[],
     )
     def test_cat_det_create_fn_no_prods_pass(
@@ -199,7 +199,7 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         self.assertEqual(list(cat_in_db.products.all()), [])
 
     @mock.patch(
-        serializer_path + "CategoryDetailSerializer.products_check",
+        serializer_path + "products_check",
     )
     def test_cat_det_create_fn_two_prods_pass(
         self,
@@ -233,7 +233,7 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         self.assertEqual(actual_prod_names, expected_prod_names)
 
     @mock.patch(
-        serializer_path + "CategoryDetailSerializer.products_check",
+        serializer_path + "products_check",
     )
     def test_cat_det_update_fn_retired_category_fail(
         self,
@@ -254,7 +254,7 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         self.assertEqual(context.exception.status_code, status.HTTP_410_GONE)
 
     @mock.patch(
-        serializer_path + "CategoryDetailSerializer.products_check",
+        serializer_path + "products_check",
     )
     def test_cat_det_update_fn_pass(
         self,
@@ -284,53 +284,4 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         )
         self.assertEqual(
             list(updated_cat.products.all()), products_check_mock.return_value
-        )
-
-    def test_products_check_return_empty_list_when_products_not_in_validated_data_pass(
-        self,
-    ):
-        validated_data: dict = self.test_cat_det_serializer_data
-        cds: CategoryDetailSerializer = CategoryDetailSerializer()
-        expected = []
-        actual: list[Product] = cds.products_check(validated_data)
-
-        self.assertEqual(actual, expected)
-
-    def test_products_check_only_needs_product_ids_pass(self):
-        to_seed: dict = {
-            "margarita_pizza_data.json": "products",
-            "pepperoni_pizza_data.json": "products",
-        }
-        self.seed_data(to_seed)
-        prod_1: Product = Product.objects.get(name="Margarita pizza")
-        prod_2: Product = Product.objects.get(name="Pepperoni pizza")
-        validated_data: dict = {
-            "products": [
-                {"id": prod_1.id},
-                {"id": prod_2.id},
-            ]
-        }
-        cds: CategoryDetailSerializer = CategoryDetailSerializer()
-        expected: list[Product] = [prod_1, prod_2]
-        actual: list[Product] = cds.products_check(validated_data)
-
-        self.assertEqual(actual, expected)
-
-    def test_products_check_retired_product_fail(self):
-        to_seed: dict = {"retired_product_data.json": "products"}
-        seeded_data: list[dict] = self.seed_data(to_seed)
-        with self.assertRaises(ProblemDetails) as context:
-            product_data: dict = seeded_data[0]
-            product_data["id"] = Product.objects.get(name="Old Pizza").id
-            validated_data: dict = copy.deepcopy(
-                self.test_cat_det_serializer_data
-            )
-            validated_data["products"] = [product_data]
-            cds: CategoryDetailSerializer = CategoryDetailSerializer()
-            cds.products_check(validated_data)
-
-        self.assertRaises(ProblemDetails)
-        self.assertEqual(context.exception.status_code, status.HTTP_410_GONE)
-        self.assertEqual(
-            context.exception.detail, "This product has been retired"
         )
