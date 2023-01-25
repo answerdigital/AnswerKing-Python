@@ -1,17 +1,17 @@
 [
     {
-        "id": 1,
-        "name": "Burgers",
-        "description": "desc"
+    "id": 1,
+    "name": "Burgers",
+    "description": "Juicy Burgers"
     },
     {
-        "id": 2,
-        "name": "Drinks",
-        "description": "desc"
+    "id": 2,
+    "name": "Drinks",
+    "description": "Cool drinks"
     },
     {
-        "id": 3,
-        "name": "Sides",
-        "description": "desc"
+    "id": 3,
+    "name": "Sides",
+    "description": "Succulent sides"
     }
 ]
