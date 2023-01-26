@@ -4,12 +4,23 @@ from ddt import ddt, data
 from freezegun import freeze_time
 
 from answerking_app.tests.test_integration.IntegrationTestBaseClass import IntegrationTestBase
+from answerking_app.models.models import Category, Product
 
 client = Client()
 frozen_time = "2022-01-01T01:02:03.000000Z"
 
+
 @ddt()
 class GetTests(IntegrationTestBase):
+    def seed_cat_with_prod(self, cat_json, prod_json) -> int:
+        seeded_data_cat = self.seedFixture("categories", cat_json)
+        seeded_data_prod = self.seedFixture("products", prod_json)
+        cat = Category.objects.get(pk=seeded_data_cat['id'])
+        prod = Product.objects.get(pk=seeded_data_prod['id'])
+        cat.products.add(prod)
+        seeded_data_cat_id: int = seeded_data_cat['id']
+        return seeded_data_cat_id
+
     @freeze_time(frozen_time)
     def test_get_all_without_categories_returns_no_content(self):
         response = client.get("/api/categories")
@@ -24,35 +35,64 @@ class GetTests(IntegrationTestBase):
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(200)
 
+    @freeze_time(frozen_time)
+    def test_get_id_valid_returns_ok(self):
+        seeded_data = self.seedFixture("categories", "basic-1.json")
+        response = client.get(f"/api/categories/{seeded_data['id']}")
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
+
+    @freeze_time(frozen_time)
+    def test_get_id_valid_with_products_returns_ok(self):
+        seeded_data_cat_id = self.seed_cat_with_prod("basic-1.json", "basic-1.json")
+        response = client.get(f"/api/categories/{seeded_data_cat_id}")
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
+
+    def test_get_invalid_id_returns_bad_request(self):
+        response = client.get("/api/categories/invalid-id")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+    def test_get_non_existent_id_returns_not_found(self):
+        response = client.get("/api/categories/1")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(404)
+
+    def test_get_prods_in_cat_returns_ok(self):
+        seeded_data_cat_id = self.seed_cat_with_prod("basic-1.json", "basic-1.json")
+        response = client.get(f"/api/categories/{seeded_data_cat_id}/products")
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
+
+    def test_get_prods_in_cat_invalid_id_returns_bad_request(self):
+        response = client.get("/api/categories/invalid-id/products")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+    def test_get_prods_in_cat_non_existent_id_returns_not_found(self):
+        response = client.get("/api/categories/1/products")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(404)
 
 
+@ddt
+class PostTests(IntegrationTestBase):
+    @data(
+        "basic-1-post.json",
+        "boundary-name.json",
+        "boundary-description.json",
+    )
+    @freeze_time(frozen_time)
+    def test_post_valid_returns_ok(self, cat_data):
+        post_data = self.getFixture("categories", cat_data)
+        response = client.post(
+            "/api/categories", post_data, content_type="application/json"
+        )
+        getResponse = client.get("/api/categories")
+        self.assertMatchSnapshot(getResponse.json())
+        assert_that(response.status_code).is_equal_to(201)
 
-#     def test_get_valid_id_returns_ok(self):
-#         # Arrange
-#         expected: CategoryType = self.get_mock_category_api(
-#             self.test_cat_1,
-#             [
-#                 self.get_mock_category_product_api(self.test_product_1),
-#                 self.get_mock_category_product_api(self.test_product_2),
-#             ],
-#         )
-#
-#         # Act
-#         response = client.get(f"/api/categories/{self.test_cat_1.id}")
-#         actual = response.json()
-#         # Assert
-#         self.assertJSONResponse(expected, actual, response, 200)
-#
-#     def test_get_invalid_id_returns_not_found(self):
-#         # Act
-#         response = client.get("/api/categories/f")
-#         actual = response.json()
-#
-#         # Assert
-#         self.assertJSONErrorResponse(
-#             self.expected_invalid_url_parameters, actual, response, 400
-#         )
-#
 #     def test_post_valid_with_products_returns_ok(self):
 #         # Arrange
 #         old_list = client.get("/api/categories").json()
