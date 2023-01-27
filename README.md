@@ -74,7 +74,7 @@ To view the AnswerKing Python API documentation in Swagger as per OpenAPI specif
 
  ***
 ### Terraform:
-The infrastructure created by running terraform in the terraform/ecs_fargate folder is illustrated below:
+The infrastructure created by running terraform in the `terraform/ecs_fargate` folder is illustrated below:
 
 ![Alt text](terraform/ecs_fargate/ecs_fargate.svg?raw=true "VPC Subnet Module Diagram")
 
@@ -95,6 +95,7 @@ variable "aws_account_id" {
 - run the following in the command line while in the `ecs_fargate` directory:
   - `terraform init`
   - `terraform apply`
+- push to a release branch to build and push Docker image to the created ECR.
 - from the AWS console search for Elastic Container Service, select `ak-python-ecs-cluster`. 
 - go to the Tasks tab and then select the running container. Here you can open or copy the IP address.
 - when finished run `terraform destroy` to tear down the infrastructure
