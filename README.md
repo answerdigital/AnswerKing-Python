@@ -95,5 +95,6 @@ variable "aws_account_id" {
 - run the following in the command line while in the `ecs_fargate` directory:
   - `terraform init`
   - `terraform apply`
-- from the AWS console search for Elastic Container Service, sele
+- from the AWS console search for Elastic Container Service, select `ak-python-ecs-cluster`. 
+- go to the Tasks tab and then select the running container. Here you can open or copy the IP address.
 - when finished run `terraform destroy` to tear down the infrastructure
