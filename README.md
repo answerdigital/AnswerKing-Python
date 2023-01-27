@@ -99,3 +99,4 @@ variable "aws_account_id" {
 - from the AWS console search for Elastic Container Service, select `ak-python-ecs-cluster`. 
 - go to the Tasks tab and then select the running container. Here you can open or copy the IP address.
 - when finished run `terraform destroy` to tear down the infrastructure.
+- Note: If there is an image in the ECR, `terraform destroy` will not delete it. This must be done manually in the AWS Management Console.
