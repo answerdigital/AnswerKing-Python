@@ -7,8 +7,10 @@ ENV PYTHONUNBUFFERED=1
 COPY . /AnswerKing-Python
 WORKDIR /AnswerKing-Python
 
+RUN pip install gunicorn==20.1.0
 RUN pip install poetry
 RUN poetry install --only main
 RUN pip install make
 
 CMD [ "/usr/bin/make", "dockerRunserver"]
+CMD [ "/usr/bin/gunicorn", "-b", ":8000", "answerking.wsgi:app"]

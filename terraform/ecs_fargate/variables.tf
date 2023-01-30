@@ -67,9 +67,15 @@ variable "scheduling_strategy" {
 }
 
 variable "container_port" {
-    type = string
+    type = number
     description = "Container port."
-    default = "REPLICA"
+    default = 8000
+}
+
+variable "host_port" {
+    type = number
+    description = "Container port."
+    default = 8000
 }
 
 variable "network_mode" {
