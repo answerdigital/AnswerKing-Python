@@ -8,7 +8,11 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 }
 
 resource "aws_ecs_service" "service" {
-  depends_on = [aws_ecr_repository.worker, module.rds_serverless_cluster_setup.rds_cluster_instance_endpoint, aws_iam_role.ecs_task_execution_role]
+  depends_on = [
+                aws_ecr_repository.worker, 
+                module.rds_serverless_cluster_setup.rds_cluster_instance_endpoint, 
+                aws_iam_role.ecs_task_execution_role
+                ]
   name            = "${var.project_name}-ecs-service"
   cluster         = aws_ecs_cluster.ecs_cluster.id
   task_definition = aws_ecs_task_definition.task_definition.arn
@@ -29,7 +33,7 @@ resource "aws_ecs_service" "service" {
 }
 
 resource "aws_ecs_task_definition" "task_definition" {
-  family                = "service"
+  family                   = "${var.project_name}-task"
   network_mode             = var.network_mode
   requires_compatibilities = [var.service_launch_type]
   cpu                      = var.ecs_task_cpu
@@ -39,13 +43,13 @@ resource "aws_ecs_task_definition" "task_definition" {
     {
       name      = "${var.project_name}-container"
       image     = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${aws_ecr_repository.worker.name}:latest"
-      cpu       = 2
+      cpu       = 256
       essential = true
       networkMode = var.network_mode
       portMappings = [
         {
-          containerPort = 8000
-          hostPort      = 8000
+          containerPort = "${var.container_port}"
+          hostPort      = "${var.host_port}"
         }]
       logConfiguration = {
         logDriver = "awslogs",

@@ -87,11 +87,11 @@ variable "network_mode" {
 variable "ecs_task_cpu" {
     type = number
     description = "Task CPU."
-    default = 256
+    default = 512
 }
 
 variable "ecs_task_memory" {
     type = number
     description = "Task memory."
-    default = 512
+    default = 1024
 }
