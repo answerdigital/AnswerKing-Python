@@ -12,4 +12,3 @@ RUN poetry install --only main
 RUN pip install make
 
 CMD [ "/usr/bin/make", "dockerRunserver"]
-
