@@ -74,3 +74,4 @@ jobs:
         with:
           args: >
             -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.exclusions=*/snapshots/*
