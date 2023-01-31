@@ -9,7 +9,6 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 
 resource "aws_ecs_service" "service" {
   depends_on = [
-                aws_ecr_repository.worker, 
                 module.rds_serverless_cluster_setup.rds_cluster_instance_endpoint, 
                 aws_iam_role.ecs_task_execution_role
                 ]
@@ -42,7 +41,7 @@ resource "aws_ecs_task_definition" "task_definition" {
   container_definitions = jsonencode([
     {
       name      = "${var.project_name}-container"
-      image     = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${aws_ecr_repository.worker.name}:latest"
+      image     = "${var.image_url}"
       cpu       = 256
       essential = true
       networkMode = var.network_mode
@@ -72,7 +71,7 @@ resource "aws_ecs_task_definition" "task_definition" {
       ]
     }
   ])
-
+  
   tags = {
     Name  = "${var.project_name}-task-definition"
     Owner = var.owner

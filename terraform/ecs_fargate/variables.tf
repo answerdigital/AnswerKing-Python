@@ -14,6 +14,12 @@ variable "owner" {
   default     = "answerking-python-team"
 }
 
+variable "image_url" {
+  type        = string
+  description = "AnswerKing Python image"
+  default     = "ghcr.io/ananswerconsulting/answerking-python:latest"
+}
+
 # Database variables
 
 variable "database_name" {
