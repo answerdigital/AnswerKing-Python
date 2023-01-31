@@ -222,11 +222,11 @@ class UtilsTests(UnitTestBase):
         seeded_data: list[dict] = self.seed_data(to_seed)
         with self.assertRaises(ProblemDetails) as context:
             product_data: dict = seeded_data[0]
-            product_object = Product.objects.get(name="Old Pizza")
+            product_data["id"] = Product.objects.get(name="Old Pizza").id
             validated_data: dict = copy.deepcopy(
                 self.test_cat_det_serializer_data
             )
-            validated_data["product_set"] = [product_object]
+            validated_data["product_set"] = [Product.objects.get(name="Old Pizza")]
             products_check(validated_data)
 
         self.assertRaises(ProblemDetails)
