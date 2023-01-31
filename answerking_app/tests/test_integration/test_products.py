@@ -49,12 +49,12 @@ class PostTests(IntegrationTestBase):
         "boundry-price.json",
     )
     def test_post_valid_returns_ok(self, data):
-        postData = self.getFixture("products", data)
+        post_data = self.getFixture("products", data)
         response = client.post(
-            "/api/products", postData, content_type="application/json"
+            "/api/products", post_data, content_type="application/json"
         )
-        getResponse = client.get("/api/products")
-        self.assertMatchSnapshot(getResponse.json())
+        get_response = client.get("/api/products")
+        self.assertMatchSnapshot(get_response.json())
         assert_that(response.status_code).is_equal_to(201)
 
     @data(
@@ -103,16 +103,16 @@ class PutTests(IntegrationTestBase):
         "boundry-price.json",
     )
     def test_put_valid_returns_ok(self, data):
-        seededData = self.seedFixture("products", "basic-1.json")
-        putData = self.getFixture("products", data)
+        seeded_data = self.seedFixture("products", "basic-1.json")
+        put_data = self.getFixture("products", data)
         response = client.put(
-            f"/api/products/{seededData['id']}",  # type: ignore[GeneralTypeIssue]
-            putData,
+            f"/api/products/{seeded_data['id']}",  # type: ignore[GeneralTypeIssue]
+            put_data,
             content_type="application/json",
         )
-        getResponse = client.get("/api/products")
+        get_response = client.get("/api/products")
         assert_that(response.status_code).is_equal_to(200)
-        self.assertMatchSnapshot(getResponse.json())
+        self.assertMatchSnapshot(get_response.json())
 
     @data(
         "invalid-id.json",

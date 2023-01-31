@@ -6,28 +6,34 @@ import json
 
 
 class IntegrationTestBase(TransactionTestCase, TestCase):
+    def seedListFixture(self, fixture_type, list_data):
+        for item in list_data:
+            if fixture_type == "products":
+                Product.objects.create(**item)
+            elif fixture_type == "categories":
+                Category.objects.create(**item)
+            else:
+                raise ValueError(
+                    f"Unrecognised seeding type {fixture_type}"
+                )
+
+    def seedDictFixture(self, fixture_type, dict_data):
+        if fixture_type == "products":
+            Product.objects.create(**dict_data)
+        elif fixture_type == "categories":
+            Category.objects.create(**dict_data)
+        else:
+            raise ValueError(
+                f"Unrecognised seeding type {fixture_type}"
+            )
+
     def seedFixture(self, fixture_type, fixture_name):
         data = self.getFixture(fixture_type, fixture_name)
         if fixture_type in ["products", "categories"]:
             if isinstance(data, list):
-                for item in data:
-                    if fixture_type == "products":
-                        Product.objects.create(**item)
-                    elif fixture_type == "categories":
-                        Category.objects.create(**item)
-                    else:
-                        raise Exception(
-                            f"Unrecognised seeding type {fixture_type}"
-                        )
+                self.seedListFixture(fixture_type, data)
             elif isinstance(data, dict):
-                if fixture_type == "products":
-                    Product.objects.create(**data)
-                elif fixture_type == "categories":
-                    Category.objects.create(**data)
-                else:
-                    raise Exception(
-                        f"Unrecognised seeding type {fixture_type}"
-                    )
+                self.seedDictFixture(fixture_type, data)
             else:
                 raise ValueError(f"{data} is not valid json")
             return data

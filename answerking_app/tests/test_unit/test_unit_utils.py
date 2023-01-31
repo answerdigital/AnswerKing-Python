@@ -219,7 +219,7 @@ class UtilsTests(UnitTestBase):
 
     def test_products_check_retired_product_fail(self):
         to_seed: dict = {"retired_product_data.json": "products"}
-        seeded_data: list[dict] = self.seed_data(to_seed)
+        self.seed_data(to_seed)
         with self.assertRaises(ProblemDetails) as context:
             product_data = Product.objects.get(name="Old Pizza")
             validated_data: dict = copy.deepcopy(

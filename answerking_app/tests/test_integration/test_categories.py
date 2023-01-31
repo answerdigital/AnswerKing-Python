@@ -102,8 +102,8 @@ class PostTests(IntegrationTestBase):
         response = client.post(
             "/api/categories", post_data, content_type="application/json"
         )
-        getResponse = client.get("/api/categories")
-        self.assertMatchSnapshot(getResponse.json())
+        get_response = client.get("/api/categories")
+        self.assertMatchSnapshot(get_response.json())
         assert_that(response.status_code).is_equal_to(201)
 
     @data("basic-1-with-products.json")
@@ -114,8 +114,8 @@ class PostTests(IntegrationTestBase):
         response = client.post(
             "/api/categories", post_data, content_type="application/json"
         )
-        getResponse = client.get("/api/categories")
-        self.assertMatchSnapshot(getResponse.json())
+        get_response = client.get("/api/categories")
+        self.assertMatchSnapshot(get_response.json())
         assert_that(response.status_code).is_equal_to(201)
 
     @data(
@@ -169,9 +169,9 @@ class PutTests(IntegrationTestBase):
             put_data,
             content_type="application/json",
         )
-        getResponse = client.get("/api/categories")
+        get_response = client.get("/api/categories")
         assert_that(response.status_code).is_equal_to(200)
-        self.assertMatchSnapshot(getResponse.json())
+        self.assertMatchSnapshot(get_response.json())
 
     @data("basic-1-update-with-products.json")
     @freeze_time(frozen_time)
@@ -190,9 +190,9 @@ class PutTests(IntegrationTestBase):
             put_data,
             content_type="application/json",
         )
-        getResponse = client.get("/api/categories")
+        get_response = client.get("/api/categories")
         assert_that(response.status_code).is_equal_to(200)
-        self.assertMatchSnapshot(getResponse.json())
+        self.assertMatchSnapshot(get_response.json())
 
     @data(
         "invalid-id.json",
