@@ -6,7 +6,6 @@ import json
 
 
 class IntegrationTestBase(TransactionTestCase, TestCase):
-
     def seedFixture(self, fixture_type, fixture_name):
         data = self.getFixture(fixture_type, fixture_name)
         if fixture_type in ["products", "categories"]:
@@ -17,14 +16,18 @@ class IntegrationTestBase(TransactionTestCase, TestCase):
                     elif fixture_type == "categories":
                         Category.objects.create(**item)
                     else:
-                        raise Exception(f"Unrecognised seeding type {fixture_type}")
+                        raise Exception(
+                            f"Unrecognised seeding type {fixture_type}"
+                        )
             elif isinstance(data, dict):
                 if fixture_type == "products":
                     Product.objects.create(**data)
                 elif fixture_type == "categories":
                     Category.objects.create(**data)
                 else:
-                    raise Exception(f"Unrecognised seeding type {fixture_type}")
+                    raise Exception(
+                        f"Unrecognised seeding type {fixture_type}"
+                    )
             else:
                 raise ValueError(f"{data} is not valid json")
             return data

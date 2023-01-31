@@ -3,7 +3,9 @@ from assertpy import assert_that
 from ddt import ddt, data
 from freezegun import freeze_time
 
-from answerking_app.tests.test_integration.IntegrationTestBaseClass import IntegrationTestBase
+from answerking_app.tests.test_integration.IntegrationTestBaseClass import (
+    IntegrationTestBase,
+)
 from answerking_app.models.models import Category, Product
 
 client = Client()
@@ -12,14 +14,15 @@ frozen_time = "2022-01-01T01:02:03.000000Z"
 
 @ddt()
 class GetTests(IntegrationTestBase):
-    def seed_cat_with_prod(self, cat_json, prod_json) -> int:
+    def seed_cat_with_prod(self, cat_json, prod_json):
         seeded_data_cat = self.seedFixture("categories", cat_json)
         seeded_data_prod = self.seedFixture("products", prod_json)
-        cat = Category.objects.get(pk=seeded_data_cat['id'])
-        prod = Product.objects.get(pk=seeded_data_prod['id'])
+        cat_id = seeded_data_cat["id"]  # type: ignore[GeneralTypeIssue]
+        prod_id = seeded_data_prod["id"]  # type: ignore[GeneralTypeIssue]
+        cat: Category = Category.objects.get(pk=cat_id)
+        prod: Product = Product.objects.get(pk=prod_id)
         cat.products.add(prod)
-        seeded_data_cat_id: int = seeded_data_cat['id']
-        return seeded_data_cat_id
+        return cat_id
 
     @freeze_time(frozen_time)
     def test_get_all_without_categories_returns_no_content(self):
@@ -38,13 +41,17 @@ class GetTests(IntegrationTestBase):
     @freeze_time(frozen_time)
     def test_get_id_valid_returns_ok(self):
         seeded_data = self.seedFixture("categories", "basic-1.json")
-        response = client.get(f"/api/categories/{seeded_data['id']}")
+        response = client.get(
+            f"/api/categories/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]
+        )
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(200)
 
     @freeze_time(frozen_time)
     def test_get_id_valid_with_products_returns_ok(self):
-        seeded_data_cat_id = self.seed_cat_with_prod("basic-1.json", "basic-1.json")
+        seeded_data_cat_id = self.seed_cat_with_prod(
+            "basic-1.json", "basic-1.json"
+        )
         response = client.get(f"/api/categories/{seeded_data_cat_id}")
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(200)
@@ -60,7 +67,9 @@ class GetTests(IntegrationTestBase):
         assert_that(response.status_code).is_equal_to(404)
 
     def test_get_prods_in_cat_returns_ok(self):
-        seeded_data_cat_id = self.seed_cat_with_prod("basic-1.json", "basic-1.json")
+        seeded_data_cat_id = self.seed_cat_with_prod(
+            "basic-1.json", "basic-1.json"
+        )
         response = client.get(f"/api/categories/{seeded_data_cat_id}/products")
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(200)
@@ -143,6 +152,7 @@ class PostTests(IntegrationTestBase):
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
+
 @ddt()
 class PutTests(IntegrationTestBase):
     @data(
@@ -155,7 +165,7 @@ class PutTests(IntegrationTestBase):
         seeded_data = self.seedFixture("categories", "basic-1.json")
         put_data = self.getFixture("categories", cat_data)
         response = client.put(
-            f"/api/categories/{seeded_data['id']}",
+            f"/api/categories/{seeded_data['id']}",  # type: ignore[GeneralTypeIssue]
             put_data,
             content_type="application/json",
         )
@@ -163,20 +173,20 @@ class PutTests(IntegrationTestBase):
         assert_that(response.status_code).is_equal_to(200)
         self.assertMatchSnapshot(getResponse.json())
 
-    @data(
-        "basic-1-update-with-products.json"
-    )
+    @data("basic-1-update-with-products.json")
     @freeze_time(frozen_time)
     def test_put_with_prods_valid_returns_ok(self, cat_update_data):
-        seeded_cat_data: dict = self.seedFixture("categories", "basic-1.json")
-        seeded_prod_data: list[dict] = self.seedFixture("products", "basic-3.json")
-        cat: Category = Category.objects.get(pk=seeded_cat_data["id"])
+        seeded_cat_data = self.seedFixture("categories", "basic-1.json")
+        seeded_prod_data = self.seedFixture("products", "basic-3.json")
+        cat: Category = Category.objects.get(
+            pk=seeded_cat_data["id"]  # type: ignore[GeneralTypeIssue]
+        )
         for prod_data in seeded_prod_data:
             prod: Product = Product.objects.get(pk=prod_data["id"])
             cat.products.add(prod)
         put_data = self.getFixture("categories", cat_update_data)
         response = client.put(
-            f"/api/categories/{seeded_cat_data['id']}",
+            f"/api/categories/{seeded_cat_data['id']}",  # type: ignore[GeneralTypeIssue]
             put_data,
             content_type="application/json",
         )
@@ -201,15 +211,14 @@ class PutTests(IntegrationTestBase):
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
-    @data(
-        "basic-1-update-with-products.json",
-        "invalid-product-id.json"
-    )
+    @data("basic-1-update-with-products.json", "invalid-product-id.json")
     def test_put_invalid_prod_data_returns_bad_request(self, cat_update_data):
-        seeded_cat_data: dict = self.seedFixture("categories", "basic-1.json")
-        seeded_prod_data: list[dict] = self.seedFixture("products", "basic-3.json")
+        seeded_cat_data = self.seedFixture("categories", "basic-1.json")
+        seeded_prod_data = self.seedFixture("products", "basic-3.json")
         Product.objects.get(pk=3).delete()
-        cat: Category = Category.objects.get(pk=seeded_cat_data["id"])
+        cat: Category = Category.objects.get(
+            pk=seeded_cat_data["id"]  # type: ignore[GeneralTypeIssue]
+        )
         for prod_data in seeded_prod_data[:2]:
             prod: Product = Product.objects.get(pk=prod_data["id"])
             cat.products.add(prod)
@@ -248,7 +257,9 @@ class PutTests(IntegrationTestBase):
         seeded_data_2 = self.seedFixture(
             "categories", "basic-1-different-name.json"
         )
-        put_data = self.getFixture("categories", "basic-1-update-dup-name.json")
+        put_data = self.getFixture(
+            "categories", "basic-1-update-dup-name.json"
+        )
         response = client.put(
             f"/api/categories/{seeded_data_2['id']}",  # type: ignore[GeneralTypeIssue]
             put_data,

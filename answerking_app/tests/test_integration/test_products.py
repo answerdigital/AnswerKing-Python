@@ -2,7 +2,9 @@ from django.test import Client
 from assertpy import assert_that
 from ddt import ddt, data
 
-from answerking_app.tests.test_integration.IntegrationTestBaseClass import IntegrationTestBase
+from answerking_app.tests.test_integration.IntegrationTestBaseClass import (
+    IntegrationTestBase,
+)
 
 client = Client()
 
@@ -23,7 +25,7 @@ class GetTests(IntegrationTestBase):
 
     def test_get_id_valid_returns_ok(self):
         seededData = self.seedFixture("products", "basic-1.json")
-        response = client.get(f"/api/products/{seededData['id']}")
+        response = client.get(f"/api/products/{seededData['id']}")  # type: ignore[GeneralTypeIssue]
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(200)
 
@@ -104,7 +106,7 @@ class PutTests(IntegrationTestBase):
         seededData = self.seedFixture("products", "basic-1.json")
         putData = self.getFixture("products", data)
         response = client.put(
-            f"/api/products/{seededData['id']}",
+            f"/api/products/{seededData['id']}",  # type: ignore[GeneralTypeIssue]
             putData,
             content_type="application/json",
         )

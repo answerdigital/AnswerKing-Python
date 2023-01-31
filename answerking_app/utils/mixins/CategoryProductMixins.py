@@ -12,9 +12,7 @@ from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 class CategoryProductListMixin:
     def list(self, **kwargs) -> Response:
         try:
-            Category.objects.get(
-                pk=kwargs["pk"]
-            )
+            Category.objects.get(pk=kwargs["pk"])
         except ObjectDoesNotExist:
             raise ProblemDetails(
                 status=status.HTTP_404_NOT_FOUND,
