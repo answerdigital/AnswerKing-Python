@@ -24,7 +24,7 @@ drf-spectacular = "^0.25.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
-pyright = "^1.1.290"
+pyright = "^1.1.291"
 pycodestyle = "^2.9.1"
 assertpy = "^1.1"
 snapshottest = "^0.6.0"
