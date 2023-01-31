@@ -13,18 +13,17 @@ def compress_white_spaces(value: str) -> str:
 
 def products_check(validated_data: dict) -> list[Product]:
     products: list[Product] = []
-    if "products" not in validated_data:
+    if "product_set" not in validated_data:
         return products
-    for product in validated_data["products"]:
+    for product in validated_data["product_set"]:
         try:
-            product = Product.objects.get(pk=product["id"])
             if product.retired:
                 raise ProblemDetails(
                     status=status.HTTP_410_GONE,
                     detail="This product has been retired",
                 )
             products.append(product)
-        except ObjectDoesNotExist as exc:
+        except (ObjectDoesNotExist, AttributeError) as exc:
             raise ProblemDetails(
                 status=status.HTTP_400_BAD_REQUEST,
                 detail="Product was not Found",

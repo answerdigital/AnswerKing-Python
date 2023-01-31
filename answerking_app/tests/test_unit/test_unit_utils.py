@@ -59,7 +59,7 @@ class UtilsTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        data = {"products": [{"id": test_prod.id}]}
+        data = {"product_set": [test_prod]}
         actual_prod = products_check(data)
         expected_prod = test_prod
 
@@ -73,14 +73,14 @@ class UtilsTests(UnitTestBase):
         self.assertRaises(
             ProblemDetails,
             products_check,
-            {"products": [{"id": test_prod.id + 1}]},
+            {"product_set": [test_prod.id + 1]},
         )
 
     def test_get_product_check_invalid_correct_exception_info(self):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        data = {"products": [{"id": test_prod.id + 1}]}
+        data = {"product_set": [test_prod.id + 1]}
 
         with self.assertRaises(ProblemDetails) as error:
             products_check(data)
@@ -207,9 +207,9 @@ class UtilsTests(UnitTestBase):
         prod_1: Product = Product.objects.get(name="Margarita pizza")
         prod_2: Product = Product.objects.get(name="Pepperoni pizza")
         validated_data: dict = {
-            "products": [
-                {"id": prod_1.id},
-                {"id": prod_2.id},
+            "product_set": [
+                prod_1,
+                prod_2,
             ]
         }
         expected: list[Product] = [prod_1, prod_2]
@@ -222,11 +222,11 @@ class UtilsTests(UnitTestBase):
         seeded_data: list[dict] = self.seed_data(to_seed)
         with self.assertRaises(ProblemDetails) as context:
             product_data: dict = seeded_data[0]
-            product_data["id"] = Product.objects.get(name="Old Pizza").id
+            product_object = Product.objects.get(name="Old Pizza")
             validated_data: dict = copy.deepcopy(
                 self.test_cat_det_serializer_data
             )
-            validated_data["products"] = [product_data]
+            validated_data["product_set"] = [product_object]
             products_check(validated_data)
 
         self.assertRaises(ProblemDetails)

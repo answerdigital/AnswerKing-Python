@@ -24,7 +24,7 @@ class ProductSerializerTests(UnitTestBase):
     def setUp(self):
         cat: Category = Category.objects.create(**self.test_cat_data)
         prod: Product = Product.objects.create(**self.test_prod_data)
-        cat.products.add(prod)
+        cat.product_set.add(prod)
 
     def tearDown(self):
         Category.objects.all().delete()
@@ -40,7 +40,7 @@ class ProductSerializerTests(UnitTestBase):
             "name",
             "description",
             "price",
-            "categories",
+            "category",
             "retired",
         ]
         actual: list[str] = list(test_serializer_data.keys())
@@ -86,12 +86,10 @@ class ProductSerializerTests(UnitTestBase):
         test_prod: Product = Product.objects.get(
             name=self.test_prod_data["name"]
         )
-        categories: QuerySet[Category] = test_prod.category_set.all()
-        category: Category = categories[0]
+        category: Category = test_prod.category
         test_serializer_data: ReturnDict = ProductSerializer(test_prod).data
-        actual_category: dict = test_serializer_data["categories"][0]
+        actual_category: dict = test_serializer_data["category"]
 
-        self.assertEqual(len(categories), 1)
         self.assertEqual(actual_category["id"], category.id)
         self.assertEqual(actual_category["name"], category.name)
         self.assertEqual(actual_category["description"], category.description)

@@ -46,7 +46,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
             name=validated_data["name"],
             description=validated_data["description"],
         )
-        category.products.add(*products)
+        category.product_set.add(*products)
         return category
 
     def update(self, category: Category, validated_data: dict) -> Category:
@@ -59,7 +59,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         category.name = validated_data["name"]
         category.description = validated_data["description"]
         category.save()
-        category.products.set(objs=products)
+        category.product_set.set(objs=products)
         return category
 
     class Meta:
@@ -68,6 +68,33 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
     def validate_name(self, value: str) -> str:
         return compress_white_spaces(value)
+
+
+class CategorySerializer(CategoryDetailSerializer):
+    createdOn = serializers.DateTimeField(source="created_on", read_only=True)
+    lastUpdated = serializers.DateTimeField(
+        source="last_updated", read_only=True
+    )
+
+    retired = serializers.BooleanField(required=False)
+    products = serializers.PrimaryKeyRelatedField(
+        source="product_set",
+        many=True,
+        queryset=Product.objects.all(),
+        required=False,
+    )
+
+    class Meta:
+        model = Category
+        fields = (
+            "id",
+            "name",
+            "description",
+            "createdOn",
+            "lastUpdated",
+            "products",
+            "retired",
+        )
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -94,10 +121,14 @@ class ProductSerializer(serializers.ModelSerializer):
             )
         ],
     )
-    categories = CategoryDetailSerializer(
-        source="category_set", many=True, required=False
-    )
     retired = serializers.BooleanField(required=False)
+    category = CategoryDetailSerializer(read_only=True)
+    categoryId = serializers.PrimaryKeyRelatedField(
+        source="category",
+        queryset=Category.objects.all(),
+        required=False,
+        write_only=True,
+    )
 
     class Meta:
         model = Product
@@ -106,9 +137,11 @@ class ProductSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "price",
-            "categories",
+            "category",
+            "categoryId",
             "retired",
         )
+        depth = 1
 
     def validate_name(self, value: str) -> str:
         return compress_white_spaces(value)
@@ -117,42 +150,16 @@ class ProductSerializer(serializers.ModelSerializer):
         return compress_white_spaces(value)
 
 
-class CategorySerializer(CategoryDetailSerializer):
-    createdOn = serializers.DateTimeField(source="created_on", read_only=True)
-    lastUpdated = serializers.DateTimeField(
-        source="last_updated", read_only=True
-    )
-    products = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Product.objects.all()
-    )
-    retired = serializers.BooleanField(required=False)
-
-    class Meta:
-        model = Category
-        fields = (
-            "id",
-            "name",
-            "description",
-            "createdOn",
-            "lastUpdated",
-            "products",
-            "retired",
-        )
-
-
 class LineItemProductSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
-    categories = CategoryDetailSerializer(
-        source="category_set", read_only=True, many=True
-    )
     price = serializers.DecimalField(
         max_digits=18, decimal_places=2, read_only=True
     )
 
     class Meta:
         model = Product
-        read_only_fields = ["name", "description", "price", "categories"]
-        exclude = ["retired"]
+        read_only_fields = ["name", "description", "price"]
+        exclude = ["retired", "category"]
 
 
 class LineItemSerializer(serializers.ModelSerializer):
@@ -219,8 +226,10 @@ class OrderSerializer(serializers.ModelSerializer):
     ):
         products_id_list = []
         for product in line_items_data:
-            products_id_list.append(product["product"])
-        products = products_check({"products": products_id_list})
+            products_id_list.append(
+                Product.objects.get(id=product["product"]["id"])
+            )
+        products = products_check({"product_set": products_id_list})
         for order_item, product in zip(line_items_data, products):
             if order_item["quantity"] < 1:
                 continue

@@ -20,7 +20,7 @@ class CategorySerializerUnitTests(UnitTestBase):
     def setUp(self):
         cat: Category = Category.objects.create(**self.test_cat_data)
         prod: Product = Product.objects.create(**self.test_prod_data)
-        cat.products.add(prod)
+        cat.product_set.add(prod)
 
     def tearDown(self):
         Category.objects.all().delete()
@@ -75,7 +75,7 @@ class CategorySerializerUnitTests(UnitTestBase):
             name=self.test_cat_data["name"]
         )
         test_serializer_data: ReturnDict = CategorySerializer(test_cat).data
-        expected: int = dict(*test_cat.products.values("id"))["id"]
+        expected: int = dict(*test_cat.product_set.values("id"))["id"]
         actual: int = test_serializer_data["products"][0]
         self.assertEqual(actual, expected)
 
