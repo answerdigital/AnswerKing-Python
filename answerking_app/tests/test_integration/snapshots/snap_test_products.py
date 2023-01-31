@@ -92,7 +92,10 @@ snapshots['GetTests::test_get_all_with_products_returns_ok_3_extreme_5_json 1'] 
     {
         'categories': [
         ],
-        'description': '200 chars - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacinia dui et nunc hendrerit ullamcorper. Duis sit amet magna ac velit auctor porta. Praesent viverra vulputate lectus, a ves',
+        'description': '200 chars - Lorem ipsum dolor sit amet, consectetur'
+                       ' adipiscing elit. Duis lacinia dui et nunc hendrerit '
+                       'ullamcorper. Duis sit amet magna ac velit auctor '
+                       'porta. Praesent viverra vulputate lectus, a ves',
         'id': 3,
         'name': 'Chips',
         'price': 1.5,
@@ -265,7 +268,10 @@ snapshots['PostTests::test_post_valid_returns_ok_3_boundry_description_json 1'] 
     {
         'categories': [
         ],
-        'description': 'twohundred chars Lorem ipsum dolor sit amet consectetur adipiscing elit Duis lacinia dui et nunc hendrerit ullamcorper Duis sit amet magna ac velit auctor porta Praesent viverra vulputate lectusjaue',
+        'description': 'twohundred chars Lorem ipsum dolor sit amet consectetur'
+                       ' adipiscing elit Duis lacinia dui et nunc hendrerit '
+                       'ullamcorper Duis sit amet magna ac velit auctor porta '
+                       'Praesent viverra vulputate lectusjaue',
         'id': 1,
         'name': 'Burger',
         'price': 1.2,
@@ -422,7 +428,10 @@ snapshots['PutTests::test_put_valid_returns_ok_3_boundry_description_json 1'] = 
     {
         'categories': [
         ],
-        'description': 'twohundred chars Lorem ipsum dolor sit amet consectetur adipiscing elit Duis lacinia dui et nunc hendrerit ullamcorper Duis sit amet magna ac velit auctor porta Praesent viverra vulputate lectusjaue',
+        'description': 'twohundred chars Lorem ipsum dolor sit amet consectetur'
+                       ' adipiscing elit Duis lacinia dui et nunc hendrerit '
+                       'ullamcorper Duis sit amet magna ac velit auctor porta '
+                       'Praesent viverra vulputate lectusjaue',
         'id': 1,
         'name': 'Burger',
         'price': 1.2,

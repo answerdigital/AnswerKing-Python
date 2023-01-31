@@ -77,7 +77,10 @@ snapshots['GetTests::test_get_all_with_categories_returns_ok_2_basic_1_list_json
 snapshots['GetTests::test_get_all_with_categories_returns_ok_3_extreme_3_json 1'] = [
     {
         'createdOn': '2022-01-01T01:02:03.000000Z',
-        'description': '200 chars - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacinia dui et nunc hendrerit ullamcorper. Duis sit amet magna ac velit auctor porta. Praesent viverra vulputate lectus, a ves',
+        'description': '200 chars - Lorem ipsum dolor sit amet, consectetur'
+                       ' adipiscing elit. Duis lacinia dui et nunc hendrerit'
+                       ' ullamcorper. Duis sit amet magna ac velit auctor porta.'
+                       ' Praesent viverra vulputate lectus, a ves',
         'id': 1,
         'lastUpdated': '2022-01-01T01:02:03.000000Z',
         'name': 'Burgers',
@@ -272,7 +275,10 @@ snapshots['PostTests::test_post_valid_returns_ok_2_boundary_name_json 1'] = [
 snapshots['PostTests::test_post_valid_returns_ok_3_boundary_description_json 1'] = [
     {
         'createdOn': '2022-01-01T01:02:03.000000Z',
-        'description': 'two hundred chars Lorem ipsum dolor sit amet consectetur adipiscing elit Duis lacinia dui et nunc hendrerit ullamcorper Duis sit amet magna ac velit auctor porta Praesent viverra vulputate lectusjaue',
+        'description': 'two hundred chars Lorem ipsum dolor sit amet consectetur'
+                       ' adipiscing elit Duis lacinia dui et nunc hendrerit '
+                       'ullamcorper Duis sit amet magna ac velit auctor porta '
+                       'Praesent viverra vulputate lectusjaue',
         'id': 7,
         'lastUpdated': '2022-01-01T01:02:03.000000Z',
         'name': 'Burgers',
@@ -433,7 +439,10 @@ snapshots['PutTests::test_put_valid_returns_ok_2_boundary_name_json 1'] = [
 snapshots['PutTests::test_put_valid_returns_ok_3_boundary_description_json 1'] = [
     {
         'createdOn': '2022-01-01T01:02:03.000000Z',
-        'description': 'two hundred chars Lorem ipsum dolor sit amet consectetur adipiscing elit Duis lacinia dui et nunc hendrerit ullamcorper Duis sit amet magna ac velit auctor porta Praesent viverra vulputate lectusjaue',
+        'description': 'two hundred chars Lorem ipsum dolor sit amet consectetur'
+                       ' adipiscing elit Duis lacinia dui et nunc hendrerit '
+                       'ullamcorper Duis sit amet magna ac velit auctor porta '
+                       'Praesent viverra vulputate lectusjaue',
         'id': 1,
         'lastUpdated': '2022-01-01T01:02:03.000000Z',
         'name': 'Burgers',
