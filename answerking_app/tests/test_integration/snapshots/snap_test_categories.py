@@ -645,6 +645,112 @@ snapshots['PostTests::test_post_valid_with_products_returns_ok_1_basic_1_with_pr
     }
 ]
 
+snapshots['PutTests::test_put_duplicated_name_returns_400 1'] = {
+    'detail': 'This name already exists',
+    'status': 400,
+    'title': 'A server error occurred.',
+    'type': 'http://testserver/problems/error/'
+}
+
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_1_invalid_id_json 1'] = {
+    'detail': 'Validation Error',
+    'errors': {
+        'id': [
+            'A valid integer is required.'
+        ]
+    },
+    'status': 400,
+    'title': 'Invalid input.',
+    'type': 'http://testserver/problems/error/'
+}
+
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_2_invalid_name_json 1'] = {
+    'detail': 'Validation Error',
+    'errors': {
+        'name': [
+            'Enter a valid value.',
+            'Ensure this field has no more than 50 characters.'
+        ]
+    },
+    'status': 400,
+    'title': 'Invalid input.',
+    'type': 'http://testserver/problems/error/'
+}
+
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_3_invalid_description_json 1'] = {
+    'detail': 'Validation Error',
+    'errors': {
+        'description': [
+            'Enter a valid value.',
+            'Ensure this field has no more than 200 characters.'
+        ]
+    },
+    'status': 400,
+    'title': 'Invalid input.',
+    'type': 'http://testserver/problems/error/'
+}
+
+snapshots['PutTests::test_put_invalid_data_returns_bad_request_4_invalid_missing_fields_json 1'] = {
+    'detail': 'Validation Error',
+    'errors': {
+        'name': [
+            'This field is required.'
+        ],
+        'products': [
+            'This field is required.'
+        ]
+    },
+    'status': 400,
+    'title': 'Invalid input.',
+    'type': 'http://testserver/problems/error/'
+}
+
+snapshots['PutTests::test_put_invalid_id_returns_bad_request 1'] = {
+    'detail': 'Invalid parameters',
+    'status': 400,
+    'title': 'Request has invalid parameters',
+    'type': 'http://testserver/problems/error/'
+}
+
+snapshots['PutTests::test_put_invalid_json_returns_bad_request 1'] = {
+    'detail': 'Parsing JSON Error',
+    'errors': 'JSON parse error - Expecting value: line 1 column 13 (char 12)',
+    'status': 400,
+    'title': 'Invalid input json.',
+    'type': 'http://testserver/problems/error/'
+}
+
+snapshots['PutTests::test_put_invalid_prod_data_returns_bad_request_1_basic_1_update_with_products_json 1'] = {
+    'detail': 'Validation Error',
+    'errors': {
+        'products': [
+            'Invalid pk "3" - object does not exist.'
+        ]
+    },
+    'status': 400,
+    'title': 'Invalid input.',
+    'type': 'http://testserver/problems/error/'
+}
+
+snapshots['PutTests::test_put_invalid_prod_data_returns_bad_request_2_invalid_product_id_json 1'] = {
+    'detail': 'Validation Error',
+    'errors': {
+        'products': [
+            'Incorrect type. Expected pk value, received str.'
+        ]
+    },
+    'status': 400,
+    'title': 'Invalid input.',
+    'type': 'http://testserver/problems/error/'
+}
+
+snapshots['PutTests::test_put_non_existent_id_returns_not_found 1'] = {
+    'detail': 'Not Found',
+    'status': 404,
+    'title': 'Resource not found',
+    'type': 'http://testserver/problems/error/'
+}
+
 snapshots['PutTests::test_put_valid_returns_ok_1_basic_1_update_json 1'] = [
     {
         'createdOn': '2022-01-01T01:02:03.000000Z',
