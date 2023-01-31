@@ -152,6 +152,7 @@ class PostTests(IntegrationTestBase):
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
+
 @ddt()
 class PutTests(IntegrationTestBase):
     @data(
