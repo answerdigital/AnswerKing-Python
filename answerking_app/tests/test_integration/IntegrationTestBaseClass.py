@@ -13,9 +13,7 @@ class IntegrationTestBase(TransactionTestCase, TestCase):
             elif fixture_type == "categories":
                 Category.objects.create(**item)
             else:
-                raise ValueError(
-                    f"Unrecognised seeding type {fixture_type}"
-                )
+                raise ValueError(f"Unrecognised seeding type {fixture_type}")
 
     def seedDictFixture(self, fixture_type, dict_data):
         if fixture_type == "products":
@@ -23,9 +21,7 @@ class IntegrationTestBase(TransactionTestCase, TestCase):
         elif fixture_type == "categories":
             Category.objects.create(**dict_data)
         else:
-            raise ValueError(
-                f"Unrecognised seeding type {fixture_type}"
-            )
+            raise ValueError(f"Unrecognised seeding type {fixture_type}")
 
     def seedFixture(self, fixture_type, fixture_name):
         data = self.getFixture(fixture_type, fixture_name)

@@ -24,8 +24,10 @@ class GetTests(IntegrationTestBase):
         assert_that(response.status_code).is_equal_to(200)
 
     def test_get_id_valid_returns_ok(self):
-        seededData = self.seedFixture("products", "basic-1.json")
-        response = client.get(f"/api/products/{seededData['id']}")  # type: ignore[GeneralTypeIssue]
+        seeded_data = self.seedFixture("products", "basic-1.json")
+        response = client.get(
+            f"/api/products/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]
+        )
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(200)
 
