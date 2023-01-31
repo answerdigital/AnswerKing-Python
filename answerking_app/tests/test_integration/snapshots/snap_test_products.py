@@ -7,6 +7,13 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
+snapshots['DeleteTests::test_delete_already_retired_returns_gone 1'] = {
+    'detail': 'This object has already been retired',
+    'status': 410,
+    'title': 'A server error occurred.',
+    'type': 'http://testserver/problems/error/'
+}
+
 snapshots['DeleteTests::test_delete_invalid_id_returns_bad_request 1'] = {
     'detail': 'Invalid parameters',
     'status': 400,

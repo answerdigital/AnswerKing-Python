@@ -185,3 +185,12 @@ class DeleteTests(IntegrationTestBase):
         response = client.delete("/api/products/1")
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(404)
+
+    def test_delete_already_retired_returns_gone(self):
+        seeded_data = self.seedFixture("products", "basic-1.json")
+        prod_url = f"/api/products/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]
+        response_1 = client.delete(prod_url)
+        response_2 = client.delete(prod_url)
+        assert_that(response_1.status_code).is_equal_to(204)
+        self.assertJSONErrorResponse(response_2.json())
+        assert_that(response_2.status_code).is_equal_to(410)

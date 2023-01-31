@@ -184,159 +184,104 @@ class PutTests(IntegrationTestBase):
         assert_that(response.status_code).is_equal_to(200)
         self.assertMatchSnapshot(getResponse.json())
 
-#
-#     def test_put_invalid_id_returns_not_found(self):
-#         # Act
-#         response = client.get("/api/categories/f")
-#         actual = response.json()
-#
-#         # Assert
-#         self.assertJSONErrorResponse(
-#             self.expected_invalid_url_parameters, actual, response, 400
-#         )
-#
-#     def test_put_invalid_json_returns_bad_request(self):
-#         # Act
-#         response = client.put(
-#             f"/api/categories/{self.test_cat_1.id}",
-#             self.invalid_json_data,
-#             content_type="application/json",
-#         )
-#         actual = response.json()
-#
-#         # Assert
-#         self.assertJSONErrorResponse(
-#             self.expected_base_json_parsing_error_400, actual, response, 400
-#         )
-#
-#     def test_put_invalid_name_returns_bad_request(self):
-#         # Arrange
-#         invalid_post_data: CategoryType = {
-#             "name": "New Name*",
-#             "description": "desc",
-#             "products": [],
-#         }
-#         expected: DetailError = {
-#             **self.expected_serializer_error_400,
-#             "errors": {"name": ["Enter a valid value."]},
-#         }
-#
-#         # Act
-#         response = client.put(
-#             f"/api/categories/{self.test_cat_1.id}",
-#             invalid_post_data,
-#             content_type="application/json",
-#         )
-#         actual = response.json()
-#
-#         # Assert
-#         self.assertJSONErrorResponse(expected, actual, response, 400)
-#
-#     def test_put_not_existing_product_returns_not_found(self):
-#         # Arrange
-#         product: CategoryProductType = self.invalid_mock_category_product
-#         invalid_post_data: CategoryType = {
-#             "name": "New Name",
-#             "description": "desc",
-#             "products": [product],
-#         }
-#         expected = {
-#             **self.expected_nonexistent_product_error,
-#             "type": "http://testserver/problems/error/",
-#         }
-#         # Act
-#         response = client.put(
-#             f"/api/categories/{self.test_cat_1.id}",
-#             invalid_post_data,
-#             content_type="application/json",
-#         )
-#         actual = response.json()
-#
-#         # Assert
-#         self.assertJSONErrorResponse(expected, actual, response, 400)
-#
-#     def test_delete_valid_returns_ok(self):
-#         # Arrange
-#         expected: CategoryType = self.get_mock_category_api(
-#             self.test_cat_1,
-#             [
-#                 self.get_mock_category_product_api(self.test_product_1),
-#                 self.get_mock_category_product_api(self.test_product_2),
-#             ],
-#         )
-#
-#         expected["retired"] = True
-#
-#         # Act
-#         response = client.delete(f"/api/categories/{self.test_cat_1.id}")
-#         actual = response.json()
-#
-#         # Assert
-#         self.assertEqual(response.status_code, 204)
-#         self.assertEqual(actual, None)
-#
-#
-#     def test_delete_invalid_id_returns_not_found(self):
-#         # Act
-#         response = client.delete("/api/categories/f")
-#         actual = response.json()
-#
-#         # Assert
-#         self.assertJSONErrorResponse(
-#             self.expected_invalid_url_parameters, actual, response, 400
-#         )
-#
-#     def test_put_add_duplicated_product_in_body_to_category_return_one(self):
-#         # Arrange
-#         product: CategoryProductType = self.get_mock_category_product_api(
-#             self.test_product_1
-#         )
-#         post_data: CategoryType = {
-#             "name": self.test_cat_2.name,
-#             "description": self.test_cat_2.description,
-#             "products": [product, product],
-#         }
-#
-#         expected: CategoryType = {
-#             **self.get_mock_category_api(
-#                 self.test_cat_2, post_data["products"]
-#             ),
-#             **post_data,
-#             "lastUpdated": datetime.datetime.now(),
-#             "products": [product],
-#         }
-#
-#         # Act
-#         response = client.put(
-#             f"/api/categories/{self.test_cat_2.id}",
-#             post_data,
-#             content_type="application/json",
-#         )
-#         actual = response.json()
-#
-#         self.assertUpdateTime(expected, actual, response, 200)
-#
-#     def test_put_duplicated_name_returns_400(self):
-#         # Arrange
-#         post_data: CategoryType = {
-#             "name": "Vegan",
-#             "description": "desc",
-#             "products": [],
-#         }
-#
-#         client.post(
-#             "/api/categories", post_data, content_type="application/json"
-#         )
-#
-#         # Act
-#         response = client.put(
-#             f"/api/categories/{self.test_cat_1.id + 1}",
-#             post_data,
-#             content_type="application/json",
-#         )
-#         actual = response.json()
-#         # Assert
-#         self.assertJSONErrorResponse(
-#             self.expected_duplicated_name_error, actual, response, 400
-#         )
-# """
+    @data(
+        "invalid-id.json",
+        "invalid-name.json",
+        "invalid-description.json",
+        "invalid-missing-fields.json",
+    )
+    def test_put_invalid_data_returns_bad_request(self, cat_data):
+        seeded_cat_data = self.seedFixture("categories", "basic-1.json")
+        put_data = self.getFixture("categories", cat_data)
+        response = client.put(
+            f"/api/categories/{seeded_cat_data['id']}",  # type: ignore[GeneralTypeIssue]
+            put_data,
+            content_type="application/json",
+        )
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+    @data(
+        "basic-1-update-with-products.json",
+        "invalid-product-id.json"
+    )
+    def test_put_invalid_prod_data_returns_bad_request(self, cat_update_data):
+        seeded_cat_data: dict = self.seedFixture("categories", "basic-1.json")
+        seeded_prod_data: list[dict] = self.seedFixture("products", "basic-3.json")
+        Product.objects.get(pk=3).delete()
+        cat: Category = Category.objects.get(pk=seeded_cat_data["id"])
+        for prod_data in seeded_prod_data[:2]:
+            prod: Product = Product.objects.get(pk=prod_data["id"])
+            cat.products.add(prod)
+        put_data = self.getFixture("categories", cat_update_data)
+        response = client.put(
+            f"/api/categories/{seeded_cat_data['id']}",  # type: ignore[GeneralTypeIssue]
+            put_data,
+            content_type="application/json",
+        )
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+    def test_put_invalid_json_returns_bad_request(self):
+        self.seedFixture("categories", "basic-1.json")
+        invalid_json_data: str = '{"invalid": }'
+        response = client.put(
+            "/api/categories/1",
+            invalid_json_data,
+            content_type="application/json",
+        )
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+    def test_put_invalid_id_returns_bad_request(self):
+        response = client.put("/api/categories/invalid-id")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+    def test_put_non_existent_id_returns_not_found(self):
+        response = client.put("/api/categories/1")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(404)
+
+    def test_put_duplicated_name_returns_400(self):
+        self.seedFixture("categories", "basic-1.json")
+        seeded_data_2 = self.seedFixture(
+            "categories", "basic-1-different-name.json"
+        )
+        put_data = self.getFixture("categories", "basic-1-update-dup-name.json")
+        response = client.put(
+            f"/api/categories/{seeded_data_2['id']}",  # type: ignore[GeneralTypeIssue]
+            put_data,
+            content_type="application/json",
+        )
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+
+class DeleteTests(IntegrationTestBase):
+    def test_delete_returns_ok(self):
+        seeded_data = self.seedFixture("categories", "basic-1.json")
+        cat_url = f"/api/categories/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]
+        response = client.delete(cat_url)
+        get_response = client.get(cat_url)
+        assert_that(response.status_code).is_equal_to(204)
+        assert_that(str(get_response.json()), None)
+
+    def test_delete_invalid_id_returns_bad_request(self):
+        response = client.delete("/api/categories/invalid-id")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+    def test_delete_non_existent_id_returns_not_found(self):
+        response = client.delete("/api/categories/1")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(404)
+
+    def test_delete_already_retired_returns_gone(self):
+        seeded_data = self.seedFixture("categories", "basic-1.json")
+        cat_url = f"/api/categories/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]
+        response_1 = client.delete(cat_url)
+        response_2 = client.delete(cat_url)
+        assert_that(response_1.status_code).is_equal_to(204)
+        self.assertJSONErrorResponse(response_2.json())
+        assert_that(response_2.status_code).is_equal_to(410)
