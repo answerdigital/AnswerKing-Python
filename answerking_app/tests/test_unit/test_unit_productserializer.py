@@ -4,7 +4,7 @@ import copy
 from django.db.models import QuerySet
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from answerking_app.models.models import Category, Product
+from answerking_app.models.models import Category, Product, Tag
 from answerking_app.models.serializers import ProductSerializer
 from answerking_app.tests.test_unit.UnitTestBaseClass import UnitTestBase
 
@@ -20,14 +20,20 @@ class ProductSerializerTests(UnitTestBase):
     test_prod_data: dict = utb.get_fixture(
         "products", "plain_burger_data.json"
     )
+    test_tag_data: dict = utb.get_fixture(
+        "tags", "halal_tag_data.json"
+    )
 
     def setUp(self):
         cat: Category = Category.objects.create(**self.test_cat_data)
         prod: Product = Product.objects.create(**self.test_prod_data)
         cat.product_set.add(prod)
+        tag: Tag = Tag.objects.create(**self.test_tag_data)
+        tag.products.add(prod)
 
     def tearDown(self):
         Category.objects.all().delete()
+        Tag.objects.all().delete()
         Product.objects.all().delete()
 
     def test_product_serializer_contains_correct_fields(self):
@@ -41,6 +47,7 @@ class ProductSerializerTests(UnitTestBase):
             "description",
             "price",
             "category",
+            "tags",
             "retired",
         ]
         actual: list[str] = list(test_serializer_data.keys())
@@ -93,6 +100,18 @@ class ProductSerializerTests(UnitTestBase):
         self.assertEqual(actual_category["id"], category.id)
         self.assertEqual(actual_category["name"], category.name)
         self.assertEqual(actual_category["description"], category.description)
+
+    def test_product_serializer_tags_field_content(self):
+        test_prod: Product = Product.objects.get(
+            name=self.test_prod_data["name"]
+        )
+        tags: QuerySet[Tag] = test_prod.tag_set.all()
+        tag: Tag = tags[0]
+        test_serializer_data: ReturnDict = ProductSerializer(test_prod).data
+        actual_tag: int = test_serializer_data["tags"][0]
+
+        self.assertEqual(len(tags), 1)
+        self.assertEqual(actual_tag, tag.id)
 
     def test_product_serializer_retired_field_content(self):
         test_prod: Product = Product.objects.get(

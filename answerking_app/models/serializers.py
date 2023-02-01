@@ -11,7 +11,7 @@ from answerking_app.models.models import (
     Category,
     Product,
     Order,
-    LineItem,
+    LineItem, Tag,
 )
 from answerking_app.utils.serializer_data_functions import (
     products_check,
@@ -129,6 +129,12 @@ class ProductSerializer(serializers.ModelSerializer):
         required=False,
         write_only=True,
     )
+    tags = serializers.PrimaryKeyRelatedField(
+        source="tag_set",
+        queryset=Tag.objects.all(),
+        many=True,
+        required=False,
+    )
 
     class Meta:
         model = Product
@@ -139,9 +145,53 @@ class ProductSerializer(serializers.ModelSerializer):
             "price",
             "category",
             "categoryId",
+            "tags",
             "retired",
         )
         depth = 1
+
+    def validate_name(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+    def validate_description(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+
+class TagSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(
+        required=False, validators=[MinValueValidator(0)]
+    )
+    name = serializers.CharField(
+        max_length=50,
+        allow_blank=False,
+        validators=[RegexValidator("^[a-zA-Z !]+$")],
+    )
+    description = serializers.CharField(
+        max_length=200,
+        allow_null=True,
+        allow_blank=True,
+        validators=[
+            RegexValidator(
+                "^[a-zA-Z .!,#]+$",
+            )
+        ],
+    )
+    products = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(),
+        many=True,
+        required=False,
+    )
+    retired = serializers.BooleanField(required=False)
+
+    class Meta:
+        model = Tag
+        fields = (
+            'id',
+            'name',
+            'description',
+            'products',
+            'retired',
+            )
 
     def validate_name(self, value: str) -> str:
         return compress_white_spaces(value)
