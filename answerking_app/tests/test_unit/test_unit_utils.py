@@ -226,7 +226,9 @@ class UtilsTests(UnitTestBase):
             validated_data: dict = copy.deepcopy(
                 self.test_cat_det_serializer_data
             )
-            validated_data["product_set"] = [Product.objects.get(name="Old Pizza")]
+            validated_data["product_set"] = [
+                Product.objects.get(name="Old Pizza")
+            ]
             products_check(validated_data)
 
         self.assertRaises(ProblemDetails)
