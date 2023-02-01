@@ -8,53 +8,136 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, unique=True)),
-                ('description', models.CharField(blank=True, max_length=200, null=True)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('last_updated', models.DateTimeField(auto_now=True)),
-                ('retired', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50, unique=True)),
+                (
+                    "description",
+                    models.CharField(blank=True, max_length=200, null=True),
+                ),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("last_updated", models.DateTimeField(auto_now=True)),
+                ("retired", models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
-            name='Order',
+            name="Order",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('order_status', models.CharField(choices=[('Created', 'Created'), ('Paid', 'Paid'), ('Cancelled', 'Cancelled')], default='Created', max_length=10)),
-                ('order_total', models.DecimalField(decimal_places=2, default=0.0, max_digits=18)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('last_updated', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "order_status",
+                    models.CharField(
+                        choices=[
+                            ("Created", "Created"),
+                            ("Paid", "Paid"),
+                            ("Cancelled", "Cancelled"),
+                        ],
+                        default="Created",
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "order_total",
+                    models.DecimalField(
+                        decimal_places=2, default=0.0, max_digits=18
+                    ),
+                ),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("last_updated", models.DateTimeField(auto_now=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Product',
+            name="Product",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, unique=True)),
-                ('description', models.CharField(blank=True, max_length=200, null=True)),
-                ('price', models.DecimalField(decimal_places=2, default=0.0, max_digits=18)),
-                ('retired', models.BooleanField(default=False)),
-                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='answerking_app.category')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50, unique=True)),
+                (
+                    "description",
+                    models.CharField(blank=True, max_length=200, null=True),
+                ),
+                (
+                    "price",
+                    models.DecimalField(
+                        decimal_places=2, default=0.0, max_digits=18
+                    ),
+                ),
+                ("retired", models.BooleanField(default=False)),
+                (
+                    "category",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="answerking_app.category",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='LineItem',
+            name="LineItem",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quantity', models.IntegerField()),
-                ('sub_total', models.DecimalField(decimal_places=2, default=0.0, max_digits=18)),
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='answerking_app.order')),
-                ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='answerking_app.product')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("quantity", models.IntegerField()),
+                (
+                    "sub_total",
+                    models.DecimalField(
+                        decimal_places=2, default=0.0, max_digits=18
+                    ),
+                ),
+                (
+                    "order",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="answerking_app.order",
+                    ),
+                ),
+                (
+                    "product",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="answerking_app.product",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('order', 'product')},
+                "unique_together": {("order", "product")},
             },
         ),
     ]
