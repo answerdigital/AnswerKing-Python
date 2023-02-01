@@ -71,3 +71,32 @@ DATABASE_ENGINE="django.db.backends.mysql"
 ### Swagger:
 To view the AnswerKing Python API documentation in Swagger as per OpenAPI specification, visit the following URL while
  your local server is running: http://127.0.0.1:8000/api/schema/swagger-ui/
+
+ ***
+### Terraform:
+The infrastructure created by running terraform in the `terraform/ecs_fargate` folder is illustrated below:
+
+![Alt text](terraform/ecs_fargate/ecs_fargate.svg?raw=true "VPC Subnet Module Diagram")
+
+To deploy the application to a server accessible by a public IP address:
+- create a `variables_env.tf`  file in the `ecs_fargate` folder containing the following variables:
+```
+variable "django_secret_key" {
+    type = string
+    description = "Django secret key."
+    default = "<DJANGO_SECRET_KEY>"
+}
+
+variable "aws_account_id" {
+    type        = string
+    default     = "<AWS_ACCOUNT_ID>"
+}
+```
+- run the following in the command line while in the `ecs_fargate` directory:
+  - `terraform init`
+  - `terraform apply`
+- push to a release branch to build and push Docker image to the created ECR.
+- from the AWS console search for Elastic Container Service, select `ak-python-ecs-cluster`. 
+- go to the Tasks tab and then select the running container. Here you can open or copy the IP address.
+- when finished run `terraform destroy` to tear down the infrastructure.
+- Note: If there is an image in the ECR, `terraform destroy` will not delete it. This must be done manually in the AWS Management Console.
