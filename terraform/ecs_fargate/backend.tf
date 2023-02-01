@@ -3,7 +3,7 @@ terraform {
     bucket         = "answerking-python-terraform"
     key            = "answerking-python-terraform.tfstate"
     region         = "eu-west-2"
-    dynamodb_table = "answerking-python-terraform"
+    dynamodb_table = "ak-python-terraform-state"
   }
 }
 
