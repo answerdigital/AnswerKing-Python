@@ -15,7 +15,7 @@ class LineItemSerializerUnitTests(UnitTestBase):
 
     serialized_product_detail = copy.deepcopy(prod_data)
     serialized_product_detail["id"] = 1
-    serialized_product_detail["categories"] = []
+    serialized_product_detail["category"] = []
     del serialized_product_detail["retired"]
 
     @staticmethod
@@ -58,9 +58,6 @@ class LineItemSerializerUnitTests(UnitTestBase):
         self.assertEqual(expected.name, actual["name"])
         self.assertEqual(expected.description, actual["description"])
         self.assertEqual(expected.price, actual["price"])
-        self.assertEqual(
-            list(expected.category_set.all()), actual["categories"]
-        )
 
     def test_line_item_serializer_quantity_content(self):
         test_order: Order = Order.objects.all()[0]

@@ -196,7 +196,7 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
             cat_in_db.description,
             self.test_cat_det_serializer_data["description"],
         )
-        self.assertEqual(list(cat_in_db.products.all()), [])
+        self.assertEqual(list(cat_in_db.product_set.all()), [])
 
     @mock.patch(
         serializer_path + "products_check",
@@ -219,7 +219,7 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         cat_in_db: Category = Category.objects.get(pk=new_cat.id)
         expected_prod_names: list[str] = [data["name"] for data in seeded_data]
         actual_prod_names: list[str] = [
-            val["name"] for val in cat_in_db.products.values("name")
+            val["name"] for val in cat_in_db.product_set.values("name")
         ]
 
         products_check_mock.assert_called_once()
@@ -283,5 +283,6 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
             updated_cat.description, serialized_data.data["description"]
         )
         self.assertEqual(
-            list(updated_cat.products.all()), products_check_mock.return_value
+            list(updated_cat.product_set.all()),
+            products_check_mock.return_value,
         )
