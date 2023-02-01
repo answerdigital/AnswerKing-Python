@@ -21,7 +21,7 @@ class GetTests(IntegrationTestBase):
         prod_id = seeded_data_prod["id"]  # type: ignore[GeneralTypeIssue]
         cat: Category = Category.objects.get(pk=cat_id)
         prod: Product = Product.objects.get(pk=prod_id)
-        cat.products.add(prod)
+        cat.product_set.add(prod)
         return cat_id
 
     @freeze_time(frozen_time)
@@ -183,7 +183,7 @@ class PutTests(IntegrationTestBase):
         )
         for prod_data in seeded_prod_data:
             prod: Product = Product.objects.get(pk=prod_data["id"])
-            cat.products.add(prod)
+            cat.product_set.add(prod)
         put_data = self.getFixture("categories", cat_update_data)
         response = client.put(
             f"/api/categories/{seeded_cat_data['id']}",  # type: ignore[GeneralTypeIssue]
@@ -221,7 +221,7 @@ class PutTests(IntegrationTestBase):
         )
         for prod_data in seeded_prod_data[:2]:
             prod: Product = Product.objects.get(pk=prod_data["id"])
-            cat.products.add(prod)
+            cat.product_set.add(prod)
         put_data = self.getFixture("categories", cat_update_data)
         response = client.put(
             f"/api/categories/{seeded_cat_data['id']}",  # type: ignore[GeneralTypeIssue]
