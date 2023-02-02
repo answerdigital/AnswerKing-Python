@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "Burgers",
+    "description": "200 chars - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacinia dui et nunc hendrerit ullamcorper. Duis sit amet magna ac velit auctor porta. Praesent viverra vulputate lectus, a ves"
+  },
+  {
+    "id": 2,
+    "name": "50 chars - Lorem ipsum dolor sit amet, consectetur",
+    "description": "desc"
+  },
+  {
+    "id": 3,
+    "name": "Sides",
+    "description": "Crispy fries"
+  }
+]

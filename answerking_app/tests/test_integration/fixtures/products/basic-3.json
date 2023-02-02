@@ -3,25 +3,18 @@
         "id": 1,
         "name": "Burger",
         "description": "desc",
-        "price": 1.2,
-        "category": [],
-        "retired": false
+        "price": 1.2
     },
     {
         "id": 2,
         "name": "Coke",
         "description": "desc",
-        "price": 1.5,
-        "category": [],
-        "retired": false
-
+        "price": 1.5
     },
     {
         "id": 3,
         "name": "Chips",
         "description": "desc",
-        "price": 1.5,
-        "category": [],
-        "retired": false
+        "price": 1.5
     }
 ]
