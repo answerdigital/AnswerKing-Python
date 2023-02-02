@@ -14,16 +14,6 @@ frozen_time = "2022-01-01T01:02:03.000000Z"
 
 @ddt()
 class GetTests(IntegrationTestBase):
-    def seed_cat_with_prod(self, cat_json, prod_json):
-        seeded_data_cat = self.seedFixture("categories", cat_json)
-        seeded_data_prod = self.seedFixture("products", prod_json)
-        cat_id = seeded_data_cat["id"]  # type: ignore[GeneralTypeIssue]
-        prod_id = seeded_data_prod["id"]  # type: ignore[GeneralTypeIssue]
-        cat: Category = Category.objects.get(pk=cat_id)
-        prod: Product = Product.objects.get(pk=prod_id)
-        cat.product_set.add(prod)
-        return cat_id
-
     @freeze_time(frozen_time)
     def test_get_all_without_categories_returns_no_content(self):
         response = client.get("/api/categories")
@@ -49,7 +39,7 @@ class GetTests(IntegrationTestBase):
 
     @freeze_time(frozen_time)
     def test_get_id_valid_with_products_returns_ok(self):
-        seeded_data_cat_id = self.seed_cat_with_prod(
+        seeded_data_cat_id, _ = self.seed_cat_with_prod(
             "basic-1.json", "basic-1.json"
         )
         response = client.get(f"/api/categories/{seeded_data_cat_id}")
@@ -67,7 +57,7 @@ class GetTests(IntegrationTestBase):
         assert_that(response.status_code).is_equal_to(404)
 
     def test_get_prods_in_cat_returns_ok(self):
-        seeded_data_cat_id = self.seed_cat_with_prod(
+        seeded_data_cat_id, _ = self.seed_cat_with_prod(
             "basic-1.json", "basic-1.json"
         )
         response = client.get(f"/api/categories/{seeded_data_cat_id}/products")
@@ -123,6 +113,7 @@ class PostTests(IntegrationTestBase):
         "invalid-name.json",
         "invalid-description.json",
         "invalid-missing-fields.json",
+        "invalid-retired.json",
     )
     def test_post_invalid_data_returns_bad_request(self, cat_data):
         post_data = self.getFixture("categories", cat_data)

@@ -3,5 +3,5 @@
   "name": "Burgers",
   "description": "Juicy Burgers",
   "products": [],
-  "retired": true
+  "retired": "string"
 }

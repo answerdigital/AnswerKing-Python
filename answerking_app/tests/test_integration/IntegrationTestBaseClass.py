@@ -6,6 +6,16 @@ import json
 
 
 class IntegrationTestBase(TransactionTestCase, TestCase):
+    def seed_cat_with_prod(self, cat_json, prod_json):
+        seeded_data_cat = self.seedFixture("categories", cat_json)
+        seeded_data_prod = self.seedFixture("products", prod_json)
+        cat_id = seeded_data_cat["id"]  # type: ignore[GeneralTypeIssue]
+        prod_id = seeded_data_prod["id"]  # type: ignore[GeneralTypeIssue]
+        cat: Category = Category.objects.get(pk=cat_id)
+        prod: Product = Product.objects.get(pk=prod_id)
+        cat.product_set.add(prod)
+        return cat_id, prod_id
+
     def seedListFixture(self, fixture_type, list_data):
         for item in list_data:
             if fixture_type == "products":

@@ -3,6 +3,5 @@
     "name": "BurgerTwo",
     "description": "desc",
     "price": 1.2,
-    "category": null,
-    "retired": false
+    "category": null
 }

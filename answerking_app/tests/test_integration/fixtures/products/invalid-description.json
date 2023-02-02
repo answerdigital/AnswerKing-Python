@@ -2,6 +2,5 @@
     "id": 1,
     "name": "name",
     "price": "1.20",
-    "description": "over 200 chars - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse pellentesque sollicitudin velit sed interdum. Nunc lacus metus, luctus quis ex rutrum, euismod tristique augue eget.",
-    "retired": false
+    "description": "over 200 chars - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse pellentesque sollicitudin velit sed interdum. Nunc lacus metus, luctus quis ex rutrum, euismod tristique augue eget."
 }

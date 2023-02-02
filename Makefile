@@ -1,11 +1,11 @@
 .PHONY: clean test lint migrate
 
 clean:
-	-rm -rf htmlcov
-	-rm -rf .coverage
-	-rm -rf build
-	-rm -rf dist
-	-rm -rf src/*.egg-info
+	-rm -r htmlcov
+	-rm -r .coverage
+	-rm -r build
+	-rm -r dist
+	-rm -r src/*.egg-info
 
 lint:
 	poetry run black . --line-length=79
@@ -21,9 +21,15 @@ migrate:
 	poetry run python manage.py makemigrations
 	poetry run python manage.py migrate
 
-dockerRunserver:
+colon := :
+
+runGunicorn:
+	poetry run gunicorn -b 0.0.0.0$(colon)8000 answerking.wsgi$(colon)application
+
+waitAndMigrate:
 	poetry run python manage.py waitForDB
 	poetry run python manage.py migrate
-    poetry run gunicorn -b 0.0.0.0:8000 answerking.wsgi:application
+
+dockerRunserver: waitAndMigrate runGunicorn
 
 prepare: lint test

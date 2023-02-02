@@ -3,5 +3,5 @@
     "name": "Burger",
     "description": "desc",
     "price": 1.2,
-    "category": null
+    "categoryId": "1"
 }

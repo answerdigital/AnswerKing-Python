@@ -2,6 +2,5 @@
     "id": 1,
     "name": "Burger",
     "price": "2147483647.00",
-    "description": "desc",
-    "retired": false
+    "description": "desc"
 }

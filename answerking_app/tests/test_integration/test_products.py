@@ -41,6 +41,14 @@ class GetTests(IntegrationTestBase):
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(404)
 
+    def test_get_id_valid_with_category_returns_ok(self):
+        _, seeded_data_prod_id = self.seed_cat_with_prod(
+            "basic-1.json", "basic-1.json"
+        )
+        response = client.get(f"/api/products/{seeded_data_prod_id}")
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
+
 
 @ddt
 class PostTests(IntegrationTestBase):
@@ -58,6 +66,28 @@ class PostTests(IntegrationTestBase):
         get_response = client.get("/api/products")
         self.assertMatchSnapshot(get_response.json())
         assert_that(response.status_code).is_equal_to(201)
+
+    @data("basic-1-with-category-id.json")
+    def test_post_valid_with_cat_id_returns_ok(self, prod_data):
+        self.seedFixture("categories", "basic-1.json")
+        post_data = self.getFixture("products", prod_data)
+        response = client.post(
+            "/api/products", post_data, content_type="application/json"
+        )
+        get_response = client.get("/api/products")
+        self.assertMatchSnapshot(get_response.json())
+        assert_that(response.status_code).is_equal_to(201)
+
+    @data("invalid-category-id.json")
+    def test_post_invalid_with_invalid_cat_id_returns_bad_request(
+        self, prod_data
+    ):
+        post_data = self.getFixture("products", prod_data)
+        response = client.post(
+            "/api/products", post_data, content_type="application/json"
+        )
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
 
     @data(
         "invalid-id.json",
