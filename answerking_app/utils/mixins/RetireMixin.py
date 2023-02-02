@@ -5,13 +5,13 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from answerking_app.models.models import Category, Product, Order, LineItem
+from answerking_app.models.models import Category, Product, Order, LineItem, Tag
 from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 
 class RetireMixin(GenericAPIView):
     def retire(self, request: Request, *args, **kwargs) -> Response:
-        instance: Category | Product = self.get_object()
+        instance: Category | Product | Tag = self.get_object()
         if instance.retired:
             raise ProblemDetails(
                 status=status.HTTP_410_GONE,
@@ -22,6 +22,9 @@ class RetireMixin(GenericAPIView):
             instance.save()
         elif isinstance(instance, Product):
             product_active_order_check(instance)
+            instance.retired = True
+            instance.save()
+        elif isinstance(instance, Tag):
             instance.retired = True
             instance.save()
         else:

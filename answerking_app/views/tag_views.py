@@ -27,7 +27,7 @@ class TagListView(
         return self.create(request, *args, **kwargs)
 
 
-class ProductDetailView(
+class TagDetailView(
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
     RetireMixin,
