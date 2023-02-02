@@ -1,5 +1,7 @@
 .PHONY: clean test lint migrate
 
+colon := :
+
 clean:
 	-rm -rf htmlcov
 	-rm -rf .coverage
@@ -21,9 +23,13 @@ migrate:
 	poetry run python manage.py makemigrations
 	poetry run python manage.py migrate
 
-dockerRunserver:
-	poetry run python manage.py waitForDB
-	poetry run python manage.py migrate
-    poetry run gunicorn -b 0.0.0.0:8000 answerking.wsgi:application
+runGunicorn:
+   poetry run gunicorn -b 0.0.0.0$(colon)8000 answerking.wsgi$(colon)application
+
+waitAndMigrate:
+   poetry run python manage.py waitForDB
+   poetry run python manage.py migrate
+
+dockerRunserver: waitAndMigrate runGunicorn
 
 prepare: lint test
