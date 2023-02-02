@@ -31,7 +31,7 @@ DEBUG = False
 #     "127.0.0.1",
 # ]
 
-ALLOWED_HOSTS =get_ecs_task_ips()
+ALLOWED_HOSTS = get_ecs_task_ips()
 
 # Application definition
 
