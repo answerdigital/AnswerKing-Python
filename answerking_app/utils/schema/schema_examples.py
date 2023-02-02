@@ -5,12 +5,14 @@ from answerking_app.utils.model_types import (
     ProblemDetails,
     ProductCategoryIdType,
     ProductBodyType,
-    OrderProductType,
+    OrderProductType, TagType, TagBodyType,
 )
 
 example_time = "2022-11-23T10:15:36.622Z"
 
 category_product_example: int = 0
+
+tag_product_example: list[int] = [1, 2]
 
 product_category_example: CategoryType = {
     "id": 0,
@@ -18,12 +20,29 @@ product_category_example: CategoryType = {
     "description": "string",
 }
 
+tag_example: TagType = {
+    "id": 0,
+    "name": "string",
+    "description": "string",
+    "products": [0],
+    "retired": False,
+}
+
+retired_tag_example: TagType = tag_example
+retired_tag_example["retired"] = True
+
+tag_body_example: TagBodyType = {
+    "name": "string",
+    "description": "string",
+    "products": [0]
+}
+
 product_example: ProductType = {
     "id": 0,
     "name": "string",
     "price": 0,
     "description": "string",
-    "categories": [product_category_example],
+    "category": product_category_example,
     "retired": False,
 }
 
@@ -34,14 +53,14 @@ product_body_example: ProductBodyType = {
     "name": "string",
     "description": "string",
     "price": 0,
-    "categories": [category_product_example],
+    "category": category_product_example,
 }
 
 product_categories_body_example: ProductCategoryIdType = {
     "name": "string",
     "description": "string",
     "price": 0,
-    "categories": [category_product_example],
+    "category": category_product_example,
 }
 
 category_example: CategoryType = {
@@ -50,7 +69,7 @@ category_example: CategoryType = {
     "description": "string",
     "createdOn": example_time,
     "lastUpdated": example_time,
-    "products": [category_product_example],
+    "products": [0],
     "retired": False,
 }
 
@@ -74,7 +93,7 @@ order_product_example: ProductType = {
     "name": "string",
     "price": 0,
     "description": "string",
-    "categories": [product_category_example],
+    "category": product_category_example,
 }
 
 line_items_example: OrderProductType = {
