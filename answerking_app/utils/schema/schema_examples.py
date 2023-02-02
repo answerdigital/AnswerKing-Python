@@ -5,7 +5,9 @@ from answerking_app.utils.model_types import (
     ProblemDetails,
     ProductCategoryIdType,
     ProductBodyType,
-    OrderProductType, TagType, TagBodyType,
+    OrderProductType,
+    TagType,
+    TagBodyType,
 )
 
 example_time = "2022-11-23T10:15:36.622Z"
@@ -34,7 +36,7 @@ retired_tag_example["retired"] = True
 tag_body_example: TagBodyType = {
     "name": "string",
     "description": "string",
-    "products": [0]
+    "products": [0],
 }
 
 product_example: ProductType = {

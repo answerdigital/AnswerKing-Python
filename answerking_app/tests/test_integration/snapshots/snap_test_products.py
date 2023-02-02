@@ -38,6 +38,7 @@ snapshots[
         "name": "Burger",
         "price": 1.2,
         "retired": False,
+        "tags": [],
     },
     {
         "category": None,
@@ -46,6 +47,7 @@ snapshots[
         "name": "Coke",
         "price": 1.5,
         "retired": False,
+        "tags": [],
     },
     {
         "category": None,
@@ -54,6 +56,7 @@ snapshots[
         "name": "Chips",
         "price": 1.5,
         "retired": False,
+        "tags": [],
     },
 ]
 
@@ -67,6 +70,7 @@ snapshots[
         "name": "Burger",
         "price": 1.2,
         "retired": False,
+        "tags": [],
     }
 ]
 
@@ -80,6 +84,7 @@ snapshots[
         "name": "Burger",
         "price": 100000000000000.0,
         "retired": False,
+        "tags": [],
     },
     {
         "category": None,
@@ -88,17 +93,19 @@ snapshots[
         "name": "Coke",
         "price": 0.01,
         "retired": False,
+        "tags": [],
     },
     {
         "category": None,
-        "description": "200 chars - Lorem ipsum dolor sit amet, consectetur "
-        "adipiscing elit. Duis lacinia dui et nunc hendrerit "
-        "ullamcorper. Duis sit amet magna ac velit auctor porta. "
-        "Praesent viverra vulputate lectus, a ves",
+        "description": "200 chars - Lorem ipsum dolor sit amet, consectetur"
+        " adipiscing elit. Duis lacinia dui et nunc hendrerit"
+        " ullamcorper. Duis sit amet magna ac velit auctor porta."
+        " Praesent viverra vulputate lectus, a ves",
         "id": 3,
         "name": "Chips",
         "price": 1.5,
         "retired": False,
+        "tags": [],
     },
     {
         "category": None,
@@ -107,6 +114,7 @@ snapshots[
         "name": "50 chars - Lorem ipsum dolor sit amet, consectetur",
         "price": 1.5,
         "retired": False,
+        "tags": [],
     },
     {
         "category": None,
@@ -115,6 +123,7 @@ snapshots[
         "name": "Kabab",
         "price": 1.5,
         "retired": False,
+        "tags": [],
     },
 ]
 
@@ -125,6 +134,7 @@ snapshots["GetTests::test_get_id_valid_returns_ok 1"] = {
     "name": "Burger",
     "price": 1.2,
     "retired": False,
+    "tags": [],
 }
 
 snapshots["GetTests::test_get_id_valid_with_category_returns_ok 1"] = {
@@ -134,6 +144,7 @@ snapshots["GetTests::test_get_id_valid_with_category_returns_ok 1"] = {
     "name": "Burger",
     "price": 1.2,
     "retired": False,
+    "tags": [],
 }
 
 snapshots["GetTests::test_get_invalid_id_returns_bad_request 1"] = {
@@ -242,8 +253,8 @@ snapshots["PostTests::test_post_invalid_json_returns_bad_request 1"] = {
 }
 
 snapshots[
-    "PostTests::test_post_invalid_with_invalid_cat_id_returns_bad_request_"
-    "1_invalid_category_id_json 1"
+    "PostTests::test_post_invalid_with_invalid_cat_id_returns_bad_request"
+    "_1_invalid_category_id_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {"categoryId": ['Invalid pk "1" - object does not exist.']},
@@ -260,6 +271,7 @@ snapshots["PostTests::test_post_valid_returns_ok_1_basic_1_json 1"] = [
         "name": "Burger",
         "price": 1.2,
         "retired": False,
+        "tags": [],
     }
 ]
 
@@ -271,6 +283,7 @@ snapshots["PostTests::test_post_valid_returns_ok_2_boundry_name_json 1"] = [
         "name": "fifty chars Lorem ipsum dolor sit amet consectetur",
         "price": 1.2,
         "retired": False,
+        "tags": [],
     }
 ]
 
@@ -279,14 +292,15 @@ snapshots[
 ] = [
     {
         "category": None,
-        "description": "twohundred chars Lorem ipsum dolor sit amet consectetur "
-        "adipiscing elit Duis lacinia dui et nunc hendrerit "
+        "description": "twohundred chars Lorem ipsum dolor sit amet consectetur"
+        " adipiscing elit Duis lacinia dui et nunc hendrerit "
         "ullamcorper Duis sit amet magna ac velit auctor porta "
         "Praesent viverra vulputate lectusjaue",
         "id": 1,
         "name": "Burger",
         "price": 1.2,
         "retired": False,
+        "tags": [],
     }
 ]
 
@@ -298,6 +312,7 @@ snapshots["PostTests::test_post_valid_returns_ok_4_boundry_price_json 1"] = [
         "name": "Burger",
         "price": 2147483647.0,
         "retired": False,
+        "tags": [],
     }
 ]
 
@@ -315,6 +330,7 @@ snapshots[
         "name": "Burger",
         "price": 1.2,
         "retired": False,
+        "tags": [],
     }
 ]
 
@@ -431,6 +447,7 @@ snapshots["PutTests::test_put_valid_returns_ok_1_basic_1_update_json 1"] = [
         "name": "BurgerTwo",
         "price": 1.5,
         "retired": False,
+        "tags": [],
     }
 ]
 
@@ -442,6 +459,7 @@ snapshots["PutTests::test_put_valid_returns_ok_2_boundry_name_json 1"] = [
         "name": "fifty chars Lorem ipsum dolor sit amet consectetur",
         "price": 1.2,
         "retired": False,
+        "tags": [],
     }
 ]
 
@@ -450,14 +468,15 @@ snapshots[
 ] = [
     {
         "category": None,
-        "description": "twohundred chars Lorem ipsum dolor sit amet consectetur "
-        "adipiscing elit Duis lacinia dui et nunc hendrerit "
-        "ullamcorper Duis sit amet magna ac velit auctor porta"
-        " Praesent viverra vulputate lectusjaue",
+        "description": "twohundred chars Lorem ipsum dolor sit amet consectetur"
+        " adipiscing elit Duis lacinia dui et nunc hendrerit "
+        "ullamcorper Duis sit amet magna ac velit auctor porta "
+        "Praesent viverra vulputate lectusjaue",
         "id": 1,
         "name": "Burger",
         "price": 1.2,
         "retired": False,
+        "tags": [],
     }
 ]
 
@@ -469,5 +488,6 @@ snapshots["PutTests::test_put_valid_returns_ok_4_boundry_price_json 1"] = [
         "name": "Burger",
         "price": 2147483647.0,
         "retired": False,
+        "tags": [],
     }
 ]

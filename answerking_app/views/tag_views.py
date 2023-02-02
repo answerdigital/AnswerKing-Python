@@ -19,13 +19,13 @@ from drf_spectacular.utils import (
 from answerking_app.utils.schema.schema_examples import (
     tag_example,
     retired_tag_example,
-    problem_detail_example, tag_body_example,
+    problem_detail_example,
+    tag_body_example,
 )
 
+
 class TagListView(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView
+    mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView
 ):
     queryset: QuerySet = Tag.objects.all()
     serializer_class = TagSerializer
@@ -39,9 +39,7 @@ class TagListView(
                 description="All the tags have been returned.",
                 examples=[
                     OpenApiExample(
-                        "Tag example",
-                        value=tag_example,
-                        response_only=True
+                        "Tag example", value=tag_example, response_only=True
                     )
                 ],
             )
@@ -55,9 +53,7 @@ class TagListView(
         summary="Create an new tag.",
         examples=[
             OpenApiExample(
-                "Request body",
-                value=tag_body_example,
-                request_only=True
+                "Request body", value=tag_body_example, request_only=True
             )
         ],
         responses={
@@ -81,8 +77,8 @@ class TagListView(
                         value=problem_detail_example,
                         response_only=True,
                     )
-                ]
-            )
+                ],
+            ),
         },
     )
     def post(self, request: Request, *args, **kwargs) -> Response:
@@ -107,9 +103,7 @@ class TagDetailView(
                 description="Tag with the provided id has been found.",
                 examples=[
                     OpenApiExample(
-                        "Tag example",
-                        value=tag_example,
-                        response_only=True
+                        "Tag example", value=tag_example, response_only=True
                     )
                 ],
             ),

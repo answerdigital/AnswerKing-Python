@@ -5,6 +5,8 @@ from typing_extensions import (  # for Python <3.11 with (Not)Required
     TypedDict,
 )
 
+from typing import Any
+
 
 class CategoryType(TypedDict):
     id: NotRequired[int]

@@ -81,8 +81,8 @@ snapshots[
         "createdOn": "2022-01-01T01:02:03.000000Z",
         "description": "200 chars - Lorem ipsum dolor sit amet, consectetur "
         "adipiscing elit. Duis lacinia dui et nunc hendrerit "
-        "ullamcorper. Duis sit amet magna ac velit auctor porta."
-        " Praesent viverra vulputate lectus, a ves",
+        "ullamcorper. Duis sit amet magna ac velit auctor porta. "
+        "Praesent viverra vulputate lectus, a ves",
         "id": 1,
         "lastUpdated": "2022-01-01T01:02:03.000000Z",
         "name": "Burgers",
@@ -173,6 +173,7 @@ snapshots["GetTests::test_get_prods_in_cat_returns_ok 1"] = [
         "name": "Burger",
         "price": 1.2,
         "retired": False,
+        "tags": [],
     }
 ]
 
@@ -280,8 +281,8 @@ snapshots[
 ] = [
     {
         "createdOn": "2022-01-01T01:02:03.000000Z",
-        "description": "two hundred chars Lorem ipsum dolor sit amet consectetur "
-        "adipiscing elit Duis lacinia dui et nunc hendrerit "
+        "description": "two hundred chars Lorem ipsum dolor sit amet consectetur"
+        " adipiscing elit Duis lacinia dui et nunc hendrerit "
         "ullamcorper Duis sit amet magna ac velit auctor porta "
         "Praesent viverra vulputate lectusjaue",
         "id": 7,
@@ -436,9 +437,9 @@ snapshots[
 ] = [
     {
         "createdOn": "2022-01-01T01:02:03.000000Z",
-        "description": "two hundred chars Lorem ipsum dolor sit amet consectetur "
-        "adipiscing elit Duis lacinia dui et nunc hendrerit"
-        " ullamcorper Duis sit amet magna ac velit auctor porta "
+        "description": "two hundred chars Lorem ipsum dolor sit amet consectetur"
+        " adipiscing elit Duis lacinia dui et nunc hendrerit "
+        "ullamcorper Duis sit amet magna ac velit auctor porta "
         "Praesent viverra vulputate lectusjaue",
         "id": 1,
         "lastUpdated": "2022-01-01T01:02:03.000000Z",

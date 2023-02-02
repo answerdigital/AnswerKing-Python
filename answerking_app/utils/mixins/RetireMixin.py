@@ -5,7 +5,13 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from answerking_app.models.models import Category, Product, Order, LineItem, Tag
+from answerking_app.models.models import (
+    Category,
+    Product,
+    Order,
+    LineItem,
+    Tag,
+)
 from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 
