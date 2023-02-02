@@ -1,6 +1,6 @@
 import requests
 
-from answerking.settings.base import *
+import answerking.settings.base
 
 
 def get_ecs_task_ips():
@@ -26,4 +26,4 @@ def get_ecs_task_ips():
 
 
 # Add ip(s) to ALLOWED HOSTS django setting
-ALLOWED_HOSTS += get_ecs_task_ips()
+answerking.settings.base.ALLOWED_HOSTS += get_ecs_task_ips()
