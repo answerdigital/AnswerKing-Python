@@ -20,9 +20,7 @@ class ProductSerializerTests(UnitTestBase):
     test_prod_data: dict = utb.get_fixture(
         "products", "plain_burger_data.json"
     )
-    test_tag_data: dict = utb.get_fixture(
-        "tags", "halal_tag_data.json"
-    )
+    test_tag_data: dict = utb.get_fixture("tags", "halal_tag_data.json")
 
     def setUp(self):
         cat: Category = Category.objects.create(**self.test_cat_data)

@@ -11,7 +11,8 @@ from answerking_app.models.models import (
     Category,
     Product,
     Order,
-    LineItem, Tag,
+    LineItem,
+    Tag,
 )
 from answerking_app.utils.serializer_data_functions import (
     products_check,
@@ -186,12 +187,12 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = (
-            'id',
-            'name',
-            'description',
-            'products',
-            'retired',
-            )
+            "id",
+            "name",
+            "description",
+            "products",
+            "retired",
+        )
 
     def validate_name(self, value: str) -> str:
         return compress_white_spaces(value)

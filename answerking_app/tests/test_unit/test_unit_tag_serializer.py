@@ -12,9 +12,7 @@ class TagSerializerTests(UnitTestBase):
     utb = UnitTestBase()
 
     serializer_path: str = "answerking_app.models.serializers."
-    test_tag_data: dict = utb.get_fixture(
-        "tags", "halal_tag_data.json"
-    )
+    test_tag_data: dict = utb.get_fixture("tags", "halal_tag_data.json")
     test_prod_data: dict = utb.get_fixture(
         "products", "plain_burger_data.json"
     )
@@ -29,9 +27,7 @@ class TagSerializerTests(UnitTestBase):
         Product.objects.all().delete()
 
     def test_tag_serializer_contains_correct_fields(self):
-        test_tag: Tag = Tag.objects.get(
-            name=self.test_tag_data["name"]
-        )
+        test_tag: Tag = Tag.objects.get(name=self.test_tag_data["name"])
         test_serializer_data: ReturnDict = TagSerializer(test_tag).data
         expected: list[str] = [
             "id",
@@ -44,45 +40,35 @@ class TagSerializerTests(UnitTestBase):
         self.assertEqual(actual, expected)
 
     def test_tag_serializer_id_field_content(self):
-        test_tag: Tag = Tag.objects.get(
-            name=self.test_tag_data["name"]
-        )
+        test_tag: Tag = Tag.objects.get(name=self.test_tag_data["name"])
         test_serializer_data: ReturnDict = TagSerializer(test_tag).data
         expected: int = test_tag.id
         actual: int = test_serializer_data["id"]
         self.assertEqual(actual, expected)
 
     def test_tag_serializer_name_field_content(self):
-        test_tag: Tag = Tag.objects.get(
-            name=self.test_tag_data["name"]
-        )
+        test_tag: Tag = Tag.objects.get(name=self.test_tag_data["name"])
         test_serializer_data: ReturnDict = TagSerializer(test_tag).data
         expected: str = test_tag.name
         actual: str = test_serializer_data["name"]
         self.assertEqual(actual, expected)
 
     def test_tag_serializer_description_field_content(self):
-        test_tag: Tag = Tag.objects.get(
-            name=self.test_tag_data["name"]
-        )
+        test_tag: Tag = Tag.objects.get(name=self.test_tag_data["name"])
         test_serializer_data: ReturnDict = TagSerializer(test_tag).data
         expected: str = test_tag.description
         actual: str = test_serializer_data["description"]
         self.assertEqual(actual, expected)
 
     def test_tag_serializer_retired_field_content(self):
-        test_tag: Tag = Tag.objects.get(
-            name=self.test_tag_data["name"]
-        )
+        test_tag: Tag = Tag.objects.get(name=self.test_tag_data["name"])
         test_serializer_data: ReturnDict = TagSerializer(test_tag).data
         expected: bool = test_tag.retired
         actual: bool = test_serializer_data["retired"]
         self.assertEqual(actual, expected)
 
     def test_tag_serializer_products_field_content(self):
-        test_tag: Tag = Tag.objects.get(
-            name=self.test_tag_data["name"]
-        )
+        test_tag: Tag = Tag.objects.get(name=self.test_tag_data["name"])
         products: QuerySet[Product] = test_tag.products.all()
         product: Product = products[0]
         test_serializer_data: ReturnDict = TagSerializer(test_tag).data
@@ -93,7 +79,7 @@ class TagSerializerTests(UnitTestBase):
 
     def test_tag_serializer_name_max_length_fail(self):
         serializer_data: dict = copy.deepcopy(self.test_tag_data)
-        serializer_data["name"] = 'e' * 51
+        serializer_data["name"] = "e" * 51
         serializer: TagSerializer = TagSerializer(data=serializer_data)
 
         self.assertFalse(serializer.is_valid())
