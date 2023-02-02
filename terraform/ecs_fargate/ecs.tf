@@ -18,6 +18,12 @@ resource "aws_ecs_service" "service" {
   desired_count   = 1
   launch_type                        = var.service_launch_type
   scheduling_strategy                = var.scheduling_strategy
+  load_balancer {
+    target_group_arn = aws_lb_target_group.eip_target.arn
+    container_name   = "${var.project_name}-container"
+    container_port   =  8000
+
+  }
 
   network_configuration {
    security_groups  = [aws_security_group.ecs_sg.id]
