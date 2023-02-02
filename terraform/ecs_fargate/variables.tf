@@ -37,7 +37,7 @@ variable "database_port" {
 variable "django_settings_module" {
     type = string
     description = "Django settings module."
-    default = "answerking.settings.base"
+    default = "answerking.settings.ecs"
 }
 
 variable "database_engine" {

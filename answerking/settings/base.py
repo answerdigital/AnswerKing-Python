@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from corsheaders.defaults import default_headers, default_methods
 
 from answerking_app.utils.json404_middleware_config import json404_response
+from answerking.settings.ecs import get_ecs_task_ips
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -25,10 +26,12 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-]
+# ALLOWED_HOSTS = [
+#     "localhost",
+#     "127.0.0.1",
+# ]
+
+ALLOWED_HOSTS =get_ecs_task_ips()
 
 # Application definition
 
