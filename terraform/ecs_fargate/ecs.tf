@@ -21,8 +21,7 @@ resource "aws_ecs_service" "service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.eip_target.arn
     container_name   = "${var.project_name}-container"
-    container_port   =  8000
-
+    container_port   = "${var.container_port}"
   }
 
   network_configuration {
