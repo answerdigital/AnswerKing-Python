@@ -1,6 +1,5 @@
 .PHONY: clean test lint migrate
 
-colon := :
 
 clean:
 	-rm -rf htmlcov
@@ -24,7 +23,7 @@ migrate:
 	poetry run python manage.py migrate
 
 runGunicorn:
-   poetry run gunicorn -b 0.0.0.0$(colon)8000 answerking.wsgi$(colon)application
+   poetry run gunicorn -b 0.0.0.0\:8000 answerking.wsgi\:application
 
 waitAndMigrate:
    poetry run python manage.py waitForDB
