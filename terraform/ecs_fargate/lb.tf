@@ -26,8 +26,8 @@ resource "aws_lb" "eip_lb" {
 
 resource "aws_lb_target_group" "eip_target" {
   name        = "tf-example-lb-tg"
-  port        = 8000
-  protocol    = "TCP"
+  port        = "${var.host_port}"
+  protocol    = "${var.lb_protocol}"
   target_type = "ip"
   vpc_id      = module.vpc_subnet_setup.vpc_id
 
@@ -39,12 +39,17 @@ resource "aws_lb_target_group" "eip_target" {
 
 resource "aws_lb_listener" "eip_listener" {
   load_balancer_arn = aws_lb.eip_lb.arn
-  port              = 8000
-  protocol          = "TCP"
+  port              = "${var.host_port}"
+  protocol          = "${var.lb_protocol}"
   
 
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.eip_target.arn
+  }
+
+  tags = {
+    Name  = "${var.project_name}-lb-listener"
+    Owner = var.owner
   }
 }
