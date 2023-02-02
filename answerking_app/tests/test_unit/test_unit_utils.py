@@ -221,7 +221,6 @@ class UtilsTests(UnitTestBase):
         to_seed: dict = {"retired_product_data.json": "products"}
         self.seed_data(to_seed)
         with self.assertRaises(ProblemDetails) as context:
-            product_data = Product.objects.get(name="Old Pizza")
             validated_data: dict = copy.deepcopy(
                 self.test_cat_det_serializer_data
             )
