@@ -101,3 +101,11 @@ variable "ecs_task_memory" {
     description = "Task memory."
     default = 1024
 }
+
+# LB variables
+
+variable "lb_protocol" {
+    type = string
+    description = "Load balancer protocol."
+    default = "TCP"
+}
