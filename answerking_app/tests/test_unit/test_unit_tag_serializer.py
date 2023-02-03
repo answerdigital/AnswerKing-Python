@@ -138,7 +138,8 @@ class TagSerializerTests(UnitTestBase):
 
     def test_tag_serializer_desc_regex_validator_pass_1(self):
         allowed_characters: str = (
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .0123456789!"
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            ",# .0123456789!"
         )
         serializer_data: dict = copy.deepcopy(self.test_tag_data)
         serializer_data["description"] = allowed_characters
@@ -149,7 +150,8 @@ class TagSerializerTests(UnitTestBase):
 
     def test_tag_serializer_desc_regex_validator_fail(self):
         allowed_characters: str = (
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .0123456789!"
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            ",# .0123456789!"
         )
         serializer_data: dict = copy.deepcopy(self.test_tag_data)
         serializer_data["description"] = allowed_characters + "*"
@@ -173,4 +175,3 @@ class TagSerializerTests(UnitTestBase):
 
         self.assertFalse(serializer.is_valid())
         self.assertEqual(set(serializer.errors), {"products"})
-        print(serializer.errors)
