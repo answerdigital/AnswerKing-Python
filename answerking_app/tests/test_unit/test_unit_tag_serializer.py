@@ -94,7 +94,7 @@ class TagSerializerTests(UnitTestBase):
         self.assertEqual(set(serializer.errors), {"name"})
 
     def test_tag_serializer_name_regex_validator_pass_1(self):
-        allowed_characters: str = "abcdefghijklm nopqrstuvwxyz"
+        allowed_characters: str = "abcdefghijklm nopqrstuvwxyz0123456789"
         serializer_data: dict = copy.deepcopy(self.test_tag_data)
         serializer_data["name"] = allowed_characters
         serializer: TagSerializer = TagSerializer(data=serializer_data)
@@ -138,7 +138,7 @@ class TagSerializerTests(UnitTestBase):
 
     def test_tag_serializer_desc_regex_validator_pass_1(self):
         allowed_characters: str = (
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .!"
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .0123456789!"
         )
         serializer_data: dict = copy.deepcopy(self.test_tag_data)
         serializer_data["description"] = allowed_characters
@@ -147,9 +147,9 @@ class TagSerializerTests(UnitTestBase):
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.data["description"], allowed_characters)
 
-    def test_product_serializer_desc_regex_validator_fail(self):
+    def test_tag_serializer_desc_regex_validator_fail(self):
         allowed_characters: str = (
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .!"
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .0123456789!"
         )
         serializer_data: dict = copy.deepcopy(self.test_tag_data)
         serializer_data["description"] = allowed_characters + "*"
@@ -157,3 +157,20 @@ class TagSerializerTests(UnitTestBase):
 
         self.assertFalse(serializer.is_valid())
         self.assertEqual(set(serializer.errors), {"description"})
+
+    def test_tag_serializer_invalid_product_id_fail(self):
+        serializer_data: dict = copy.deepcopy(self.test_tag_data)
+        serializer_data["products"] = ["f"]
+        serializer: TagSerializer = TagSerializer(data=serializer_data)
+
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(set(serializer.errors), {"products"})
+
+    def test_tag_serializer_nonexistent_product_id_fail(self):
+        serializer_data: dict = copy.deepcopy(self.test_tag_data)
+        serializer_data["products"] = [-1]
+        serializer: TagSerializer = TagSerializer(data=serializer_data)
+
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(set(serializer.errors), {"products"})
+        print(serializer.errors)

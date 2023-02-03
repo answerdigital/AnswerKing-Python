@@ -21,8 +21,8 @@ from answerking_app.utils.serializer_data_functions import (
 from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 MAXNUMBERSIZE = 2147483647
-name_regex_str = "^[a-zA-Z !]+$"
-desc_regex_str = "^[a-zA-Z .!,#]+$"
+name_regex_str = "^[a-zA-Z0-9 !]+$"
+desc_regex_str = "^[a-zA-Z0-9 .!,#]+$"
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):

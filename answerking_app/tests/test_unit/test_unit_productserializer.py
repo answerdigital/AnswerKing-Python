@@ -137,7 +137,7 @@ class ProductSerializerTests(UnitTestBase):
         self.assertEqual(set(serializer.errors), {"name"})
 
     def test_product_serializer_name_regex_validator_pass_1(self):
-        allowed_characters: str = "abcdefghijklm nopqrstuvwxyz"
+        allowed_characters: str = "abcdefghijklm nopqrstuvwxyz0123456789"
         serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["name"] = allowed_characters
         serializer = ProductSerializer(data=serializer_data)
@@ -198,7 +198,7 @@ class ProductSerializerTests(UnitTestBase):
 
     def test_product_serializer_desc_regex_validator_pass_1(self):
         allowed_characters: str = (
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .!"
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .0123456789!"
         )
         serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["description"] = allowed_characters
@@ -209,7 +209,7 @@ class ProductSerializerTests(UnitTestBase):
 
     def test_product_serializer_desc_regex_validator_fail(self):
         allowed_characters: str = (
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .!"
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .0123456789!"
         )
         serializer_data: dict = copy.deepcopy(self.test_prod_data)
         serializer_data["description"] = allowed_characters + "*"
