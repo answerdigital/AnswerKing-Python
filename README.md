@@ -96,7 +96,19 @@ variable "aws_account_id" {
   - `terraform init`
   - `terraform apply`
 - push to a release branch to build and push Docker image to the created ECR.
-- from the AWS console search for Elastic Container Service, select `ak-python-ecs-cluster`. 
+- from the AWS console search for Elastic Container Service, select `ak-python-ecs-cluster`.
 - go to the Tasks tab and then select the running container. Here you can open or copy the IP address.
 - when finished run `terraform destroy` to tear down the infrastructure.
 - Note: If there is an image in the ECR, `terraform destroy` will not delete it. This must be done manually in the AWS Management Console.
+
+The ECR should already be created but if it is not and you get an error follow the procedure outlined below:
+- create a `ecr.tf`  file in the `ecs_fargate` folder containing the following resource:
+```
+resource "aws_ecr_repository" "python_ecr_repository" {
+  name = "${var.project_name}-repo"
+}
+```
+- run the `terraform apply` command.
+- to stop the ECR being deleted by terraform destroy, first delete the `ecr.tf`  file.
+- then run this command to remove it from the state file ` terraform state rm "aws_ecr_repository.python_ecr_repository"
+`. This will leave the ECR for future runs using the infrastructure.
