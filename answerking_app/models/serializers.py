@@ -21,6 +21,8 @@ from answerking_app.utils.serializer_data_functions import (
 from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 MAXNUMBERSIZE = 2147483647
+name_regex_str = "^[a-zA-Z !]+$"
+desc_regex_str = "^[a-zA-Z .!,#]+$"
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
@@ -28,7 +30,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,
-        validators=[RegexValidator("^[a-zA-Z !]+$")],
+        validators=[RegexValidator(name_regex_str)],
     )
     description = serializers.CharField(
         max_length=200,
@@ -36,7 +38,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         allow_blank=True,
         validators=[
             RegexValidator(
-                "^[a-zA-Z .!,#]+$",
+                desc_regex_str,
             )
         ],
     )
@@ -105,7 +107,7 @@ class ProductSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,
-        validators=[RegexValidator("^[a-zA-Z !]+$")],
+        validators=[RegexValidator(name_regex_str)],
     )
     price = serializers.DecimalField(
         max_digits=18,
@@ -118,7 +120,7 @@ class ProductSerializer(serializers.ModelSerializer):
         allow_blank=True,
         validators=[
             RegexValidator(
-                "^[a-zA-Z .!,#]+$",
+                desc_regex_str,
             )
         ],
     )
@@ -165,7 +167,7 @@ class TagSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,
-        validators=[RegexValidator("^[a-zA-Z !]+$")],
+        validators=[RegexValidator(name_regex_str)],
     )
     description = serializers.CharField(
         max_length=200,
@@ -173,7 +175,7 @@ class TagSerializer(serializers.ModelSerializer):
         allow_blank=True,
         validators=[
             RegexValidator(
-                "^[a-zA-Z .!,#]+$",
+                desc_regex_str,
             )
         ],
     )

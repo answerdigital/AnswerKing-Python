@@ -23,14 +23,11 @@ class RetireMixin(GenericAPIView):
                 status=status.HTTP_410_GONE,
                 detail="This object has already been retired",
             )
-        if isinstance(instance, Category):
+        if isinstance(instance, Category | Tag):
             instance.retired = True
             instance.save()
         elif isinstance(instance, Product):
             product_active_order_check(instance)
-            instance.retired = True
-            instance.save()
-        elif isinstance(instance, Tag):
             instance.retired = True
             instance.save()
         else:
