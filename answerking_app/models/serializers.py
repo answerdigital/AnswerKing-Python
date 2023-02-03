@@ -12,6 +12,7 @@ from answerking_app.models.models import (
     Product,
     Order,
     LineItem,
+    Tag,
 )
 from answerking_app.utils.serializer_data_functions import (
     products_check,
@@ -20,6 +21,8 @@ from answerking_app.utils.serializer_data_functions import (
 from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
 MAXNUMBERSIZE = 2147483647
+name_regex_str = "^[a-zA-Z0-9 !]+$"
+desc_regex_str = "^[a-zA-Z0-9 .!,#]+$"
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
@@ -27,7 +30,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,
-        validators=[RegexValidator("^[a-zA-Z !]+$")],
+        validators=[RegexValidator(name_regex_str)],
     )
     description = serializers.CharField(
         max_length=200,
@@ -35,7 +38,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         allow_blank=True,
         validators=[
             RegexValidator(
-                "^[a-zA-Z .!,#]+$",
+                desc_regex_str,
             )
         ],
     )
@@ -104,7 +107,7 @@ class ProductSerializer(serializers.ModelSerializer):
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,
-        validators=[RegexValidator("^[a-zA-Z !]+$")],
+        validators=[RegexValidator(name_regex_str)],
     )
     price = serializers.DecimalField(
         max_digits=18,
@@ -117,7 +120,7 @@ class ProductSerializer(serializers.ModelSerializer):
         allow_blank=True,
         validators=[
             RegexValidator(
-                "^[a-zA-Z .!,#]+$",
+                desc_regex_str,
             )
         ],
     )
@@ -129,6 +132,12 @@ class ProductSerializer(serializers.ModelSerializer):
         required=False,
         write_only=True,
     )
+    tags = serializers.PrimaryKeyRelatedField(
+        source="tag_set",
+        queryset=Tag.objects.all(),
+        many=True,
+        required=False,
+    )
 
     class Meta:
         model = Product
@@ -139,9 +148,53 @@ class ProductSerializer(serializers.ModelSerializer):
             "price",
             "category",
             "categoryId",
+            "tags",
             "retired",
         )
         depth = 1
+
+    def validate_name(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+    def validate_description(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+
+class TagSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(
+        required=False, validators=[MinValueValidator(0)]
+    )
+    name = serializers.CharField(
+        max_length=50,
+        allow_blank=False,
+        validators=[RegexValidator(name_regex_str)],
+    )
+    description = serializers.CharField(
+        max_length=200,
+        allow_null=True,
+        allow_blank=True,
+        validators=[
+            RegexValidator(
+                desc_regex_str,
+            )
+        ],
+    )
+    products = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(),
+        many=True,
+        required=False,
+    )
+    retired = serializers.BooleanField(required=False)
+
+    class Meta:
+        model = Tag
+        fields = (
+            "id",
+            "name",
+            "description",
+            "products",
+            "retired",
+        )
 
     def validate_name(self, value: str) -> str:
         return compress_white_spaces(value)

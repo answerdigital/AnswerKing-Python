@@ -16,6 +16,13 @@ class Product(models.Model):
     )
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    description = models.CharField(max_length=200, blank=True, null=True)
+    products = models.ManyToManyField(Product)
+    retired = models.BooleanField(default=False, null=False)
+
+
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.CharField(max_length=200, blank=True, null=True)

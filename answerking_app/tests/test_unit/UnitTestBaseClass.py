@@ -2,7 +2,7 @@ import json
 from django.test import TransactionTestCase
 from snapshottest import TestCase
 
-from answerking_app.models.models import Category, Product
+from answerking_app.models.models import Category, Product, Tag
 
 
 class UnitTestBase(TransactionTestCase, TestCase):
@@ -23,6 +23,8 @@ class UnitTestBase(TransactionTestCase, TestCase):
             self.input_data(Product, data)
         elif fixture_type == "categories":
             self.input_data(Category, data)
+        elif fixture_type == "tags":
+            self.input_data(Tag, data)
         else:
             raise ValueError(
                 f"{fixture_type} is not a valid data seeding type"

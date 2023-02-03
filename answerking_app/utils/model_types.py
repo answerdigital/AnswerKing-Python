@@ -23,7 +23,16 @@ class ProductType(TypedDict):
     name: str
     price: str | float
     description: str
-    categories: NotRequired[list[CategoryType]]
+    category: NotRequired[CategoryType]
+    tags: NotRequired[list[int]]
+    retired: NotRequired[bool]
+
+
+class TagType(TypedDict):
+    id: NotRequired[int]
+    name: str
+    description: str
+    products: NotRequired[list[int]]
     retired: NotRequired[bool]
 
 
@@ -31,7 +40,13 @@ class ProductBodyType(TypedDict):
     name: str
     price: str | float
     description: str
-    categories: NotRequired[list[int]]
+    category: NotRequired[int]
+
+
+class TagBodyType(TypedDict):
+    name: str
+    description: str
+    products: NotRequired[list[int]]
 
 
 class CategoryProductType(TypedDict):
@@ -43,7 +58,7 @@ class ProductCategoryIdType(TypedDict):
     name: str
     price: str | float
     description: str
-    categories: NotRequired[list[int]]
+    category: NotRequired[int]
     retired: NotRequired[bool]
 
 

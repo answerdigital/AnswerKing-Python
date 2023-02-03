@@ -283,6 +283,14 @@ python-versions = ">=3.6"
 python-dateutil = ">=2.7"
 
 [[package]]
+name = "generics"
+version = "6.0.0"
+description = "A classy toolkit designed with OOP in mind."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "gunicorn"
 version = "20.1.0"
 description = "WSGI HTTP Server for UNIX"
@@ -648,7 +656,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "26b713c54586f3fbf828d3e2069b709855454381e0a254660d3099cdc88db3c9"
+content-hash = "a1b7912f1f96e754a741049eb4258b3a7af5d13ea9cd3fe4506c3c38d04ff989"
 
 [metadata.files]
 asgiref = [
@@ -788,6 +796,10 @@ fastdiff = [
 freezegun = [
     {file = "freezegun-1.2.2-py3-none-any.whl", hash = "sha256:ea1b963b993cb9ea195adbd893a48d573fda951b0da64f60883d7e988b606c9f"},
     {file = "freezegun-1.2.2.tar.gz", hash = "sha256:cd22d1ba06941384410cd967d8a99d5ae2442f57dfafeff2fda5de8dc5c05446"},
+]
+generics = [
+    {file = "generics-6.0.0-py2.py3-none-any.whl", hash = "sha256:ed71d45b3422edb601cdcbad6bd5cd81d5909f908725c7530b38d3b8a188bf1e"},
+    {file = "generics-6.0.0.tar.gz", hash = "sha256:4a0390dae5000d17f11624ac6fc465b472201816532b07ae958500b7c2388904"},
 ]
 gunicorn = [
     {file = "gunicorn-20.1.0-py3-none-any.whl", hash = "sha256:9dcc4547dbb1cb284accfb15ab5667a0e5d1881cc443e0677b4882a4067a807e"},

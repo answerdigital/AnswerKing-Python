@@ -66,7 +66,7 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         self.assertEqual(set(serializer.errors), {"name"})
 
     def test_cat_det_serializer_name_regex_validator_pass_1(self):
-        allowed_characters: str = "abcdefghijklm nopqrstuvwxyz"
+        allowed_characters: str = "abcdefghijklm nopqrstuvwxyz0123456789"
         serializer_data: dict = copy.deepcopy(
             self.test_cat_det_serializer_data
         )
@@ -79,7 +79,7 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         self.assertEqual(serializer.data["name"], allowed_characters)
 
     def test_cat_det_serializer_name_regex_validator_pass_2(self):
-        allowed_characters: str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!"
+        allowed_characters: str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!0123456789"
         serializer_data: dict = copy.deepcopy(
             self.test_cat_det_serializer_data
         )
@@ -148,7 +148,8 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
 
     def test_cat_det_serializer_desc_regex_validator_pass_1(self):
         allowed_characters: str = (
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .!"
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            ",# .0123456789!"
         )
         serializer_data: dict = copy.deepcopy(
             self.test_cat_det_serializer_data
@@ -163,7 +164,8 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
 
     def test_cat_det_serializer_desc_regex_validator_fail(self):
         allowed_characters: str = (
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,# .!"
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            ",# .0123456789!"
         )
         serializer_data: dict = copy.deepcopy(
             self.test_cat_det_serializer_data
