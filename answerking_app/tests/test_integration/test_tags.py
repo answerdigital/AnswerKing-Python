@@ -11,18 +11,126 @@ client = Client()
 
 @ddt()
 class GetTests(IntegrationTestBase):
-    def test_get_all_returns_no_content(self):
+    def test_get_all_without_tags_returns_no_content(self):
         response = client.get("/api/tags")
         assert_that(response.json()).is_equal_to([])
         assert_that(response.status_code).is_equal_to(200)
 
+    @data("basic-3.json", "basic-1-list.json", "extreme-3.json")
+    def test_get_all_with_tags_returns_ok(self, seed):
+        self.seedFixture("tags", seed)
+        response = client.get("/api/tags")
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
 
+    def test_get_id_valid_returns_ok(self):
+        seeded_data = self.seedFixture("tags", "basic-1.json")
+        response = client.get(
+            f"/api/tags/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]
+        )
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
+
+    def test_get_id_valid_with_products_returns_ok(self):
+        seeded_data_tag_id, _ = self.seed_tag_with_prod(
+            "basic-1.json", "basic-1.json"
+        )
+        response = client.get(f"/api/tags/{seeded_data_tag_id}")
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
+
+    def test_get_invalid_id_returns_bad_request(self):
+        response = client.get("/api/tags/invalid-id")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+    def test_get_non_existent_id_returns_not_found(self):
+        response = client.get("/api/tags/1")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(404)
+
+
+@ddt
 class PostTests(IntegrationTestBase):
-    pass
+    @data(
+        "basic-1-post.json",
+        "boundary-name.json",
+        "boundary-description.json",
+    )
+    def test_post_valid_returns_ok(self, tag_data):
+        post_data = self.getFixture("tags", tag_data)
+        response = client.post(
+            "/api/tags", post_data, content_type="application/json"
+        )
+        get_response = client.get("/api/tags")
+        self.assertMatchSnapshot(get_response.json())
+        assert_that(response.status_code).is_equal_to(201)
+
+    @data("basic-1-with-products.json")
+    def test_post_valid_with_products_returns_ok(self, tag_data):
+        post_data = self.getFixture("tags", tag_data)
+        self.preload_products(["basic-3.json"])
+        response = client.post(
+            "/api/tags", post_data, content_type="application/json"
+        )
+        get_response = client.get("/api/tags")
+        self.assertMatchSnapshot(get_response.json())
+        assert_that(response.status_code).is_equal_to(201)
+
+    @data(
+        "invalid-id.json",
+        "invalid-name.json",
+        "invalid-description.json",
+        "invalid-missing-fields.json",
+        "invalid-retired.json",
+    )
+    def test_post_invalid_data_returns_bad_request(self, tag_data):
+        post_data = self.getFixture("tags", tag_data)
+        response = client.post(
+            "/api/tags",
+            post_data,
+            content_type="application/json",
+        )
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+    def test_post_invalid_json_returns_bad_request(self):
+        invalid_json_data: str = '{"invalid": }'
+        response = client.post(
+            "/api/tags",
+            invalid_json_data,
+            content_type="application/json",
+        )
+        self.assertJSONErrorResponse(response.json())
+
+    def test_post_duplicated_name_returns_400(self):
+        self.seedFixture("tags", "basic-1.json")
+        post_data = self.getFixture("tags", "basic-1-post.json")
+        response = client.post(
+            "/api/tags", post_data, content_type="application/json"
+        )
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
 
 
+@ddt
 class PutTests(IntegrationTestBase):
-    pass
+    @data(
+        "basic-1-update.json",
+        "boundary-name.json",
+        "boundary-description.json",
+    )
+    def test_put_valid_returns_ok(self, tag_data):
+        seeded_data = self.seedFixture("tags", "basic-1.json")
+        put_data = self.getFixture("tags", tag_data)
+        response = client.put(
+            f"/api/tags/{seeded_data['id']}",  # type: ignore[GeneralTypeIssue]
+            put_data,
+            content_type="application/json",
+        )
+        get_response = client.get("/api/tags")
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertMatchSnapshot(get_response.json())
 
 
 class DeleteTests(IntegrationTestBase):

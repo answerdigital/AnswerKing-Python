@@ -77,9 +77,6 @@ class GetTests(IntegrationTestBase):
 
 @ddt
 class PostTests(IntegrationTestBase):
-    def preload_products(self, products_to_load: list[str]) -> None:
-        for prod_json_file in products_to_load:
-            self.seedFixture("products", prod_json_file)
 
     @data(
         "basic-1-post.json",
