@@ -9,7 +9,7 @@ resource "aws_eip" "lb" {
 
 resource "aws_lb" "eip_lb" {
   name               = "${var.project_name}-lb"
-  load_balancer_type = "network"
+  load_balancer_type = "${var.lb_type}"
   internal           = false
   ip_address_type    = "ipv4"
 

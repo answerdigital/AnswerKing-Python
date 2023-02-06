@@ -109,3 +109,23 @@ variable "lb_protocol" {
     description = "Load balancer protocol."
     default = "TCP"
 }
+
+variable "lb_type" {
+    type = string
+    description = "Load balancer type."
+    default = "network"
+}
+
+# DNS
+
+variable "dns_hosted_zone_id" {
+    type = string
+    description = "ID of the hosted zone."
+    default = "Z0072706JT6B6N2J7Z9H"
+}
+
+variable "dns_record_name" {
+    type = string
+    description = "Hosted zone record name."
+    default = "python.answerking.co.uk"
+}
