@@ -213,12 +213,8 @@ class PutTests(IntegrationTestBase):
 
     def test_put_duplicated_name_returns_400(self):
         self.seedFixture("tags", "basic-1.json")
-        seeded_data_2 = self.seedFixture(
-            "tags", "basic-1-different-name.json"
-        )
-        put_data = self.getFixture(
-            "tags", "basic-1-update-dup-name.json"
-        )
+        seeded_data_2 = self.seedFixture("tags", "basic-1-different-name.json")
+        put_data = self.getFixture("tags", "basic-1-update-dup-name.json")
         response = client.put(
             f"/api/tags/{seeded_data_2['id']}",  # type: ignore[GeneralTypeIssue]
             put_data,
@@ -255,4 +251,3 @@ class DeleteTests(IntegrationTestBase):
         assert_that(response_1.status_code).is_equal_to(204)
         self.assertJSONErrorResponse(response_2.json())
         assert_that(response_2.status_code).is_equal_to(410)
-

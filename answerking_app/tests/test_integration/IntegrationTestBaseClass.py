@@ -11,14 +11,18 @@ class IntegrationTestBase(TransactionTestCase, TestCase):
             self.seedFixture("products", prod_json_file)
 
     def seed_tag_with_prod(self, tag_json, prod_json):
-        tag_id, prod_id = self._seed_x_with_y("tags", tag_json, "products", prod_json)
+        tag_id, prod_id = self._seed_x_with_y(
+            "tags", tag_json, "products", prod_json
+        )
         tag: Tag = Tag.objects.get(pk=tag_id)
         prod: Product = Product.objects.get(pk=prod_id)
         tag.products.add(prod)
         return tag_id, prod_id
 
     def seed_cat_with_prod(self, cat_json, prod_json):
-        cat_id, prod_id = self._seed_x_with_y("categories", cat_json, "products", prod_json)
+        cat_id, prod_id = self._seed_x_with_y(
+            "categories", cat_json, "products", prod_json
+        )
         cat: Category = Category.objects.get(pk=cat_id)
         prod: Product = Product.objects.get(pk=prod_id)
         cat.product_set.add(prod)

@@ -77,7 +77,6 @@ class GetTests(IntegrationTestBase):
 
 @ddt
 class PostTests(IntegrationTestBase):
-
     @data(
         "basic-1-post.json",
         "boundary-name.json",
