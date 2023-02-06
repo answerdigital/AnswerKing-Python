@@ -202,12 +202,12 @@ class PutTests(IntegrationTestBase):
         assert_that(response.status_code).is_equal_to(400)
 
     def test_put_invalid_id_returns_bad_request(self):
-        response = client.put("/api/categories/invalid-id")
+        response = client.put("/api/tags/invalid-id")
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
     def test_put_non_existent_id_returns_not_found(self):
-        response = client.put("/api/categories/1")
+        response = client.put("/api/tags/1")
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(404)
 
