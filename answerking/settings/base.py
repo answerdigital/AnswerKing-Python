@@ -2,12 +2,11 @@
 Django base settings for answerking project..
 """
 import os
+from os.path import join
 from pathlib import Path
 
-from os.path import join
-from dotenv import load_dotenv
-
 from corsheaders.defaults import default_headers, default_methods
+from dotenv import load_dotenv
 
 from answerking_app.utils.json404_middleware_config import json404_response
 
@@ -52,6 +51,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_json_404_middleware.JSON404Middleware",
+    "drf_ignore_slash_middleware.SlashIgnoreMiddleware",
 ]
 
 ROOT_URLCONF = "answerking.urls"
