@@ -3,8 +3,9 @@ from ddt import data, ddt
 from django.test import Client
 
 from answerking_app.models.models import Product, Tag
-from answerking_app.tests.test_integration.IntegrationTestBaseClass import \
-    IntegrationTestBase
+from answerking_app.tests.test_integration.IntegrationTestBaseClass import (
+    IntegrationTestBase,
+)
 
 client = Client()
 
