@@ -95,6 +95,25 @@ class PostTests(IntegrationTestBase):
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
+    @data("invalid-product-id.json")
+    def test_post_invalid_product_id_returns_bad_request(self, tag_data):
+        post_data = self.getFixture("tags", tag_data)
+        response = client.post(
+            "/api/tags", post_data, content_type="application/json"
+        )
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+    @data("basic-1-with-products.json")
+    def test_post_nonexistent_product_id_returns_not_found(self, tag_data):
+        post_data = self.getFixture("tags", tag_data)
+        response = client.post(
+            "/api/tags", post_data, content_type="application/json"
+        )
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+
     def test_post_invalid_json_returns_bad_request(self):
         invalid_json_data: str = '{"invalid": }'
         response = client.post(
