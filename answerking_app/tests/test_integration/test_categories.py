@@ -1,12 +1,12 @@
-from django.test import Client
 from assertpy import assert_that
-from ddt import ddt, data
+from ddt import data, ddt
+from django.test import Client
 from freezegun import freeze_time
 
+from answerking_app.models.models import Category, Product
 from answerking_app.tests.test_integration.IntegrationTestBaseClass import (
     IntegrationTestBase,
 )
-from answerking_app.models.models import Category, Product
 
 client = Client()
 frozen_time = "2022-01-01T01:02:03.000000Z"
@@ -254,6 +254,17 @@ class PutTests(IntegrationTestBase):
         )
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
+
+    def test_put_retired_returns_gone(self):
+        seeded_data = self.seedFixture("categories", "retired.json")
+        put_data = self.getFixture("categories", "basic-2.json")
+        response = client.put(
+            f"/api/categories/{seeded_data['id']}",  # type: ignore[GeneralTypeIssue]
+            put_data,
+            content_type="application/json",
+        )
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(410)
 
 
 class DeleteTests(IntegrationTestBase):

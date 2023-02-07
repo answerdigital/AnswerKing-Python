@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 from snapshottest import Snapshot
 
-
 snapshots = Snapshot()
 
 snapshots["DeleteTests::test_delete_already_retired_returns_gone 1"] = {
@@ -79,10 +78,7 @@ snapshots[
 ] = [
     {
         "createdOn": "2022-01-01T01:02:03.000000Z",
-        "description": "200 chars - Lorem ipsum dolor sit amet, consectetur "
-        "adipiscing elit. Duis lacinia dui et nunc hendrerit "
-        "ullamcorper. Duis sit amet magna ac velit auctor "
-        "porta. Praesent viverra vulputate lectus, a ves",
+        "description": "200 chars - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacinia dui et nunc hendrerit ullamcorper. Duis sit amet magna ac velit auctor porta. Praesent viverra vulputate lectus, a ves",
         "id": 1,
         "lastUpdated": "2022-01-01T01:02:03.000000Z",
         "name": "Burgers",
@@ -281,10 +277,7 @@ snapshots[
 ] = [
     {
         "createdOn": "2022-01-01T01:02:03.000000Z",
-        "description": "two hundred chars Lorem ipsum dolor sit amet "
-        "consectetur adipiscing elit Duis lacinia dui et nunc "
-        "hendrerit ullamcorper Duis sit amet magna ac velit "
-        "auctor porta Praesent viverra vulputate lectusjaue",
+        "description": "two hundred chars Lorem ipsum dolor sit amet consectetur adipiscing elit Duis lacinia dui et nunc hendrerit ullamcorper Duis sit amet magna ac velit auctor porta Praesent viverra vulputate lectusjaue",
         "id": 7,
         "lastUpdated": "2022-01-01T01:02:03.000000Z",
         "name": "Burgers",
@@ -408,6 +401,13 @@ snapshots["PutTests::test_put_non_existent_id_returns_not_found 1"] = {
     "type": "http://testserver/problems/error/",
 }
 
+snapshots["PutTests::test_put_retired_returns_gone 1"] = {
+    "detail": "This category has been retired",
+    "status": 410,
+    "title": "A server error occurred.",
+    "type": "http://testserver/problems/error/",
+}
+
 snapshots["PutTests::test_put_valid_returns_ok_1_basic_1_update_json 1"] = [
     {
         "createdOn": "2022-01-01T01:02:03.000000Z",
@@ -437,10 +437,7 @@ snapshots[
 ] = [
     {
         "createdOn": "2022-01-01T01:02:03.000000Z",
-        "description": "two hundred chars Lorem ipsum dolor sit amet "
-        "consectetur adipiscing elit Duis lacinia dui et nunc "
-        "hendrerit ullamcorper Duis sit amet magna ac velit "
-        "auctor porta Praesent viverra vulputate lectusjaue",
+        "description": "two hundred chars Lorem ipsum dolor sit amet consectetur adipiscing elit Duis lacinia dui et nunc hendrerit ullamcorper Duis sit amet magna ac velit auctor porta Praesent viverra vulputate lectusjaue",
         "id": 1,
         "lastUpdated": "2022-01-01T01:02:03.000000Z",
         "name": "Burgers",

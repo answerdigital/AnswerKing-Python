@@ -1,4 +1,5 @@
 import json
+
 from django.test import TransactionTestCase
 from snapshottest import TestCase
 
@@ -17,34 +18,65 @@ class UnitTestBase(TransactionTestCase, TestCase):
             raise ValueError(f"{data} is not valid json")
         return data
 
+    @staticmethod
+    def get_object(model_type: str, data: dict) -> Product | Category | Tag:
+        if model_type == "products":
+            return Product.objects.get(**data)
+        elif model_type == "categories":
+            return Category.objects.get(**data)
+        elif model_type == "tags":
+            return Tag.objects.get(**data)
+        else:
+            raise ValueError(f"{model_type} is not a valid model type")
+
     def seedFixture(self, fixture_type: str, fixture_name: str):
         data = self.get_fixture(fixture_type, fixture_name)
         if fixture_type == "products":
-            self.input_data(Product, data)
+            return self.input_data(Product, data)
         elif fixture_type == "categories":
-            self.input_data(Category, data)
+            return self.input_data(Category, data)
         elif fixture_type == "tags":
-            self.input_data(Tag, data)
+            return self.input_data(Tag, data)
         else:
             raise ValueError(
                 f"{fixture_type} is not a valid data seeding type"
             )
 
-    def get_fixture(self, fixture_type: str, fixture_name: str):
-        fixture_path = "answerking_app/tests/test_unit/fixtures"
+    def get_fixture(
+        self,
+        fixture_type: str,
+        fixture_name: str,
+        fixture_path="answerking_app/tests/test_unit/fixtures",
+    ):
         return json.load(open(f"{fixture_path}/{fixture_type}/{fixture_name}"))
 
-    def seed_data(self, list_fixtures: dict) -> list[dict]:
+    def seed_data(self, fixtures: dict) -> list[dict]:
         loaded_fixtures = []
-        for fixture_name, fixture_type in list_fixtures.items():
-            self.seedFixture(fixture_type, fixture_name)
-            loaded_fixture = self.get_fixture(fixture_type, fixture_name)
-            if isinstance(loaded_fixture, list):
-                loaded_fixtures.append(*loaded_fixture)
-            elif isinstance(loaded_fixture, dict):
-                loaded_fixtures.append(loaded_fixture)
+        for fixture_name, fixture_type in fixtures.items():
+            data = self.seedFixture(fixture_type, fixture_name)
+            if isinstance(data, list):
+                loaded_fixtures.append(*data)
+            elif isinstance(data, dict):
+                loaded_fixtures.append(data)
             else:
-                raise ValueError(
-                    f"The type {type(loaded_fixture)} is not a valid data seeding type"
+                raise TypeError(
+                    f"The type of {data} : [{type(data)}] is not valid"
                 )
         return loaded_fixtures
+
+    def seed_data_and_get_models(
+        self, fixtures: dict
+    ) -> list[Category | Tag | Product]:
+        models: list[Category | Tag | Product] = []
+        for fixture_name, fixture_type in fixtures.items():
+            data = self.seedFixture(fixture_type, fixture_name)
+            if isinstance(data, list):
+                for i in data:
+                    models.append(self.get_object(fixture_type, i))
+            elif isinstance(data, dict):
+                models.append(self.get_object(fixture_type, data))
+            else:
+                raise TypeError(
+                    f"The type of {data} : [{type(data)}] is not valid"
+                )
+        return models

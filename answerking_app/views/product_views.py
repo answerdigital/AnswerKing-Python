@@ -1,28 +1,27 @@
 from django.db.models import QuerySet
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiResponse,
+    extend_schema,
+)
 from rest_framework import generics, mixins
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from answerking_app.models.models import Product
 from answerking_app.models.serializers import (
-    ProductSerializer,
     ProblemDetailSerializer,
+    ProductSerializer,
 )
 from answerking_app.utils.mixins.RetireMixin import RetireMixin
-from answerking_app.utils.url_parameter_check import check_url_parameter
-
-from drf_spectacular.utils import (
-    extend_schema,
-    OpenApiExample,
-    OpenApiResponse,
-)
 from answerking_app.utils.schema.schema_examples import (
+    problem_detail_example,
+    product_body_example,
+    product_categories_body_example,
     product_example,
     retired_product_example,
-    product_body_example,
-    problem_detail_example,
-    product_categories_body_example,
 )
+from answerking_app.utils.url_parameter_check import check_url_parameter
 
 
 class ProductListView(
@@ -92,10 +91,9 @@ class ProductListView(
 
 
 class ProductDetailView(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
     RetireMixin,
-    generics.GenericAPIView,
+    generics.UpdateAPIView,
+    mixins.RetrieveModelMixin,
 ):
     queryset: QuerySet = Product.objects.all()
     serializer_class: ProductSerializer = ProductSerializer

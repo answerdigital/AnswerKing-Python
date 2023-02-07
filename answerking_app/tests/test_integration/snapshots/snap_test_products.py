@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 from snapshottest import Snapshot
 
-
 snapshots = Snapshot()
 
 snapshots["DeleteTests::test_delete_already_retired_returns_gone 1"] = {
@@ -97,10 +96,7 @@ snapshots[
     },
     {
         "category": None,
-        "description": "200 chars - Lorem ipsum dolor sit amet, consectetur "
-        "adipiscing elit. Duis lacinia dui et nunc hendrerit "
-        "ullamcorper. Duis sit amet magna ac velit auctor "
-        "porta. Praesent viverra vulputate lectus, a ves",
+        "description": "200 chars - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacinia dui et nunc hendrerit ullamcorper. Duis sit amet magna ac velit auctor porta. Praesent viverra vulputate lectus, a ves",
         "id": 3,
         "name": "Chips",
         "price": 1.5,
@@ -258,8 +254,7 @@ snapshots["PostTests::test_post_invalid_json_returns_bad_request 1"] = {
 }
 
 snapshots[
-    "PostTests::test_post_invalid_with_invalid_cat_id_returns_bad_request_1"
-    "_invalid_category_id_json 1"
+    "PostTests::test_post_invalid_with_invalid_cat_id_returns_bad_request_1_invalid_category_id_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {"categoryId": ['Invalid pk "1" - object does not exist.']},
@@ -297,10 +292,7 @@ snapshots[
 ] = [
     {
         "category": None,
-        "description": "twohundred chars Lorem ipsum dolor sit amet "
-        "consectetur adipiscing elit Duis lacinia dui et nunc "
-        "hendrerit ullamcorper Duis sit amet magna ac velit "
-        "auctor porta Praesent viverra vulputate lectusjaue",
+        "description": "twohundred chars Lorem ipsum dolor sit amet consectetur adipiscing elit Duis lacinia dui et nunc hendrerit ullamcorper Duis sit amet magna ac velit auctor porta Praesent viverra vulputate lectusjaue",
         "id": 1,
         "name": "Burger",
         "price": 1.2,
@@ -449,6 +441,13 @@ snapshots["PutTests::test_put_non_existent_id_returns_not_found 1"] = {
     "type": "http://testserver/problems/error/",
 }
 
+snapshots["PutTests::test_put_retired_product_returns_gone 1"] = {
+    "detail": "This object has already been retired, unretire it before updating it",
+    "status": 410,
+    "title": "A server error occurred.",
+    "type": "http://testserver/problems/error/",
+}
+
 snapshots["PutTests::test_put_valid_returns_ok_1_basic_1_update_json 1"] = [
     {
         "category": None,
@@ -478,10 +477,7 @@ snapshots[
 ] = [
     {
         "category": None,
-        "description": "twohundred chars Lorem ipsum dolor sit amet "
-        "consectetur adipiscing elit Duis lacinia dui et nunc "
-        "hendrerit ullamcorper Duis sit amet magna ac velit "
-        "auctor porta Praesent viverra vulputate lectusjaue",
+        "description": "twohundred chars Lorem ipsum dolor sit amet consectetur adipiscing elit Duis lacinia dui et nunc hendrerit ullamcorper Duis sit amet magna ac velit auctor porta Praesent viverra vulputate lectusjaue",
         "id": 1,
         "name": "Burger",
         "price": 1.2,
