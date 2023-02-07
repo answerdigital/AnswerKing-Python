@@ -1,0 +1,8 @@
+{
+  "id": 1,
+  "name": "Burger",
+  "description": "desc",
+  "price": 1.2,
+  "category": null,
+  "retired": true
+}

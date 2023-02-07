@@ -2,14 +2,15 @@ from django.db.models import QuerySet
 from rest_framework import status
 from rest_framework.exceptions import ParseError
 from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from answerking_app.models.models import (
     Category,
-    Product,
-    Order,
     LineItem,
+    Order,
+    Product,
     Tag,
 )
 from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
@@ -30,9 +31,17 @@ class RetireMixin(GenericAPIView):
             product_active_order_check(instance)
             instance.retired = True
             instance.save()
-        else:
-            raise ParseError
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def update(self, request: Request, *args, **kwargs) -> Response:
+        instance: Category | Product | Tag = self.get_object()
+        if instance.retired:
+            raise ProblemDetails(
+                status=status.HTTP_410_GONE,
+                detail="This object has already been retired, unretire it before updating it",
+            )
+        else:
+            return super().update(request, *args, **kwargs)
 
 
 class CancelOrderMixin(GenericAPIView):

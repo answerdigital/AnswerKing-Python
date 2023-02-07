@@ -74,4 +74,4 @@ jobs:
         with:
           args: >
             -Dsonar.python.coverage.reportPaths=coverage.xml
-            -Dsonar.exclusions=answerking_app/tests/test_integration/snapshots/**
+            -Dsonar.exclusions=answerking_app/tests/**

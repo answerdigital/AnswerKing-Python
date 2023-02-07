@@ -73,10 +73,7 @@ snapshots["GetTests::test_get_all_with_tags_returns_ok_3_extreme_3_json 1"] = [
         "retired": False,
     },
     {
-        "description": "twohundred chars Lorem ipsum dolor sit amet "
-        "consectetur adipiscing elit Duis lacinia dui et nunc "
-        "hendrerit ullamcorper Duis sit amet magna ac velit "
-        "auctor porta Praesent viverra vulputate lectusjaue",
+        "description": "twohundred chars Lorem ipsum dolor sit amet consectetur adipiscing elit Duis lacinia dui et nunc hendrerit ullamcorper Duis sit amet magna ac velit auctor porta Praesent viverra vulputate lectusjaue",
         "id": 2,
         "name": "Vegetarian",
         "products": [],
@@ -242,10 +239,7 @@ snapshots[
     "PostTests::test_post_valid_returns_ok_3_boundary_description_json 1"
 ] = [
     {
-        "description": "twohundred chars Lorem ipsum dolor sit amet "
-        "consectetur adipiscing elit Duis lacinia dui et nunc "
-        "hendrerit ullamcorper Duis sit amet magna ac velit "
-        "auctor porta Praesent viverra vulputate lectusjaue",
+        "description": "twohundred chars Lorem ipsum dolor sit amet consectetur adipiscing elit Duis lacinia dui et nunc hendrerit ullamcorper Duis sit amet magna ac velit auctor porta Praesent viverra vulputate lectusjaue",
         "id": 1,
         "name": "Halal",
         "products": [],
@@ -366,6 +360,13 @@ snapshots["PutTests::test_put_non_existent_id_returns_not_found 1"] = {
     "type": "http://testserver/problems/error/",
 }
 
+snapshots["PutTests::test_put_retired_returns_gone 1"] = {
+    "detail": "This object has already been retired, unretire it before updating it",
+    "status": 410,
+    "title": "A server error occurred.",
+    "type": "http://testserver/problems/error/",
+}
+
 snapshots["PutTests::test_put_valid_returns_ok_1_basic_1_update_json 1"] = [
     {
         "description": "Tag identifying a product as halal.",
@@ -390,10 +391,7 @@ snapshots[
     "PutTests::test_put_valid_returns_ok_3_boundary_description_json 1"
 ] = [
     {
-        "description": "twohundred chars Lorem ipsum dolor sit amet "
-        "consectetur adipiscing elit Duis lacinia dui et nunc "
-        "hendrerit ullamcorper Duis sit amet magna ac velit "
-        "auctor porta Praesent viverra vulputate lectusjaue",
+        "description": "twohundred chars Lorem ipsum dolor sit amet consectetur adipiscing elit Duis lacinia dui et nunc hendrerit ullamcorper Duis sit amet magna ac velit auctor porta Praesent viverra vulputate lectusjaue",
         "id": 1,
         "name": "Halal",
         "products": [],

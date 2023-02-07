@@ -1,8 +1,8 @@
-from django.test import Client
 from assertpy import assert_that
-from ddt import ddt, data
+from ddt import data, ddt
+from django.test import Client
 
-from answerking_app.models.models import Tag, Product
+from answerking_app.models.models import Product, Tag
 from answerking_app.tests.test_integration.IntegrationTestBaseClass import (
     IntegrationTestBase,
 )
@@ -240,6 +240,17 @@ class PutTests(IntegrationTestBase):
         )
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
+
+    def test_put_retired_returns_gone(self):
+        seeded_data = self.seedFixture("tags", "retired.json")
+        put_data = self.getFixture("tags", "basic-1.json")
+        response = client.put(
+            f"/api/tags/{seeded_data['id']}",  # type: ignore[GeneralTypeIssue]
+            put_data,
+            content_type="application/json",
+        )
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(410)
 
 
 class DeleteTests(IntegrationTestBase):
