@@ -1,0 +1,6 @@
+{
+  "id": 1,
+  "name": "Halal",
+  "description": "Tag identifying a product as halal.",
+  "products": ["string"]
+}
