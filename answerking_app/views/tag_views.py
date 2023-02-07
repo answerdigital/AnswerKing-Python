@@ -1,27 +1,17 @@
 from django.db.models import QuerySet
+from drf_spectacular.utils import (OpenApiExample, OpenApiResponse,
+                                   extend_schema)
 from rest_framework import generics, mixins
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from answerking_app.models.models import Tag
-from answerking_app.models.serializers import (
-    TagSerializer,
-    ProblemDetailSerializer,
-)
+from answerking_app.models.serializers import (ProblemDetailSerializer,
+                                               TagSerializer)
 from answerking_app.utils.mixins.RetireMixin import RetireMixin
-from answerking_app.utils.url_parameter_check import check_url_parameter
-
-from drf_spectacular.utils import (
-    extend_schema,
-    OpenApiExample,
-    OpenApiResponse,
-)
 from answerking_app.utils.schema.schema_examples import (
-    tag_example,
-    retired_tag_example,
-    problem_detail_example,
-    tag_body_example,
-)
+    problem_detail_example, retired_tag_example, tag_body_example, tag_example)
+from answerking_app.utils.url_parameter_check import check_url_parameter
 
 
 class TagListView(
@@ -86,10 +76,9 @@ class TagListView(
 
 
 class TagDetailView(
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
     RetireMixin,
-    generics.GenericAPIView,
+    generics.UpdateAPIView,
+    mixins.RetrieveModelMixin,
 ):
     queryset: QuerySet = Tag.objects.all()
     serializer_class: TagSerializer = TagSerializer
