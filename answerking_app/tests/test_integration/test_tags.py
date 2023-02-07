@@ -101,7 +101,7 @@ class PostTests(IntegrationTestBase):
         response = client.post(
             "/api/tags", post_data, content_type="application/json"
         )
-        self.assertMatchSnapshot(response.json())
+        self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
     @data("basic-1-with-products.json")
@@ -110,9 +110,8 @@ class PostTests(IntegrationTestBase):
         response = client.post(
             "/api/tags", post_data, content_type="application/json"
         )
-        self.assertMatchSnapshot(response.json())
+        self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
-
 
     def test_post_invalid_json_returns_bad_request(self):
         invalid_json_data: str = '{"invalid": }'
