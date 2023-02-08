@@ -1,5 +1,5 @@
 from django.test import TransactionTestCase
-from answerking_app.models.models import Product, Category, Tag
+from answerking_app.models.models import Product, Category, Tag, Order, LineItem
 
 from snapshottest import TestCase
 import json
@@ -28,6 +28,23 @@ class IntegrationTestBase(TransactionTestCase, TestCase):
         cat.product_set.add(prod)
         return cat_id, prod_id
 
+    def seed_order_with_prod(self, order_json, prod_json):
+        order_id, prod_id = self._seed_x_with_y(
+            "products", prod_json, "orders", order_json
+        )
+        return order_id
+
+    def create_order_lineItems(self, data):
+        order = Order.objects.create()
+        for lineItem in data["lineItems"]:
+            prod: Product = Product.objects.get(pk=lineItem["product"]["id"])
+
+            LineItem.objects.create(
+                order=order, product=prod, quantity=lineItem["quantity"]
+            ).calculate_sub_total()
+
+        order.calculate_total()
+
     def _seed_x_with_y(self, x, x_json, y, y_json):
         seeded_data_x = self.seedFixture(x, x_json)
         seeded_data_y = self.seedFixture(y, y_json)
@@ -43,6 +60,8 @@ class IntegrationTestBase(TransactionTestCase, TestCase):
                 Category.objects.create(**item)
             elif fixture_type == "tags":
                 Tag.objects.create(**item)
+            elif fixture_type == "orders":
+                self.create_order_lineItems(item)
             else:
                 raise ValueError(f"Unrecognised seeding type {fixture_type}")
 
@@ -53,12 +72,14 @@ class IntegrationTestBase(TransactionTestCase, TestCase):
             Category.objects.create(**dict_data)
         elif fixture_type == "tags":
             Tag.objects.create(**dict_data)
+        elif fixture_type == "orders":
+            self.create_order_lineItems(dict_data)
         else:
             raise ValueError(f"Unrecognised seeding type {fixture_type}")
 
     def seedFixture(self, fixture_type, fixture_name):
         data = self.getFixture(fixture_type, fixture_name)
-        if fixture_type in ["products", "categories", "tags"]:
+        if fixture_type in ["products", "categories", "tags", "orders"]:
             if isinstance(data, list):
                 self.seedListFixture(fixture_type, data)
             elif isinstance(data, dict):

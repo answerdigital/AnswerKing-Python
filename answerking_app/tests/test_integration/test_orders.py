@@ -1,70 +1,65 @@
-"""
+from assertpy import assert_that
+from ddt import data, ddt
+from django.test import Client
+from freezegun import freeze_time
+
+from answerking_app.tests.test_integration.IntegrationTestBaseClass import (
+    IntegrationTestBase,
+)
+
 from datetime import datetime
 
 from django.db.models import QuerySet
-from django.test import Client
 
 from answerking_app.models.models import Order, LineItem
-from answerking_app.tests.BaseTestClass import TestBase
 from answerking_app.utils.model_types import (
-    DetailError,
     OrderType,
 )
 
-client = Client()
+client = Client(IntegrationTestBase)
+frozen_time = "2022-04-01T04:02:03.000000Z"
 
 
-class OrderTests(TestBase):
-    maxDiff = None
-
+@ddt
+class GetTests(IntegrationTestBase):
     def test_get_all_without_orders_returns_no_content(self):
-        # Arrange
-        Order.objects.all().delete()
-
-        # Act
         response = client.get("/api/orders")
+        assert_that(response.json()).is_equal_to([])
+        assert_that(response.status_code).is_equal_to(200)
 
-        # Assert
-        self.assertJSONResponse([], response.data, response, 200)
-
+    @freeze_time(frozen_time)
     def test_get_all_with_orders_returns_ok(self):
-        # Arrange
-        expected: list[OrderType] = [
-            self.get_mock_order_api(self.test_order_empty),
-            self.get_mock_order_api(
-                self.test_order_1,
-            ),
-            self.get_mock_order_api(self.test_order_2),
-        ]
-
-        # Act
+        self.seed_order_with_prod("basic-2.json", "basic-1.json")
         response = client.get("/api/orders")
-        actual = response.json()
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
 
-        # Assert
-        self.assertJSONResponse(expected, actual, response, 200)
-
+    @freeze_time(frozen_time)
     def test_get_id_valid_returns_ok(self):
-        # Arrange
-        expected: OrderType = self.get_mock_order_api(self.test_order_1)
+        seeded_data = self.seedFixture("orders", "basic-1.json")
+        response = client.get(f"/api/orders/{seeded_data['id']}")
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
 
-        # Act
-        response = client.get(f"/api/orders/{self.test_order_1.id}")
-        actual = response.json()
-
-        # Assert
-        self.assertJSONResponse(expected, actual, response, 200)
+    @freeze_time(frozen_time)
+    def test_get_id_with_orders_with_prod_returns_ok(self):
+        seeded_id = self.seed_order_with_prod("basic-2.json", "basic-1.json")
+        response = client.get(f"/api/orders/{seeded_id}")
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(200)
 
     def test_get_id_invalid_returns_not_found(self):
-        # Arrange
         response = client.get("/api/orders/f")
-        actual = response.json()
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
 
-        # Assert
-        self.assertJSONErrorResponse(
-            self.expected_invalid_url_parameters, actual, response, 400
-        )
+    def test_get_non_existent_id_returns_not_found(self):
+        response = client.get("/api/orders/1")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(404)
 
+@ddt
+class PostTests(IntegrationTestBase):
     def test_post_valid_without_products_returns_ok(self):
         # Arrange
         old_list = client.get("/api/orders").json()
@@ -327,4 +322,3 @@ class OrderTests(TestBase):
         self.assertJSONErrorResponse(
             self.expected_invalid_url_parameters, actual, response, 400
         )
-"""
