@@ -76,7 +76,7 @@ To view the AnswerKing Python API documentation in Swagger as per OpenAPI specif
 ### Terraform:
 The infrastructure created by running terraform in the `terraform/ecs_fargate` folder is illustrated below:
 
-![Alt text](terraform/ecs_fargate/ecs_fargate.svg?raw=true "VPC Subnet Module Diagram")
+![Alt text](terraform/ecs_fargate/infrastructure.svg?raw=true "VPC Subnet Module Diagram")
 
 To deploy the application to a server accessible by a public IP address:
 - create a `variables_env.tf`  file in the `ecs_fargate` folder containing the following variables:
@@ -91,7 +91,15 @@ variable "aws_account_id" {
     type        = string
     default     = "<AWS_ACCOUNT_ID>"
 }
+
+variable "dns_hosted_zone_id" {
+  type        = string
+  description = "ID of the hosted zone."
+  default     = "<DNS_HOSTED_ZONE_ID>"
+}
 ```
+Note: The `DNS_HOSTED_ZONE_ID` can be found in the AWS console. Search for Route 53, select 'Hosted zone' under 'DNS management' and look in the 'Hosted zone ID' column.
+
 - run the following in the command line while in the `ecs_fargate` directory:
   - `terraform init`
   - `terraform apply`
