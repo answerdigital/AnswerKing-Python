@@ -4,7 +4,7 @@ resource "aws_s3_bucket" "elb_logs" {
   tags = {
     Name  = "${var.project_name}-lb-logs"
     Owner = var.owner
-  }  
+  }
 }
 
 data "aws_region" "current" {}
@@ -70,14 +70,14 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "example" {
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm     = "AES256"
+      sse_algorithm = "AES256"
     }
     bucket_key_enabled = true
   }
 }
 
 resource "aws_s3_bucket_public_access_block" "elb_logs_backend_bucket_public_access_block" {
-  bucket = aws_s3_bucket.elb_logs.id
+  bucket                  = aws_s3_bucket.elb_logs.id
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
