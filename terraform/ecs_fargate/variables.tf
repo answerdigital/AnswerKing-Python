@@ -118,12 +118,6 @@ variable "lb_type" {
 
 # DNS
 
-variable "dns_hosted_zone_id" {
-  type        = string
-  description = "ID of the hosted zone."
-  default     = "Z0072706JT6B6N2J7Z9H"
-}
-
 variable "dns_record_name" {
   type        = string
   description = "Hosted zone record name."
