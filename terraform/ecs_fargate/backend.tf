@@ -87,7 +87,7 @@ resource "aws_s3_bucket_policy" "lb-bucket-policy" {
             "Action": [
                 "s3:PutObject"
             ],
-            "Resource": "${aws_s3_bucket.elb_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*"
+            "Resource": "${aws_s3_bucket.elb_logs.arn}/AWSLogs/*"
         },
         {
             "Effect": "Allow",
@@ -97,7 +97,7 @@ resource "aws_s3_bucket_policy" "lb-bucket-policy" {
             "Action": [
                 "s3:PutObject"
             ],
-            "Resource": "${aws_s3_bucket.elb_logs.arn}/AWSLogs/${data.aws_caller_identity.current.account_id}/*",
+            "Resource": "${aws_s3_bucket.elb_logs.arn}/AWSLogs/*",
             "Condition": {
                 "StringEquals": {
                     "s3:x-amz-acl": "bucket-owner-full-control"
@@ -212,12 +212,12 @@ resource "aws_s3_bucket_acl" "elb_logs_bucket_acl" {
 
 }
 
-resource "aws_s3_bucket_versioning" "terraform_backend_bucket_versioning" {
-  bucket = aws_s3_bucket.elb_logs.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
+# resource "aws_s3_bucket_versioning" "terraform_backend_bucket_versioning" {
+#   bucket = aws_s3_bucket.elb_logs.id
+#   versioning_configuration {
+#     status = "Enabled"
+#   }
+# }
 
 
 

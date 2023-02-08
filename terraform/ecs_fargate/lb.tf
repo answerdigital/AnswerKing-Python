@@ -20,6 +20,7 @@ resource "aws_lb" "eip_lb" {
 
   access_logs {
     bucket  = "${aws_s3_bucket.elb_logs.bucket}"
+    enabled = true
   }
 
   tags = {
