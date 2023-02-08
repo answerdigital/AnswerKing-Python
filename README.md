@@ -98,7 +98,7 @@ variable "dns_hosted_zone_id" {
   default     = "<DNS_HOSTED_ZONE_ID>"
 }
 ```
-Note: The `DNS_HOSTED_ZONE_ID` can be found in the AWS console. Search for Route 53, select Hosted zone under DNS management and look in the Hosted zone ID column.
+Note: The `DNS_HOSTED_ZONE_ID` can be found in the AWS console. Search for Route 53, select 'Hosted zone' under 'DNS management' and look in the 'Hosted zone ID' column.
 
 - run the following in the command line while in the `ecs_fargate` directory:
   - `terraform init`
