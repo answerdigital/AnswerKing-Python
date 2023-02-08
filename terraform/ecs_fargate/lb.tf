@@ -18,6 +18,10 @@ resource "aws_lb" "eip_lb" {
     allocation_id = "${aws_eip.lb.id}"
   }
 
+  access_logs {
+    bucket  = "${aws_s3_bucket.elb_logs.bucket}"
+  }
+
   tags = {
     Name  = "${var.project_name}-lb"
     Owner = var.owner
