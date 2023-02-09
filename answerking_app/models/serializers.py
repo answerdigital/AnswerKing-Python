@@ -219,7 +219,7 @@ class LineItemSerializer(serializers.ModelSerializer):
     product = LineItemProductSerializer()
     quantity = serializers.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
-    )
+                                        )
     subTotal = serializers.DecimalField(
         source="sub_total",
         read_only=True,
@@ -278,18 +278,22 @@ class OrderSerializer(serializers.ModelSerializer):
         line_items_data: list[OrderedDict],
     ):
         products_id_list = []
-        for product in line_items_data:
-            products_id_list.append(
-                Product.objects.get(id=product["product"]["id"])
-            )
-        products = products_check({"product_set": products_id_list})
-        for order_item, product in zip(line_items_data, products):
-            if order_item["quantity"] < 1:
-                continue
-            new_line_item = LineItem.objects.create(
-                order=order, product=product, quantity=order_item["quantity"]
-            )
-            new_line_item.calculate_sub_total()
+        if line_items_data:
+            for product in line_items_data:
+                products_id_list.append(
+                    Product.objects.get(id=product["product"]["id"])
+                )
+            products = products_check({"product_set": products_id_list})
+            for order_item, product in zip(line_items_data, products):
+                if order_item["quantity"] < 1:
+                    continue
+                new_line_item = LineItem.objects.create(
+                    order=order, product=product, quantity=order_item["quantity"]
+                )
+                new_line_item.calculate_sub_total()
+
+    def validate_lineItems(self, value):
+        pass
 
     class Meta:
         model = Order

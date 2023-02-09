@@ -107,91 +107,79 @@ class PostTests(IntegrationTestBase):
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(404)
 
-"""@ddt()
-class PutTests(IntegrationTestBase)
-    def test_put_add_valid_products_to_order_return_ok(self):
-        # Arrange
-        old_orders_list_json = client.get("/api/orders").json()
-        post_data = {
-            "lineItems": [
-                {"product": {"id": self.test_product_1.id}, "quantity": 1}
-            ]
-        }
-        expected = self.expected_order_after_put_request(
-            self.test_order_1, post_data["lineItems"]
-        )
 
-        # Act
+@ddt
+class PutTests(IntegrationTestBase):
+    @data("basic-1-with-products.json", "basic-2.json", "basic-3.json")
+    @freeze_time(frozen_time)
+    def test_put_add_valid_products_to_order_return_ok(self, seed):
+        seeded_data = self.seedFixture("orders", "basic-1.json")
+        self.preload_products(["basic-3.json"])
+        put_data = self.getFixture("orders", seed)
         response = client.put(
-            f"/api/orders/{self.test_order_1.id}",
-            post_data,
+            f"/api/orders/{seeded_data['id']}",  # type: ignore[GeneralTypeIssue]
+            put_data,
             content_type="application/json",
         )
-        actual = response.json()
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertMatchSnapshot(response.json())
 
-        updated_orders_list_json = client.get("/api/orders").json()
-        updated_orders_objects: list[Order] = Order.objects.all()
 
-        created_order: Order = Order.objects.get(pk=actual["id"])
-
-        # Assert
-        self.assertIn(created_order, updated_orders_objects)
-        self.assertNotIn(actual, old_orders_list_json)
-        self.assertIn(actual, updated_orders_list_json)
-        self.assertUpdateTime(expected, actual, response, status_code=200)
-
+    @freeze_time(frozen_time)
     def test_put_update_quantity_to_zero_return_empty_line_items(self):
-        # Arrange
-        old_orders_list_json = client.get("/api/orders").json()
-        post_data = {
-            "lineItems": [
-                {"product": {"id": self.test_product_1.id}, "quantity": 0}
-            ]
-        }
-        expected = {
-            **self.expected_order_after_put_request(
-                self.test_order_1, post_data["lineItems"]
-            ),
-        }
-        # Act
+        self.preload_products(["basic-3.json"])
+        seeded_data = self.seedFixture("orders", "basic-2.json")
+        put_data = self.getFixture("orders", "basic-2-update.json")
         response = client.put(
-            f"/api/orders/{self.test_order_1.id}",
-            post_data,
+            f"/api/orders/{seeded_data['id']}",  # type: ignore[GeneralTypeIssue]
+            put_data,
             content_type="application/json",
         )
-        actual = response.json()
+        assert_that(response.status_code).is_equal_to(200)
+        self.assertMatchSnapshot(response.json())
 
-        updated_orders_list_json = client.get("/api/orders").json()
-        updated_orders_objects: list[Order] = Order.objects.all()
-
-        created_order: Order = Order.objects.get(pk=actual["id"])
-
-        # Assert
-        self.assertIn(created_order, updated_orders_objects)
-        self.assertNotIn(actual, old_orders_list_json)
-        self.assertIn(actual, updated_orders_list_json)
-        self.assertUpdateTime(expected, actual, response, status_code=200)
-        self.assertEqual(actual["lineItems"], [])
-
-    def test_put_invalid_order_id_return_not_found(self):
-        # Arrange
-        post_data = {
-            "lineItems": [
-                {"product": {"id": self.test_product_1.id}, "quantity": 1}
-            ]
-        }
-        # Act
+    def test_put_invalid_json_returns_bad_request(self):
+        self.seedFixture("orders", "basic-1.json")
+        invalid_json_data: str = '{"invalid": }'
         response = client.put(
-            f"/api/orders/-1",
-            post_data,
+            "/api/orders/1",
+            invalid_json_data,
             content_type="application/json",
         )
-        actual = response.json()
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
 
-        # Assert
-        self.assertJSONErrorResponse(
-            self.expected_invalid_url_parameters, actual, response, 400
+    def test_put_invalid_id_returns_bad_request(self):
+        response = client.put("/api/orders/invalid-id")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+    def test_put_non_existent_id_returns_not_found(self):
+        response = client.put("/api/orders/1")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(404)
+
+    @data(
+        "invalid-missing-quantity.json",
+        "invalid-product-id.json",
+        "invalid-quantity.json",
+        "invalid-quantity-2.json",
+    )
+    def test_put_invalid_products_return_empty_order(self, seed):
+        self.preload_products(["basic-3.json"])
+        seeded_data = self.seedFixture("orders", "basic-2.json")
+        put_data = self.getFixture("orders", seed)
+        response = client.put(
+            f"/api/orders/{seeded_data['id']}",
+            put_data,
+            content_type="application/json",
         )
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(400)
+
+"""
+
+
 
     def test_put_invalid_products_return_empty_order(self):
         # Arrange
@@ -209,6 +197,8 @@ class PutTests(IntegrationTestBase)
             self.expected_nonexistent_product_error, actual, response, 400
         )
 
+"""
+"""
     def test_delete_order_valid_returns_ok(self):
         # Arrange
         old_order_status: str = self.test_order_1.order_status
