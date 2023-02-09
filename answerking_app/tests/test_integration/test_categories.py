@@ -12,7 +12,7 @@ client = Client()
 frozen_time = "2022-01-01T01:02:03.000000Z"
 
 
-@ddt()
+@ddt
 class GetTests(IntegrationTestBase):
     @freeze_time(frozen_time)
     def test_get_all_without_categories_returns_no_content(self):
@@ -140,7 +140,7 @@ class PostTests(IntegrationTestBase):
         assert_that(response.status_code).is_equal_to(400)
 
 
-@ddt()
+@ddt
 class PutTests(IntegrationTestBase):
     @data(
         "basic-1-update.json",

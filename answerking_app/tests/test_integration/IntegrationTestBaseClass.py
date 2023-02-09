@@ -28,14 +28,8 @@ class IntegrationTestBase(TransactionTestCase, TestCase):
         cat.product_set.add(prod)
         return cat_id, prod_id
 
-    def seed_order_with_prod(self, order_json, prod_json):
-        order_id, prod_id = self._seed_x_with_y(
-            "products", prod_json, "orders", order_json
-        )
-        return order_id
-
     def create_order_lineItems(self, data):
-        order = Order.objects.create()
+        order = Order.objects.create(id=data['id'])
         for lineItem in data["lineItems"]:
             prod: Product = Product.objects.get(pk=lineItem["product"]["id"])
 
@@ -73,7 +67,8 @@ class IntegrationTestBase(TransactionTestCase, TestCase):
         elif fixture_type == "tags":
             Tag.objects.create(**dict_data)
         elif fixture_type == "orders":
-            self.create_order_lineItems(dict_data)
+            order_id = self.create_order_lineItems(dict_data)
+            return order_id
         else:
             raise ValueError(f"Unrecognised seeding type {fixture_type}")
 

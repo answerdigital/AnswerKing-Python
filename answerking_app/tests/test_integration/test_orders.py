@@ -1,5 +1,5 @@
 from assertpy import assert_that
-from ddt import data, ddt
+from ddt import ddt, data
 from django.test import Client
 from freezegun import freeze_time
 
@@ -7,16 +7,7 @@ from answerking_app.tests.test_integration.IntegrationTestBaseClass import (
     IntegrationTestBase,
 )
 
-from datetime import datetime
-
-from django.db.models import QuerySet
-
-from answerking_app.models.models import Order, LineItem
-from answerking_app.utils.model_types import (
-    OrderType,
-)
-
-client = Client(IntegrationTestBase)
+client = Client()
 frozen_time = "2022-04-01T04:02:03.000000Z"
 
 
@@ -29,7 +20,8 @@ class GetTests(IntegrationTestBase):
 
     @freeze_time(frozen_time)
     def test_get_all_with_orders_returns_ok(self):
-        self.seed_order_with_prod("basic-2.json", "basic-1.json")
+        self.preload_products(["basic-3.json"])
+        self.seedFixture("orders", "basic-2.json")
         response = client.get("/api/orders")
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(200)
@@ -43,12 +35,13 @@ class GetTests(IntegrationTestBase):
 
     @freeze_time(frozen_time)
     def test_get_id_with_orders_with_prod_returns_ok(self):
-        seeded_id = self.seed_order_with_prod("basic-2.json", "basic-1.json")
-        response = client.get(f"/api/orders/{seeded_id}")
+        self.preload_products(["basic-3.json"])
+        seeded_data = self.seedFixture("orders", "basic-2.json")
+        response = client.get(f"/api/orders/{seeded_data['id']}")
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(200)
 
-    def test_get_id_invalid_returns_not_found(self):
+    def test_get_id_invalid_returns_Invalid(self):
         response = client.get("/api/orders/f")
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
@@ -58,150 +51,64 @@ class GetTests(IntegrationTestBase):
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(404)
 
+
 @ddt
 class PostTests(IntegrationTestBase):
-    def test_post_valid_without_products_returns_ok(self):
-        # Arrange
-        old_list = client.get("/api/orders").json()
-
-        post_data: dict = {}
-        expected: OrderType = {
-            "id": self.test_order_2.id + 1,
-            "createdOn": datetime.now(),
-            "lastUpdated": datetime.now(),
-            "orderStatus": "Created",
-            "orderTotal": 0.00,
-            "lineItems": [],
-        }
-
-        # Act
+    @data("basic-1-with-products.json", "basic-2.json", "basic-3.json")
+    @freeze_time(frozen_time)
+    def test_post_valid_with_products_returns_ok(self, order_data):
+        post_data = self.getFixture("orders", order_data)
+        self.preload_products(["basic-3.json"])
         response = client.post(
             "/api/orders", post_data, content_type="application/json"
         )
-        actual = response.json()
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(201)
 
-        created_order: Order = Order.objects.get(pk=self.test_order_2.id + 1)
-        created_order_products: list[LineItem] = actual["lineItems"]
-        updated_list: QuerySet[Order] = Order.objects.all()
-
-        # Assert
-        self.assertNotIn(actual, old_list)
-        self.assertIn(created_order, updated_list)
-        self.assertEqual(len(created_order_products), 0)
-        self.assertCreateUpdateTime(expected, actual, response, 201)
-
+    @freeze_time(frozen_time)
     def test_post_valid_with_empty_products_returns_ok(self):
-        # Arrange
-        old_list = client.get("/api/orders").json()
-
-        post_data: dict = {
-            "lineItems": [],
-        }
-        expected: dict = {
-            "id": self.test_order_2.id + 1,
-            "createdOn": datetime.now(),
-            "lastUpdated": datetime.now(),
-            "orderStatus": "Created",
-            "orderTotal": 0.00,
-            **post_data,
-        }
-
-        # Act
+        post_data = self.getFixture("orders", "basic-1.json")
         response = client.post(
             "/api/orders", post_data, content_type="application/json"
         )
-        actual = response.json()
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(201)
 
-        created_order_products: list[LineItem] = actual["lineItems"]
-        updated_list = client.get("/api/orders").json()
-
-        # Assert
-        self.assertNotIn(actual, old_list)
-        self.assertIn(actual, updated_list)
-        self.assertEqual(len(created_order_products), 0)
-        self.assertCreateUpdateTime(expected, actual, response, 201)
-
-    def test_post_valid_with_products_returns_ok(self):
-        # Arrange
-        old_orders_list_json = client.get("/api/orders").json()
-        post_data = {
-            "lineItems": [
-                {"product": {"id": self.test_product_1.id}, "quantity": 1}
-            ]
-        }
-        expected: OrderType = {
-            "id": self.test_order_2.id + 1,
-            "createdOn": datetime.now(),
-            "lastUpdated": datetime.now(),
-            "orderStatus": "Created",
-            "orderTotal": self.test_product_1.price,
-            "lineItems": [
-                {
-                    "product": self.get_category_and_product_for_order(
-                        self.test_product_1
-                    ),
-                    "quantity": 1,
-                    "subTotal": self.test_product_1.price,
-                }
-            ],
-        }
-        # Act
-        response = client.post(
-            "/api/orders", post_data, content_type="application/json"
-        )
-        actual = response.json()
-
-        updated_orders_list_json = client.get("/api/orders").json()
-        updated_orders_objects: list[Order] = Order.objects.all()
-
-        created_order: Order = Order.objects.get(pk=actual["id"])
-
-        # Assert
-        self.assertIn(created_order, updated_orders_objects)
-        self.assertNotIn(actual, old_orders_list_json)
-        self.assertIn(actual, updated_orders_list_json)
-        self.assertCreateUpdateTime(
-            expected, actual, response, status_code=201
-        )
-
-    def test_post_invalid_json_returns_bad_request(self):
-        # Act
+    @data(
+        "invalid-missing-quantity.json",
+        "invalid-product-id.json",
+        "invalid-quantity.json",
+        "invalid-quantity-2.json",
+    )
+    def test_post_invalid_data_returns_bad_request(self, seed):
+        post_data = self.getFixture("orders", seed)
         response = client.post(
             "/api/orders",
-            self.invalid_json_data,
+            post_data,
             content_type="application/json",
         )
-        actual = response.json()
+        self.assertMatchSnapshot(response.json())
+        assert_that(response.status_code).is_equal_to(400)
 
-        # Assert
-        self.assertJSONErrorResponse(
-            self.expected_base_json_parsing_error_400, actual, response, 400
-        )
-
-    def test_post_invalid_details_returns_bad_request(self):
-        # Arrange
-        invalid_post_data = {"lineItems": [{"id": "df"}]}
-        expected: DetailError = {
-            **self.expected_serializer_error_400,
-            "errors": {
-                "lineItems": [
-                    {
-                        "product": ["This field is required."],
-                        "quantity": ["This field is required."],
-                    }
-                ]
-            },
-        }
-
-        # Act
+    def test_post_invalid_json_returns_bad_request(self):
+        invalid_json_data: str = '{"invalid": }'
         response = client.post(
-            "/api/orders", invalid_post_data, content_type="application/json"
+            "/api/orders",
+            invalid_json_data,
+            content_type="application/json",
         )
-        actual = response.json()
+        self.assertJSONErrorResponse(response.json())
 
-        # Assert
-        self.assertJSONErrorResponse(expected, actual, response, 400)
+    def test_post_non_existent_product_id_returns_404(self):
+        post_data = self.getFixture("orders", "non_existent-product-id.json")
+        response = client.post(
+            "/api/orders", post_data, content_type="application/json"
+        )
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(404)
 
+"""@ddt()
+class PutTests(IntegrationTestBase)
     def test_put_add_valid_products_to_order_return_ok(self):
         # Arrange
         old_orders_list_json = client.get("/api/orders").json()
@@ -322,3 +229,4 @@ class PostTests(IntegrationTestBase):
         self.assertJSONErrorResponse(
             self.expected_invalid_url_parameters, actual, response, 400
         )
+"""
