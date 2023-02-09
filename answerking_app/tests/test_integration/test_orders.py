@@ -165,7 +165,7 @@ class PutTests(IntegrationTestBase):
         "invalid-quantity.json",
         "invalid-quantity-2.json",
     )
-    def test_put_invalid_products_return_empty_order(self, seed):
+    def test_put_invalid_products_return_bad_request(self, seed):
         self.preload_products(["basic-3.json"])
         seeded_data = self.seedFixture("orders", "basic-2.json")
         put_data = self.getFixture("orders", seed)

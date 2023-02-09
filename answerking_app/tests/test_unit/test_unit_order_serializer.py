@@ -142,11 +142,11 @@ class OrderSerializerUnitTests(UnitTestBase):
     )
     def test_valid_order_create_pass(self, products_check_mock):
         new_order_data = OrderSerializer(data=self.test_order_1_data)
-        new_order_data.is_valid()
-        serializer = OrderSerializer()
         products_check_mock.return_value = [
             Product.objects.get(name="Plain Burger"),
         ]
+        new_order_data.is_valid()
+        serializer = OrderSerializer()
         new_order_object = serializer.create(new_order_data.validated_data)
         new_order_serializer_data: ReturnDict = OrderSerializer(
             new_order_object
@@ -271,12 +271,13 @@ class OrderSerializerUnitTests(UnitTestBase):
     def test_valid_order_update_pass(self, products_check_mock):
         orders: QuerySet[Order] = Order.objects.all()
         old_order: Order = orders.first()
-        updated_order_data = OrderSerializer(data=self.test_order_2_data)
-        updated_order_data.is_valid()
-        serializer = OrderSerializer()
         products_check_mock.return_value = [
             Product.objects.get(name="Margarita pizza"),
         ]
+        updated_order_data = OrderSerializer(data=self.test_order_2_data)
+        updated_order_data.is_valid()
+        serializer = OrderSerializer()
+
         new_order_object = serializer.update(
             old_order, updated_order_data.validated_data
         )
@@ -361,11 +362,11 @@ class OrderSerializerUnitTests(UnitTestBase):
     def test_empty_order_update_with_product_pass(self, products_check_mock):
         empty_order: Order = Order.objects.create()
         updated_order_data = OrderSerializer(data=self.test_order_2_data)
-        updated_order_data.is_valid()
-        serializer = OrderSerializer()
         products_check_mock.return_value = [
             Product.objects.get(name="Margarita pizza"),
         ]
+        updated_order_data.is_valid()
+        serializer = OrderSerializer()
         new_order_object = serializer.update(
             empty_order, updated_order_data.validated_data
         )
@@ -459,11 +460,11 @@ class OrderSerializerUnitTests(UnitTestBase):
         existing_product: Product = Product.objects.get(name="Margarita pizza")
         serializer = OrderSerializer()
         updated_order_data = OrderSerializer(data=self.test_order_2_data)
+        products_check_mock.return_value = [existing_product]
         updated_order_data.is_valid()
         line_items_data: list[OrderedDict] = updated_order_data.validated_data[
             "lineitem_set"
         ]
-        products_check_mock.return_value = [existing_product]
         serializer.create_order_line_items(existing_order, line_items_data)
 
         new_line_item = LineItem.objects.get(

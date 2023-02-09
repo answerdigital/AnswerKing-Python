@@ -292,7 +292,7 @@ class OrderSerializer(serializers.ModelSerializer):
             )
         products = products_check({"product_set": products_id_list})
         for order_item, product in zip(line_items_data, products):
-            if order_item["quantity"] < 1:
+            if 'quantity' not in order_item or order_item["quantity"] < 1:
                 continue
             line_items_valid.append({"product": product, "quantity": order_item["quantity"]})
         return line_items_valid
