@@ -29,7 +29,7 @@ class GetTests(IntegrationTestBase):
     @freeze_time(frozen_time)
     def test_get_id_valid_returns_ok(self):
         seeded_data = self.seedFixture("orders", "basic-1.json")
-        response = client.get(f"/api/orders/{seeded_data['id']}")
+        response = client.get(f"/api/orders/{seeded_data['id']}")  # type: ignore[GeneralTypeIssue]
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(200)
 
@@ -37,7 +37,7 @@ class GetTests(IntegrationTestBase):
     def test_get_id_with_orders_with_prod_returns_ok(self):
         self.preload_products(["basic-3.json"])
         seeded_data = self.seedFixture("orders", "basic-2.json")
-        response = client.get(f"/api/orders/{seeded_data['id']}")
+        response = client.get(f"/api/orders/{seeded_data['id']}") # type: ignore[GeneralTypeIssue]
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(200)
 
@@ -155,7 +155,7 @@ class PutTests(IntegrationTestBase):
             "/api/orders/1",
             invalid_json_data,
             content_type="application/json",
-        )
+        )   # type: ignore[GeneralTypeIssue]
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
@@ -180,10 +180,10 @@ class PutTests(IntegrationTestBase):
         seeded_data = self.seedFixture("orders", "basic-2.json")
         put_data = self.getFixture("orders", seed)
         response = client.put(
-            f"/api/orders/{seeded_data['id']}",
+            f"/api/orders/{seeded_data['id']}",  # type: ignore[GeneralTypeIssue]
             put_data,
             content_type="application/json",
-        )
+        ) # type: ignore[GeneralTypeIssue]
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
@@ -203,8 +203,8 @@ class PutTests(IntegrationTestBase):
 class DeleteTests(IntegrationTestBase):
     def test_delete_returns_ok(self):
         seeded_data = self.seedFixture("orders", "basic-1.json")
-        response = client.delete(f"/api/orders/{seeded_data['id']}")
-        get_response = client.get(f"/api/orders/{seeded_data['id']}")
+        response = client.delete(f"/api/orders/{seeded_data['id']}")  # type: ignore[GeneralTypeIssue]
+        get_response = client.get(f"/api/orders/{seeded_data['id']}")  # type: ignore[GeneralTypeIssue]
         assert_that(response.status_code).is_equal_to(204)
         assert_that(response.data, None)
         self.assertMatchSnapshot(get_response.json())
