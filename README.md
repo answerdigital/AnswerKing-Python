@@ -71,8 +71,30 @@ DATABASE_ENGINE="django.db.backends.mysql"
 ### Swagger:
 To view the AnswerKing Python API documentation in Swagger as per OpenAPI specification, visit the following URL while
  your local server is running: http://127.0.0.1:8000/api/schema/swagger-ui/
+ 
+***
+### CI pipeline
+When raising a PR it goes through the Continuous Integration pipeline which has been implemented. This consists of two pipelines; one for Integration testing and one for static code anaylsis testing.
 
- ***
+#### Static Code Analysis CI
+This pipeline consists of the following checks:
+
+- #### Black
+  - This checks that the formating package black has been run on the code to format it in a consistent way acording to PEP 8 guidelines. The line length has been set to 79 characters.
+
+- #### Pycodestyle
+  - This checks that PEP 8 guidelines have been adhered to. We ignore error code E501 which is raised if the length of the line is over 82 characters long. This is ok to ignore as the previous `Black` check ensures that the line length is less than 79 characters where possible.
+  
+- #### Pyright
+  - This checks that static type checking has been implemented properly.
+  
+- #### Unit tests
+  - This runs the written unit tests against the PR code.
+  
+- #### SonarCloud
+  - SonarCloud is also run agains the PR code and checks for non-optimal code (code smells), Bugs in the code, vulnerabilities in the code, and potential security issues in the code (security Hotspots). It also check duplicated code and code coverage. SonarCloud has been configured so that if there are any Code smells, Bugs, Vulnerabilities or Security Hotspots in the code the PR will be blocked until these are resolved. It is also set up to block the PR if the percentage duplication is above 4% or the code coverage is less than 80%.
+
+***
 ### Terraform:
 The infrastructure created by running terraform in the `terraform/ecs_fargate` folder is illustrated below:
 
