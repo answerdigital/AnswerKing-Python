@@ -98,7 +98,7 @@ class PostTests(IntegrationTestBase):
             post_data,
             content_type="application/json",
         )
-        self.assertMatchSnapshot(response.json())
+        self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
     def test_post_invalid_json_returns_bad_request(self):
@@ -184,7 +184,7 @@ class PutTests(IntegrationTestBase):
             put_data,
             content_type="application/json",
         )
-        self.assertMatchSnapshot(response.json())
+        self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
     def test_put_retired_returns_gone(self):

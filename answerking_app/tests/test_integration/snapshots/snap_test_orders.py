@@ -29,9 +29,9 @@ snapshots['DeleteTests::test_delete_non_existent_id_returns_not_found 1'] = {
 }
 
 snapshots['DeleteTests::test_delete_returns_ok 1'] = {
-    'createdOn': '2023-02-10T13:49:20.044630Z',
+    'createdOn': '2023-02-10T13:54:36.762210Z',
     'id': 1,
-    'lastUpdated': '2023-02-10T13:49:20.045130Z',
+    'lastUpdated': '2023-02-10T13:54:36.762210Z',
     'lineItems': [
     ],
     'orderStatus': 'Cancelled',
@@ -117,7 +117,6 @@ snapshots['PostTests::test_post_invalid_data_returns_bad_request_1_invalid_missi
     },
     'status': 400,
     'title': 'Invalid input.',
-    'traceId': 'dc354510-41cc-4ffc-9353-d3d0381cf28e',
     'type': 'http://testserver/problems/error/'
 }
 
@@ -136,7 +135,6 @@ snapshots['PostTests::test_post_invalid_data_returns_bad_request_2_invalid_produ
     },
     'status': 400,
     'title': 'Invalid input.',
-    'traceId': '4f50ee3d-07bf-478f-ae9a-ec339944a27a',
     'type': 'http://testserver/problems/error/'
 }
 
@@ -153,7 +151,6 @@ snapshots['PostTests::test_post_invalid_data_returns_bad_request_3_invalid_quant
     },
     'status': 400,
     'title': 'Invalid input.',
-    'traceId': 'cd27adb2-b969-4613-81de-a53e8a637e91',
     'type': 'http://testserver/problems/error/'
 }
 
@@ -170,7 +167,6 @@ snapshots['PostTests::test_post_invalid_data_returns_bad_request_4_invalid_quant
     },
     'status': 400,
     'title': 'Invalid input.',
-    'traceId': '0939f09e-cb36-43ff-8770-83a867b8cf92',
     'type': 'http://testserver/problems/error/'
 }
 
@@ -377,7 +373,6 @@ snapshots['PutTests::test_put_invalid_products_return_bad_request_1_invalid_miss
     },
     'status': 400,
     'title': 'Invalid input.',
-    'traceId': '5a2f8d12-5570-453b-839b-dbf445f6fca8',
     'type': 'http://testserver/problems/error/'
 }
 
@@ -396,7 +391,6 @@ snapshots['PutTests::test_put_invalid_products_return_bad_request_2_invalid_prod
     },
     'status': 400,
     'title': 'Invalid input.',
-    'traceId': '931556ac-77dc-44dc-a918-9c72f2bafa50',
     'type': 'http://testserver/problems/error/'
 }
 
@@ -413,7 +407,6 @@ snapshots['PutTests::test_put_invalid_products_return_bad_request_3_invalid_quan
     },
     'status': 400,
     'title': 'Invalid input.',
-    'traceId': '609e8563-c056-493f-9ded-2b6b88110515',
     'type': 'http://testserver/problems/error/'
 }
 
@@ -430,7 +423,6 @@ snapshots['PutTests::test_put_invalid_products_return_bad_request_4_invalid_quan
     },
     'status': 400,
     'title': 'Invalid input.',
-    'traceId': '42ee0305-8882-4a0f-92e2-c49f803aab66',
     'type': 'http://testserver/problems/error/'
 }
 
