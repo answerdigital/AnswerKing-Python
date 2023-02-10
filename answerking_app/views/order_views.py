@@ -89,7 +89,6 @@ class OrderListView(
 
 class OrderDetailView(
     mixins.RetrieveModelMixin,
-    mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
     CancelOrderMixin,
     generics.GenericAPIView,
@@ -179,7 +178,7 @@ class OrderDetailView(
     )
     def put(self, request: Request, *args, **kwargs) -> Response:
         check_url_parameter(kwargs["pk"])
-        return self.partial_update(request, *args, **kwargs)
+        return self.update(request, *args, **kwargs)
 
     @extend_schema(
         tags=["Orders"],
