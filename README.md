@@ -93,6 +93,12 @@ This pipeline consists of the following checks:
   
 - #### SonarCloud
   - SonarCloud is also run agains the PR code and checks for non-optimal code (code smells), Bugs in the code, vulnerabilities in the code, and potential security issues in the code (security Hotspots). It also check duplicated code and code coverage. SonarCloud has been configured so that if there are any Code smells, Bugs, Vulnerabilities or Security Hotspots in the code the PR will be blocked until these are resolved. It is also set up to block the PR if the percentage duplication is above 4% or the code coverage is less than 80%.
+  
+#### Integration CI
+This pipeline runs the integration tests and tests the connection to the database is working correctly.
+
+#### Dependabot
+Dependabot has been implemented to notify and automatically update to new versions of any packages we have within our poetry dependancy file.
 
 ***
 ### Terraform:
