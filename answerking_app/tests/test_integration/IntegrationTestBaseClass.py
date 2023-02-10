@@ -73,8 +73,7 @@ class IntegrationTestBase(TransactionTestCase, TestCase):
         elif fixture_type == "tags":
             Tag.objects.create(**dict_data)
         elif fixture_type == "orders":
-            order_id = self.create_order_lineItems(dict_data)
-            return order_id
+            self.create_order_lineItems(dict_data)
         else:
             raise ValueError(f"Unrecognised seeding type {fixture_type}")
 

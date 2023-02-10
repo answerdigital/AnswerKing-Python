@@ -18,10 +18,17 @@ class GetTests(IntegrationTestBase):
         assert_that(response.json()).is_equal_to([])
         assert_that(response.status_code).is_equal_to(200)
 
+    @data(
+        "basic-1.json",
+        "basic-1-list.json",
+        "basic-1-with-products.json",
+        "basic-2.json",
+        "basic-3.json",
+    )
     @freeze_time(frozen_time)
-    def test_get_all_with_orders_returns_ok(self):
+    def test_get_all_with_orders_returns_ok(self, seed):
         self.preload_products(["basic-3.json"])
-        self.seedFixture("orders", "basic-2.json")
+        self.seedFixture("orders", seed)
         response = client.get("/api/orders")
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(200)
@@ -54,7 +61,12 @@ class GetTests(IntegrationTestBase):
 
 @ddt
 class PostTests(IntegrationTestBase):
-    @data("basic-1-with-products.json", "basic-2.json", "basic-3.json")
+    @data(
+        "basic-1.json",
+        "basic-1-with-products.json",
+        "basic-2.json",
+        "basic-3.json",
+    )
     @freeze_time(frozen_time)
     def test_post_valid_with_products_returns_ok(self, order_data):
         post_data = self.getFixture("orders", order_data)
@@ -88,8 +100,8 @@ class PostTests(IntegrationTestBase):
     @data(
         "invalid-missing-quantity.json",
         "invalid-product-id.json",
-        "invalid-quantity.json",
-        "invalid-quantity-2.json",
+        "invalid-quantity-negative.json",
+        "invalid-quantity-string.json",
     )
     def test_post_invalid_data_returns_bad_request(self, seed):
         post_data = self.getFixture("orders", seed)
@@ -121,7 +133,12 @@ class PostTests(IntegrationTestBase):
 
 @ddt
 class PutTests(IntegrationTestBase):
-    @data("basic-1-with-products.json", "basic-2.json", "basic-3.json")
+    @data(
+        "basic-1.json",
+        "basic-1-with-products.json",
+        "basic-2.json",
+        "basic-3.json",
+    )
     @freeze_time(frozen_time)
     def test_put_add_valid_products_to_order_return_ok(self, seed):
         seeded_data = self.seedFixture("orders", "basic-1.json")
@@ -172,8 +189,8 @@ class PutTests(IntegrationTestBase):
     @data(
         "invalid-missing-quantity.json",
         "invalid-product-id.json",
-        "invalid-quantity.json",
-        "invalid-quantity-2.json",
+        "invalid-quantity-negative.json",
+        "invalid-quantity-string.json",
     )
     def test_put_invalid_products_return_bad_request(self, seed):
         self.preload_products(["basic-3.json"])

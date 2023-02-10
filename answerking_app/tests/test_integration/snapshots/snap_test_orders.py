@@ -37,7 +37,55 @@ snapshots["DeleteTests::test_delete_returns_ok 1"] = {
     "orderTotal": 0.0,
 }
 
-snapshots["GetTests::test_get_all_with_orders_returns_ok 1"] = [
+snapshots["GetTests::test_get_all_with_orders_returns_ok_1_basic_1_json 1"] = [
+    {
+        "createdOn": "2022-04-01T04:02:03.000000Z",
+        "id": 1,
+        "lastUpdated": "2022-04-01T04:02:03.000000Z",
+        "lineItems": [],
+        "orderStatus": "Created",
+        "orderTotal": 0.0,
+    }
+]
+
+snapshots[
+    "GetTests::test_get_all_with_orders_returns_ok_2_basic_1_list_json 1"
+] = [
+    {
+        "createdOn": "2022-04-01T04:02:03.000000Z",
+        "id": 1,
+        "lastUpdated": "2022-04-01T04:02:03.000000Z",
+        "lineItems": [],
+        "orderStatus": "Created",
+        "orderTotal": 0.0,
+    }
+]
+
+snapshots[
+    "GetTests::test_get_all_with_orders_returns_ok_3_basic_1_with_products_json 1"
+] = [
+    {
+        "createdOn": "2022-04-01T04:02:03.000000Z",
+        "id": 1,
+        "lastUpdated": "2022-04-01T04:02:03.000000Z",
+        "lineItems": [
+            {
+                "product": {
+                    "description": "desc",
+                    "id": 1,
+                    "name": "Burger",
+                    "price": 1.2,
+                },
+                "quantity": 4,
+                "subTotal": 4.8,
+            }
+        ],
+        "orderStatus": "Created",
+        "orderTotal": 4.8,
+    }
+]
+
+snapshots["GetTests::test_get_all_with_orders_returns_ok_4_basic_2_json 1"] = [
     {
         "createdOn": "2022-04-01T04:02:03.000000Z",
         "id": 2,
@@ -56,6 +104,38 @@ snapshots["GetTests::test_get_all_with_orders_returns_ok 1"] = [
         ],
         "orderStatus": "Created",
         "orderTotal": 6.0,
+    }
+]
+
+snapshots["GetTests::test_get_all_with_orders_returns_ok_5_basic_3_json 1"] = [
+    {
+        "createdOn": "2022-04-01T04:02:03.000000Z",
+        "id": 3,
+        "lastUpdated": "2022-04-01T04:02:03.000000Z",
+        "lineItems": [
+            {
+                "product": {
+                    "description": "desc",
+                    "id": 1,
+                    "name": "Burger",
+                    "price": 1.2,
+                },
+                "quantity": 3,
+                "subTotal": 3.6,
+            },
+            {
+                "product": {
+                    "description": "desc",
+                    "id": 2,
+                    "name": "Coke",
+                    "price": 1.5,
+                },
+                "quantity": 2,
+                "subTotal": 3.0,
+            },
+        ],
+        "orderStatus": "Created",
+        "orderTotal": 6.6,
     }
 ]
 
@@ -125,7 +205,7 @@ snapshots[
 }
 
 snapshots[
-    "PostTests::test_post_invalid_data_returns_bad_request_3_invalid_quantity_json 1"
+    "PostTests::test_post_invalid_data_returns_bad_request_3_invalid_quantity_negative_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {
@@ -139,7 +219,7 @@ snapshots[
 }
 
 snapshots[
-    "PostTests::test_post_invalid_data_returns_bad_request_4_invalid_quantity_2_json 1"
+    "PostTests::test_post_invalid_data_returns_bad_request_4_invalid_quantity_string_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {"lineItems": [{"quantity": ["A valid integer is required."]}]},
@@ -173,7 +253,7 @@ snapshots["PostTests::test_post_retired_returns_gone 1"] = {
 
 snapshots["PostTests::test_post_valid_with_empty_products_returns_ok 1"] = {
     "createdOn": "2022-04-01T04:02:03.000000Z",
-    "id": 3,
+    "id": 4,
     "lastUpdated": "2022-04-01T04:02:03.000000Z",
     "lineItems": [],
     "orderStatus": "Created",
@@ -181,10 +261,21 @@ snapshots["PostTests::test_post_valid_with_empty_products_returns_ok 1"] = {
 }
 
 snapshots[
-    "PostTests::test_post_valid_with_products_returns_ok_1_basic_1_with_products_json 1"
+    "PostTests::test_post_valid_with_products_returns_ok_1_basic_1_json 1"
 ] = {
     "createdOn": "2022-04-01T04:02:03.000000Z",
-    "id": 4,
+    "id": 5,
+    "lastUpdated": "2022-04-01T04:02:03.000000Z",
+    "lineItems": [],
+    "orderStatus": "Created",
+    "orderTotal": 0.0,
+}
+
+snapshots[
+    "PostTests::test_post_valid_with_products_returns_ok_2_basic_1_with_products_json 1"
+] = {
+    "createdOn": "2022-04-01T04:02:03.000000Z",
+    "id": 6,
     "lastUpdated": "2022-04-01T04:02:03.000000Z",
     "lineItems": [
         {
@@ -203,10 +294,10 @@ snapshots[
 }
 
 snapshots[
-    "PostTests::test_post_valid_with_products_returns_ok_2_basic_2_json 1"
+    "PostTests::test_post_valid_with_products_returns_ok_3_basic_2_json 1"
 ] = {
     "createdOn": "2022-04-01T04:02:03.000000Z",
-    "id": 5,
+    "id": 7,
     "lastUpdated": "2022-04-01T04:02:03.000000Z",
     "lineItems": [
         {
@@ -225,10 +316,10 @@ snapshots[
 }
 
 snapshots[
-    "PostTests::test_post_valid_with_products_returns_ok_3_basic_3_json 1"
+    "PostTests::test_post_valid_with_products_returns_ok_4_basic_3_json 1"
 ] = {
     "createdOn": "2022-04-01T04:02:03.000000Z",
-    "id": 6,
+    "id": 8,
     "lastUpdated": "2022-04-01T04:02:03.000000Z",
     "lineItems": [
         {
@@ -257,7 +348,18 @@ snapshots[
 }
 
 snapshots[
-    "PutTests::test_put_add_valid_products_to_order_return_ok_1_basic_1_with_products_json 1"
+    "PutTests::test_put_add_valid_products_to_order_return_ok_1_basic_1_json 1"
+] = {
+    "createdOn": "2022-04-01T04:02:03.000000Z",
+    "id": 1,
+    "lastUpdated": "2022-04-01T04:02:03.000000Z",
+    "lineItems": [],
+    "orderStatus": "Created",
+    "orderTotal": 0.0,
+}
+
+snapshots[
+    "PutTests::test_put_add_valid_products_to_order_return_ok_2_basic_1_with_products_json 1"
 ] = {
     "createdOn": "2022-04-01T04:02:03.000000Z",
     "id": 1,
@@ -279,7 +381,7 @@ snapshots[
 }
 
 snapshots[
-    "PutTests::test_put_add_valid_products_to_order_return_ok_2_basic_2_json 1"
+    "PutTests::test_put_add_valid_products_to_order_return_ok_3_basic_2_json 1"
 ] = {
     "createdOn": "2022-04-01T04:02:03.000000Z",
     "id": 1,
@@ -301,7 +403,7 @@ snapshots[
 }
 
 snapshots[
-    "PutTests::test_put_add_valid_products_to_order_return_ok_3_basic_3_json 1"
+    "PutTests::test_put_add_valid_products_to_order_return_ok_4_basic_3_json 1"
 ] = {
     "createdOn": "2022-04-01T04:02:03.000000Z",
     "id": 1,
@@ -370,7 +472,7 @@ snapshots[
 }
 
 snapshots[
-    "PutTests::test_put_invalid_products_return_bad_request_3_invalid_quantity_json 1"
+    "PutTests::test_put_invalid_products_return_bad_request_3_invalid_quantity_negative_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {
@@ -384,7 +486,7 @@ snapshots[
 }
 
 snapshots[
-    "PutTests::test_put_invalid_products_return_bad_request_4_invalid_quantity_2_json 1"
+    "PutTests::test_put_invalid_products_return_bad_request_4_invalid_quantity_string_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {"lineItems": [{"quantity": ["A valid integer is required."]}]},
