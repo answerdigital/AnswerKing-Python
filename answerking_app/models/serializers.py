@@ -219,7 +219,7 @@ class LineItemSerializer(serializers.ModelSerializer):
     product = LineItemProductSerializer()
     quantity = serializers.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
-                                        )
+    )
     subTotal = serializers.DecimalField(
         source="sub_total",
         read_only=True,
@@ -279,7 +279,9 @@ class OrderSerializer(serializers.ModelSerializer):
     ):
         for order_item in line_items_data:
             new_line_item = LineItem.objects.create(
-                order=order, product=order_item["product"], quantity=order_item["quantity"]
+                order=order,
+                product=order_item["product"],
+                quantity=order_item["quantity"],
             )
             new_line_item.calculate_sub_total()
 
@@ -294,7 +296,9 @@ class OrderSerializer(serializers.ModelSerializer):
         for order_item, product in zip(line_items_data, products):
             if order_item["quantity"] < 1:
                 continue
-            line_items_valid.append({"product": product, "quantity": order_item["quantity"]})
+            line_items_valid.append(
+                {"product": product, "quantity": order_item["quantity"]}
+            )
         return line_items_valid
 
     class Meta:

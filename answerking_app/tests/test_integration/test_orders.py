@@ -65,6 +65,17 @@ class PostTests(IntegrationTestBase):
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(201)
 
+    def test_post_retired_returns_gone(self):
+        post_data = self.getFixture("orders", "basic-1-with-products.json")
+        self.preload_products(["retired.json"])
+        response = client.post(
+            "/api/orders",  # type: ignore[GeneralTypeIssue]
+            post_data,
+            content_type="application/json",
+        )
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(410)
+
     @freeze_time(frozen_time)
     def test_post_valid_with_empty_products_returns_ok(self):
         post_data = self.getFixture("orders", "basic-1.json")
@@ -124,7 +135,6 @@ class PutTests(IntegrationTestBase):
         assert_that(response.status_code).is_equal_to(200)
         self.assertMatchSnapshot(response.json())
 
-
     @freeze_time(frozen_time)
     def test_put_update_quantity_to_zero_return_empty_line_items(self):
         self.preload_products(["basic-3.json"])
@@ -177,46 +187,44 @@ class PutTests(IntegrationTestBase):
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
-"""
-
-
-
-    def test_put_invalid_products_return_empty_order(self):
-        # Arrange
-        post_data = {"lineItems": [{"product": {"id": -1}, "quantity": 1}]}
-        # Act
+    def test_put_retired_returns_gone(self):
+        seeded_data = self.seedFixture("orders", "basic-1.json")
+        put_data = self.getFixture("orders", "basic-1-with-products.json")
+        self.preload_products(["retired.json"])
         response = client.put(
-            f"/api/orders/{self.test_order_2.id}",
-            post_data,
+            f"/api/orders/{seeded_data['id']}",  # type: ignore[GeneralTypeIssue]
+            put_data,
             content_type="application/json",
         )
-        actual = response.json()
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(410)
 
-        # Assert
-        self.assertJSONErrorResponse(
-            self.expected_nonexistent_product_error, actual, response, 400
-        )
 
-"""
-"""
-    def test_delete_order_valid_returns_ok(self):
-        # Arrange
-        old_order_status: str = self.test_order_1.order_status
-        # Act
-        response = client.delete(f"/api/orders/{self.test_order_1.id}")
+class DeleteTests(IntegrationTestBase):
+    def test_delete_returns_ok(self):
+        seeded_data = self.seedFixture("orders", "basic-1.json")
+        response = client.delete(f"/api/orders/{seeded_data['id']}")
+        get_response = client.get(f"/api/orders/{seeded_data['id']}")
+        assert_that(response.status_code).is_equal_to(204)
+        assert_that(response.data, None)
+        self.assertMatchSnapshot(get_response.json())
+        assert_that(get_response.status_code).is_equal_to(200)
 
-        # Assert
-        self.assertEqual(response.status_code, 204)
-        self.assertEqual(response.json, None)
+    def test_delete_invalid_id_returns_bad_request(self):
+        response = client.delete("/api/orders/invalid-id")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(400)
 
-    def test_delete_invalid_id_returns_not_found(self):
-        # Arrange
-        # Act
-        response = client.delete("/api/orders/f")
-        actual = response.json()
+    def test_delete_non_existent_id_returns_not_found(self):
+        response = client.delete("/api/orders/1")
+        self.assertJSONErrorResponse(response.json())
+        assert_that(response.status_code).is_equal_to(404)
 
-        # Assert
-        self.assertJSONErrorResponse(
-            self.expected_invalid_url_parameters, actual, response, 400
-        )
-"""
+    def test_delete_already_retired_returns_gone(self):
+        seeded_data = self.seedFixture("orders", "basic-1.json")
+        order_url = f"/api/orders/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]
+        response_1 = client.delete(order_url)
+        response_2 = client.delete(order_url)
+        assert_that(response_1.status_code).is_equal_to(204)
+        self.assertJSONErrorResponse(response_2.json())
+        assert_that(response_2.status_code).is_equal_to(400)
