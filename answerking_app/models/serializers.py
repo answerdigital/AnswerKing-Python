@@ -277,7 +277,17 @@ class OrderSerializer(serializers.ModelSerializer):
         order: Order,
         line_items_data: list[OrderedDict],
     ):
+        for order_item in line_items_data:
+            new_line_item = LineItem.objects.create(
+                order=order,
+                product=order_item["product"],
+                quantity=order_item["quantity"],
+            )
+            new_line_item.calculate_sub_total()
+
+    def validate_lineItems(self, line_items_data):
         products_id_list = []
+        line_items_valid = []
         for product in line_items_data:
             products_id_list.append(
                 Product.objects.get(id=product["product"]["id"])
@@ -286,10 +296,10 @@ class OrderSerializer(serializers.ModelSerializer):
         for order_item, product in zip(line_items_data, products):
             if order_item["quantity"] < 1:
                 continue
-            new_line_item = LineItem.objects.create(
-                order=order, product=product, quantity=order_item["quantity"]
+            line_items_valid.append(
+                {"product": product, "quantity": order_item["quantity"]}
             )
-            new_line_item.calculate_sub_total()
+        return line_items_valid
 
     class Meta:
         model = Order
