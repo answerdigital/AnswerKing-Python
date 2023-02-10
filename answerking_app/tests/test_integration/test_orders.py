@@ -201,6 +201,7 @@ class PutTests(IntegrationTestBase):
 
 
 class DeleteTests(IntegrationTestBase):
+    @freeze_time(frozen_time)
     def test_delete_returns_ok(self):
         seeded_data = self.seedFixture("orders", "basic-1.json")
         response = client.delete(f"/api/orders/{seeded_data['id']}")  # type: ignore[GeneralTypeIssue]

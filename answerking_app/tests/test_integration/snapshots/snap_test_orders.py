@@ -29,9 +29,9 @@ snapshots['DeleteTests::test_delete_non_existent_id_returns_not_found 1'] = {
 }
 
 snapshots['DeleteTests::test_delete_returns_ok 1'] = {
-    'createdOn': '2023-02-10T13:54:36.762210Z',
+    'createdOn': '2022-04-01T04:02:03.000000Z',
     'id': 1,
-    'lastUpdated': '2023-02-10T13:54:36.762210Z',
+    'lastUpdated': '2022-04-01T04:02:03.000000Z',
     'lineItems': [
     ],
     'orderStatus': 'Cancelled',
