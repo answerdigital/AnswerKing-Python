@@ -37,7 +37,7 @@ class GetTests(IntegrationTestBase):
     def test_get_id_with_orders_with_prod_returns_ok(self):
         self.preload_products(["basic-3.json"])
         seeded_data = self.seedFixture("orders", "basic-2.json")
-        response = client.get(f"/api/orders/{seeded_data['id']}") # type: ignore[GeneralTypeIssue]
+        response = client.get(f"/api/orders/{seeded_data['id']}")  # type: ignore[GeneralTypeIssue]
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(200)
 
@@ -155,7 +155,7 @@ class PutTests(IntegrationTestBase):
             "/api/orders/1",
             invalid_json_data,
             content_type="application/json",
-        )   # type: ignore[GeneralTypeIssue]
+        )  # type: ignore[GeneralTypeIssue]
         self.assertJSONErrorResponse(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
@@ -183,7 +183,7 @@ class PutTests(IntegrationTestBase):
             f"/api/orders/{seeded_data['id']}",  # type: ignore[GeneralTypeIssue]
             put_data,
             content_type="application/json",
-        ) # type: ignore[GeneralTypeIssue]
+        )
         self.assertMatchSnapshot(response.json())
         assert_that(response.status_code).is_equal_to(400)
 
