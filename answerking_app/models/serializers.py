@@ -1,11 +1,14 @@
+import re
 from typing import OrderedDict
 
+from django.contrib.auth.models import User
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
     RegexValidator,
 )
 from rest_framework import serializers, status
+from rest_framework.validators import UniqueValidator
 
 from answerking_app.models.models import (
     Category,
@@ -305,6 +308,76 @@ class OrderSerializer(serializers.ModelSerializer):
             "lineItems",
         )
         depth = 3
+
+
+class ManagerAuthSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())],
+        max_length=50,
+        min_length=4,
+    )
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())],
+    )
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        min_length=8,
+        max_length=255,
+    )
+    password2 = serializers.CharField(
+        write_only=True,
+        required=True,
+    )
+
+
+    class Meta:
+        model = User,
+        fields = [
+            'username',
+            'password',
+            'password2',
+            'email',
+            'first_name',
+            'last_name'
+        ]
+
+    def validate_password_is_password2(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise ProblemDetails(
+                status=status.HTTP_400_BAD_REQUEST,
+                detail="The passwords supplied do not match",
+            )
+
+    def validate_password(self, value):
+        if not re.fullmatch(r'[A-Za-z0-9]{8,}', value):
+            raise ProblemDetails(
+                status=status.HTTP_400_BAD_REQUEST,
+                detail="Password must be 8 characters long and contain at "
+                       "least 1 capital letter and 1 lower case letter."
+            )
+
+    def validate_first_name(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+    def validate_last_name(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            is_staff=True,
+            is_superuser=True,
+        )
+
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
 
 class ErrorDetailSerializer(serializers.Serializer):
