@@ -21,7 +21,6 @@ from drf_spectacular.utils import (
 )
 from answerking_app.utils.schema.schema_examples import (
     category_example,
-    retired_category_example,
     category_body_example,
     problem_detail_example,
     category_products_body_example,
@@ -29,11 +28,13 @@ from answerking_app.utils.schema.schema_examples import (
 )
 
 
-class CategoryListView(
+# classes for each endpoint and type of request
+
+class CategoryGetView(
     mixins.ListModelMixin,
-    mixins.CreateModelMixin,
     generics.GenericAPIView,
 ):
+    permission_classes = []
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
 
@@ -56,6 +57,15 @@ class CategoryListView(
     )
     def get(self, request: Request, *args, **kwargs) -> Response:
         return self.list(request, *args, **kwargs)
+
+
+class CategoryPostView(
+    mixins.CreateModelMixin,
+    generics.GenericAPIView,
+):
+    permission_classes = []
+    queryset: QuerySet = Category.objects.all()
+    serializer_class: CategorySerializer = CategorySerializer
 
     @extend_schema(
         tags=["Inventory"],
@@ -94,13 +104,11 @@ class CategoryListView(
         return self.create(request, *args, **kwargs)
 
 
-class CategoryDetailView(
+class CategoryIdGetView(
     mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    RetireMixin,
-    mixins.DestroyModelMixin,
     generics.GenericAPIView,
 ):
+    permission_classes = []
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
 
@@ -146,6 +154,15 @@ class CategoryDetailView(
     def get(self, request: Request, *args, **kwargs) -> Response:
         check_url_parameter(kwargs["pk"])
         return self.retrieve(request, *args, **kwargs)
+
+
+class CategoryIdPutView(
+        mixins.UpdateModelMixin,
+        generics.GenericAPIView,
+):
+    permission_classes = []
+    queryset: QuerySet = Category.objects.all()
+    serializer_class: CategorySerializer = CategorySerializer
 
     @extend_schema(
         tags=["Inventory"],
@@ -197,6 +214,14 @@ class CategoryDetailView(
         check_url_parameter(kwargs["pk"])
         return self.update(request, *args, **kwargs)
 
+
+class CategoryIdDeleteView(
+    RetireMixin,
+    generics.GenericAPIView,
+):
+    permission_classes = []
+    queryset: QuerySet = Category.objects.all()
+    serializer_class: CategorySerializer = CategorySerializer
     @extend_schema(
         tags=["Inventory"],
         summary="Retire an existing category",
@@ -242,10 +267,11 @@ class CategoryDetailView(
         return self.retire(request, *args, **kwargs)
 
 
-class CategoryProductListView(
+class CategoryProductGetView(
     CategoryProductListMixin,
     generics.GenericAPIView,
 ):
+    permission_classes = []
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
 
@@ -291,3 +317,27 @@ class CategoryProductListView(
     def get(self, request: Request, **kwargs) -> Response:
         check_url_parameter(kwargs["pk"])
         return self.list(**kwargs)
+
+
+# classes grouping all the requests for one endpoint
+
+class CategoryView(
+    CategoryGetView,
+    CategoryPostView
+):
+    pass
+
+
+class CategoryIdView(
+    CategoryIdGetView,
+    CategoryIdPutView,
+    CategoryIdDeleteView
+):
+    pass
+
+
+class CategoryProductView(
+    CategoryProductGetView
+):
+    pass
+

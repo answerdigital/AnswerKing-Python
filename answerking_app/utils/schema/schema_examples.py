@@ -118,7 +118,7 @@ order_body_example: dict = {"lineItems": [{"productId": 0, "quantity": 0}]}
 problem_detail_example: ProblemDetails = {
     "errors": {"name": "The name field is required."},
     "type": "https://testserver/problems/error/",
-    "title": "One or more validation errors occurred.",
+    "title": "One or more permissions errors occurred.",
     "status": 400,
     "traceID": "00-f40e09a437a87f4ebcd2f39b128bb8f3-4b2ad798ac046140-00",
     "detail": "string",
