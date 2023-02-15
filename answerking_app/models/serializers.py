@@ -196,6 +196,18 @@ class TagSerializer(serializers.ModelSerializer):
         return compress_white_spaces(value)
 
 
+class LineItemProductSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    price = serializers.DecimalField(
+        max_digits=18, decimal_places=2, read_only=True
+    )
+
+    class Meta:
+        model = Product
+        read_only_fields = ["name", "description", "price"]
+        exclude = ["retired", "category"]
+
+
 class LineItemSerializer(serializers.ModelSerializer):
     productId = serializers.IntegerField()
     quantity = serializers.IntegerField(
