@@ -90,7 +90,6 @@ class PostTests(IntegrationTestBase):
         assert_that(response.status_code).is_equal_to(400)
 
     @data(
-        "invalid-id.json",
         "invalid-name.json",
         "invalid-description.json",
         "invalid-retired.json",
@@ -147,7 +146,6 @@ class PutTests(IntegrationTestBase):
         self.assertMatchSnapshot(get_response.json())
 
     @data(
-        "invalid-id.json",
         "invalid-name.json",
         "invalid-description.json",
         "invalid-retired.json",

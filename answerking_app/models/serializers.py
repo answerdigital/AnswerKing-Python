@@ -26,7 +26,6 @@ desc_regex_str = "^[a-zA-Z0-9 .!,#]+$"
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(required=False)
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,
@@ -101,9 +100,6 @@ class CategorySerializer(CategoryDetailSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(
-        required=False, validators=[MinValueValidator(0)]
-    )
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,
@@ -161,9 +157,6 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(
-        required=False, validators=[MinValueValidator(0)]
-    )
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,
