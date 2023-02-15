@@ -1,7 +1,9 @@
 import re
+from abc import ABC
 from typing import OrderedDict
 
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
@@ -9,6 +11,7 @@ from django.core.validators import (
 )
 from rest_framework import serializers, status
 from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from answerking_app.models.models import (
     Category,
@@ -324,40 +327,31 @@ class ManagerAuthSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True,
         required=True,
-        min_length=8,
-        max_length=255,
+        validators=[validate_password]
     )
     password2 = serializers.CharField(
         write_only=True,
         required=True,
     )
 
-
     class Meta:
-        model = User,
-        fields = [
+        model = User
+        fields = (
             'username',
             'password',
             'password2',
             'email',
             'first_name',
-            'last_name'
-        ]
+            'last_name',
+        )
 
-    def validate_password_is_password2(self, attrs):
+    def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
             raise ProblemDetails(
                 status=status.HTTP_400_BAD_REQUEST,
                 detail="The passwords supplied do not match",
             )
-
-    def validate_password(self, value):
-        if not re.fullmatch(r'[A-Za-z0-9]{8,}', value):
-            raise ProblemDetails(
-                status=status.HTTP_400_BAD_REQUEST,
-                detail="Password must be 8 characters long and contain at "
-                       "least 1 capital letter and 1 lower case letter."
-            )
+        return attrs
 
     def validate_first_name(self, value: str) -> str:
         return compress_white_spaces(value)
@@ -372,12 +366,30 @@ class ManagerAuthSerializer(serializers.ModelSerializer):
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             is_staff=True,
-            is_superuser=True,
+            is_superuser=False,
         )
 
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class LoginSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['username'] = user.username
+        token['email'] = user.email
+        return token
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        return {
+            "username": self.user.username,
+            "email": self.user.email,
+            "first_name": self.user.first_name,
+            **attrs,
+        }
 
 
 class ErrorDetailSerializer(serializers.Serializer):

@@ -7,6 +7,7 @@ urlpatterns = [
     path("api/", include("answerking_app.urls.category_urls")),
     path("api/", include("answerking_app.urls.order_urls")),
     path("api/", include("answerking_app.urls.tag_urls")),
+    path("api/", include("answerking_app.urls.auth_urls")),
     path("admin/", admin.site.urls),
     path("", include("drf_problems.urls")),
 ]
