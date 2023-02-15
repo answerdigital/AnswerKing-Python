@@ -9,16 +9,16 @@ from rest_framework import serializers, status
 
 from answerking_app.models.models import (
     Category,
-    Product,
-    Order,
     LineItem,
+    Order,
+    Product,
     Tag,
 )
-from answerking_app.utils.serializer_data_functions import (
-    products_check,
-    compress_white_spaces,
-)
 from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
+from answerking_app.utils.serializer_data_functions import (
+    compress_white_spaces,
+    products_check,
+)
 
 MAXNUMBERSIZE = 2147483647
 name_regex_str = "^[a-zA-Z0-9 !]+$"
@@ -196,20 +196,8 @@ class TagSerializer(serializers.ModelSerializer):
         return compress_white_spaces(value)
 
 
-class LineItemProductSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
-    price = serializers.DecimalField(
-        max_digits=18, decimal_places=2, read_only=True
-    )
-
-    class Meta:
-        model = Product
-        read_only_fields = ["name", "description", "price"]
-        exclude = ["retired", "category"]
-
-
 class LineItemSerializer(serializers.ModelSerializer):
-    product = LineItemProductSerializer()
+    productId = serializers.IntegerField()
     quantity = serializers.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
     )
@@ -220,9 +208,20 @@ class LineItemSerializer(serializers.ModelSerializer):
         max_digits=18,
     )
 
+    def to_representation(self, instance):
+        return {
+            "id": instance.product.id,
+            "name": instance.product.name,
+            "description": instance.product.description,
+            "price": instance.product.price,
+            "category": instance.product.category,
+            "quantity": instance.quantity,
+            "subTotal": instance.sub_total,
+        }
+
     class Meta:
         model = LineItem
-        fields = ["product", "quantity", "subTotal"]
+        fields = ["productId", "quantity", "subTotal"]
         depth = 2
 
 
@@ -283,7 +282,7 @@ class OrderSerializer(serializers.ModelSerializer):
         line_items_valid = []
         for product in line_items_data:
             products_id_list.append(
-                Product.objects.get(id=product["product"]["id"])
+                Product.objects.get(id=product["productId"])
             )
         products = products_check({"product_set": products_id_list})
         for order_item, product in zip(line_items_data, products):
