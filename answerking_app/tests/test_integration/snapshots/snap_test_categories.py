@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from snapshottest import Snapshot
 
+
 snapshots = Snapshot()
 
 snapshots["DeleteTests::test_delete_already_retired_returns_gone 1"] = {
@@ -181,17 +182,7 @@ snapshots["PostTests::test_post_duplicated_name_returns_400 1"] = {
 }
 
 snapshots[
-    "PostTests::test_post_invalid_data_returns_bad_request_1_invalid_id_json 1"
-] = {
-    "detail": "Validation Error",
-    "errors": {"id": ["A valid integer is required."]},
-    "status": 400,
-    "title": "Invalid input.",
-    "type": "http://testserver/problems/error/",
-}
-
-snapshots[
-    "PostTests::test_post_invalid_data_returns_bad_request_2_invalid_name_json 1"
+    "PostTests::test_post_invalid_data_returns_bad_request_1_invalid_name_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {
@@ -206,7 +197,7 @@ snapshots[
 }
 
 snapshots[
-    "PostTests::test_post_invalid_data_returns_bad_request_3_invalid_description_json 1"
+    "PostTests::test_post_invalid_data_returns_bad_request_2_invalid_description_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {
@@ -221,7 +212,7 @@ snapshots[
 }
 
 snapshots[
-    "PostTests::test_post_invalid_data_returns_bad_request_4_invalid_missing_fields_json 1"
+    "PostTests::test_post_invalid_data_returns_bad_request_3_invalid_missing_fields_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {"name": ["This field is required."]},
@@ -231,7 +222,7 @@ snapshots[
 }
 
 snapshots[
-    "PostTests::test_post_invalid_data_returns_bad_request_5_invalid_retired_json 1"
+    "PostTests::test_post_invalid_data_returns_bad_request_4_invalid_retired_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {"retired": ["Must be a valid boolean."]},
@@ -308,17 +299,7 @@ snapshots["PutTests::test_put_duplicated_name_returns_400 1"] = {
 }
 
 snapshots[
-    "PutTests::test_put_invalid_data_returns_bad_request_1_invalid_id_json 1"
-] = {
-    "detail": "Validation Error",
-    "errors": {"id": ["A valid integer is required."]},
-    "status": 400,
-    "title": "Invalid input.",
-    "type": "http://testserver/problems/error/",
-}
-
-snapshots[
-    "PutTests::test_put_invalid_data_returns_bad_request_2_invalid_name_json 1"
+    "PutTests::test_put_invalid_data_returns_bad_request_1_invalid_name_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {
@@ -333,7 +314,7 @@ snapshots[
 }
 
 snapshots[
-    "PutTests::test_put_invalid_data_returns_bad_request_3_invalid_description_json 1"
+    "PutTests::test_put_invalid_data_returns_bad_request_2_invalid_description_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {
@@ -348,7 +329,7 @@ snapshots[
 }
 
 snapshots[
-    "PutTests::test_put_invalid_data_returns_bad_request_4_invalid_missing_fields_json 1"
+    "PutTests::test_put_invalid_data_returns_bad_request_3_invalid_missing_fields_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {"name": ["This field is required."]},

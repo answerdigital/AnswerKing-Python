@@ -126,17 +126,7 @@ snapshots["PostTests::test_post_duplicated_name_returns_400 1"] = {
 }
 
 snapshots[
-    "PostTests::test_post_invalid_data_returns_bad_request_1_invalid_id_json 1"
-] = {
-    "detail": "Validation Error",
-    "errors": {"id": ["A valid integer is required."]},
-    "status": 400,
-    "title": "Invalid input.",
-    "type": "http://testserver/problems/error/",
-}
-
-snapshots[
-    "PostTests::test_post_invalid_data_returns_bad_request_2_invalid_name_json 1"
+    "PostTests::test_post_invalid_data_returns_bad_request_1_invalid_name_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {
@@ -151,7 +141,7 @@ snapshots[
 }
 
 snapshots[
-    "PostTests::test_post_invalid_data_returns_bad_request_3_invalid_description_json 1"
+    "PostTests::test_post_invalid_data_returns_bad_request_2_invalid_description_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {
@@ -166,7 +156,7 @@ snapshots[
 }
 
 snapshots[
-    "PostTests::test_post_invalid_data_returns_bad_request_4_invalid_missing_fields_json 1"
+    "PostTests::test_post_invalid_data_returns_bad_request_3_invalid_missing_fields_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {"name": ["This field is required."]},
@@ -176,7 +166,7 @@ snapshots[
 }
 
 snapshots[
-    "PostTests::test_post_invalid_data_returns_bad_request_5_invalid_retired_json 1"
+    "PostTests::test_post_invalid_data_returns_bad_request_4_invalid_retired_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {"retired": ["Must be a valid boolean."]},
@@ -218,7 +208,7 @@ snapshots[
 snapshots["PostTests::test_post_valid_returns_ok_1_basic_1_post_json 1"] = [
     {
         "description": "Tag identifying a product as halal.",
-        "id": 1,
+        "id": 5,
         "name": "Halal",
         "products": [],
         "retired": False,
@@ -228,7 +218,7 @@ snapshots["PostTests::test_post_valid_returns_ok_1_basic_1_post_json 1"] = [
 snapshots["PostTests::test_post_valid_returns_ok_2_boundary_name_json 1"] = [
     {
         "description": "Tag identifying a product as halal.",
-        "id": 1,
+        "id": 6,
         "name": "fifty chars Lorem ipsum dolor sit amet consectetur",
         "products": [],
         "retired": False,
@@ -240,7 +230,7 @@ snapshots[
 ] = [
     {
         "description": "twohundred chars Lorem ipsum dolor sit amet consectetur adipiscing elit Duis lacinia dui et nunc hendrerit ullamcorper Duis sit amet magna ac velit auctor porta Praesent viverra vulputate lectusjaue",
-        "id": 1,
+        "id": 7,
         "name": "Halal",
         "products": [],
         "retired": False,
@@ -252,7 +242,7 @@ snapshots[
 ] = [
     {
         "description": "Tag identifying a product as halal.",
-        "id": 1,
+        "id": 8,
         "name": "Halal",
         "products": [1, 2, 3],
         "retired": False,
@@ -267,17 +257,7 @@ snapshots["PutTests::test_put_duplicated_name_returns_400 1"] = {
 }
 
 snapshots[
-    "PutTests::test_put_invalid_data_returns_bad_request_1_invalid_id_json 1"
-] = {
-    "detail": "Validation Error",
-    "errors": {"id": ["A valid integer is required."]},
-    "status": 400,
-    "title": "Invalid input.",
-    "type": "http://testserver/problems/error/",
-}
-
-snapshots[
-    "PutTests::test_put_invalid_data_returns_bad_request_2_invalid_name_json 1"
+    "PutTests::test_put_invalid_data_returns_bad_request_1_invalid_name_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {
@@ -292,7 +272,7 @@ snapshots[
 }
 
 snapshots[
-    "PutTests::test_put_invalid_data_returns_bad_request_3_invalid_description_json 1"
+    "PutTests::test_put_invalid_data_returns_bad_request_2_invalid_description_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {
@@ -307,7 +287,7 @@ snapshots[
 }
 
 snapshots[
-    "PutTests::test_put_invalid_data_returns_bad_request_4_invalid_missing_fields_json 1"
+    "PutTests::test_put_invalid_data_returns_bad_request_3_invalid_missing_fields_json 1"
 ] = {
     "detail": "Validation Error",
     "errors": {"name": ["This field is required."]},

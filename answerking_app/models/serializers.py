@@ -197,6 +197,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class LineItemProductSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
     price = serializers.DecimalField(
         max_digits=18, decimal_places=2, read_only=True
     )
