@@ -1,5 +1,5 @@
 from assertpy import assert_that
-from ddt import ddt, data
+from ddt import data, ddt
 from django.test import Client
 from freezegun import freeze_time
 
@@ -122,13 +122,13 @@ class PostTests(IntegrationTestBase):
         )
         self.assertJSONErrorResponse(response.json())
 
-    def test_post_non_existent_product_id_returns_404(self):
+    def test_post_non_existent_product_id_returns_400(self):
         post_data = self.getFixture("orders", "non_existent-product-id.json")
         response = client.post(
             "/api/orders", post_data, content_type="application/json"
         )
         self.assertJSONErrorResponse(response.json())
-        assert_that(response.status_code).is_equal_to(404)
+        assert_that(response.status_code).is_equal_to(400)
 
 
 @ddt

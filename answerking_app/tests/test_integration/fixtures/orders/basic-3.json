@@ -1,19 +1,12 @@
 {
   "id": 3,
-  "lineItems":
-  [
+  "lineItems": [
     {
-      "product":
-      {
-        "id": 1
-      },
+      "productId": 1,
       "quantity": 3
     },
     {
-      "product":
-      {
-        "id": 2
-      },
+      "productId": 2,
       "quantity": 2
     }
   ]

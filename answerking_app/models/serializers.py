@@ -288,7 +288,14 @@ class OrderSerializer(serializers.ModelSerializer):
         products_id_list = []
         line_items_valid = []
         for product in line_items_data:
-            products_id_list.append(product["product"])
+            try:
+                product_objt = product.get("product")
+            except KeyError:
+                raise ProblemDetails(
+                    status=status.HTTP_400_BAD_REQUEST,
+                    detail="Serializer error missing productId",
+                )
+            products_id_list.append(product_objt)
         products = products_check({"product_set": products_id_list})
         for order_item, product in zip(line_items_data, products):
             if order_item["quantity"] < 1:
