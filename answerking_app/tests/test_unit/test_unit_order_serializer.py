@@ -6,7 +6,7 @@ from django.db.models import QuerySet
 from freezegun import freeze_time
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from answerking_app.models.models import Order, Product, LineItem
+from answerking_app.models.models import LineItem, Order, Product
 from answerking_app.models.serializers import OrderSerializer
 from answerking_app.tests.test_unit.UnitTestBaseClass import UnitTestBase
 
@@ -20,8 +20,10 @@ class OrderSerializerUnitTests(UnitTestBase):
     test_prod_2_data: dict = UBT.get_fixture(
         "products", "margarita_pizza_data.json"
     )
-    test_order_1_data: dict = UBT.get_fixture("orders", "order_data.json")
-    test_order_2_data: dict = UBT.get_fixture("orders", "order_data_2.json")
+
+    test_order_data_input: dict = UBT.get_fixture(
+        "orders", "order_data_input.json"
+    )
 
     frozen_time: str = "2022-01-01T01:02:03.000000Z"
     frozen_time_update: str = "2022-07-01T01:32:03.000000Z"
@@ -29,21 +31,13 @@ class OrderSerializerUnitTests(UnitTestBase):
     @freeze_time(frozen_time)
     def setUp(self):
         valid_order: Order = Order.objects.create()
-        product_burger: Product = Product.objects.create(
+        self.product_burger: Product = Product.objects.create(
             **self.test_prod_1_data
         )
-        self.test_order_1_data["lineItems"][0]["product"][
-            "id"
-        ] = product_burger.id
-        product_pizza: Product = Product.objects.create(
-            **self.test_prod_2_data
-        )
-        self.test_order_2_data["lineItems"][0]["product"][
-            "id"
-        ] = product_pizza.id
+        Product.objects.create(**self.test_prod_2_data)
 
         line_item = LineItem.objects.create(
-            order=valid_order, product=product_burger, quantity=3
+            order=valid_order, product=self.product_burger, quantity=3
         )
         line_item.calculate_sub_total()
         valid_order.calculate_total()
@@ -141,29 +135,27 @@ class OrderSerializerUnitTests(UnitTestBase):
         serializer_path + "products_check",
     )
     def test_valid_order_create_pass(self, products_check_mock):
-        new_order_data = OrderSerializer(data=self.test_order_1_data)
-        products_check_mock.return_value = [
-            Product.objects.get(name="Plain Burger"),
-        ]
+        prod = Product.objects.get(name="Plain Burger")
+        input_data = self.test_order_data_input
+        input_data["lineItems"][0]["productId"] = prod.id
+        new_order_data = OrderSerializer(data=input_data)
+        products_check_mock.return_value = [prod]
         new_order_data.is_valid()
         serializer = OrderSerializer()
         new_order_object = serializer.create(new_order_data.validated_data)
         new_order_serializer_data: ReturnDict = OrderSerializer(
             new_order_object
         ).data
-        test_json_data = self.test_order_1_data["lineItems"][0]
 
-        expected_product_id: dict = new_order_object.lineitem_set.values(
-            "product_id"
-        )[0]
-        actual_product_id: dict = {
-            "product_id": test_json_data["product"]["id"]
-        }
+        expected_product_id: int = prod.id
+        actual_product_id: int = new_order_serializer_data["lineItems"][0][
+            "product"
+        ]["id"]
 
-        expected_quantity: dict = new_order_object.lineitem_set.values(
+        expected_quantity: int = input_data["lineItems"][0]["quantity"]
+        actual_quantity: int = new_order_serializer_data["lineItems"][0][
             "quantity"
-        )[0]
-        actual_quantity: dict = {"quantity": test_json_data["quantity"]}
+        ]
 
         expected_time: str = self.frozen_time
         actual_created: str = new_order_serializer_data["createdOn"]
@@ -172,7 +164,7 @@ class OrderSerializerUnitTests(UnitTestBase):
         expected_status: str = "Created"
         actual_status: str = new_order_object.order_status
 
-        expected_total: Decimal = Decimal(60.00)
+        expected_total: Decimal = Decimal(prod.price * expected_quantity)
         actual_total: Decimal = new_order_object.order_total
         products_check_mock.assert_called_once()
 
@@ -235,7 +227,9 @@ class OrderSerializerUnitTests(UnitTestBase):
         existing_product: Product = Product.objects.get(name="Plain Burger")
         existing_product.retired = True
         existing_product.save()
-        new_order_data = OrderSerializer(data=self.test_order_1_data)
+        input_data = self.test_order_data_input
+        input_data["lineItems"][0]["productId"] = existing_product.id
+        new_order_data = OrderSerializer(data=input_data)
         new_order_data.is_valid()
         serializer = OrderSerializer()
         new_order_object = serializer.create(new_order_data.validated_data)
@@ -271,10 +265,11 @@ class OrderSerializerUnitTests(UnitTestBase):
     def test_valid_order_update_pass(self, products_check_mock):
         orders: QuerySet[Order] = Order.objects.all()
         old_order: Order = orders.first()
-        products_check_mock.return_value = [
-            Product.objects.get(name="Margarita pizza"),
-        ]
-        updated_order_data = OrderSerializer(data=self.test_order_2_data)
+        prod = Product.objects.get(name="Margarita pizza")
+        products_check_mock.return_value = [prod]
+        input_data = self.test_order_data_input
+        input_data["lineItems"][0]["productId"] = prod.id
+        updated_order_data = OrderSerializer(data=input_data)
         updated_order_data.is_valid()
         serializer = OrderSerializer()
 
@@ -284,19 +279,16 @@ class OrderSerializerUnitTests(UnitTestBase):
         new_order_serializer_data: ReturnDict = OrderSerializer(
             new_order_object
         ).data
-        test_json_data = self.test_order_2_data["lineItems"]
 
-        expected_product_id: dict = new_order_object.lineitem_set.values(
-            "product_id"
-        )[0]
-        actual_product_id: dict = {
-            "product_id": test_json_data[0]["product"]["id"]
-        }
+        expected_product_id: int = prod.id
+        actual_product_id: int = new_order_serializer_data["lineItems"][0][
+            "product"
+        ]["id"]
 
-        expected_quantity: dict = new_order_object.lineitem_set.values(
+        expected_quantity: int = input_data["lineItems"][0]["quantity"]
+        actual_quantity: int = new_order_serializer_data["lineItems"][0][
             "quantity"
-        )[0]
-        actual_quantity: dict = {"quantity": test_json_data[0]["quantity"]}
+        ]
 
         expected_create_time: str = self.frozen_time
         actual_created: str = new_order_serializer_data["createdOn"]
@@ -307,7 +299,7 @@ class OrderSerializerUnitTests(UnitTestBase):
         expected_status: str = "Created"
         actual_status: str = new_order_object.order_status
 
-        expected_total: Decimal = Decimal(42.00)
+        expected_total: Decimal = Decimal(prod.price * expected_quantity)
         actual_total: Decimal = new_order_object.order_total
 
         products_check_mock.assert_called_once()
@@ -360,11 +352,13 @@ class OrderSerializerUnitTests(UnitTestBase):
         serializer_path + "products_check",
     )
     def test_empty_order_update_with_product_pass(self, products_check_mock):
+        prod = Product.objects.get(name="Margarita pizza")
+
         empty_order: Order = Order.objects.create()
-        updated_order_data = OrderSerializer(data=self.test_order_2_data)
-        products_check_mock.return_value = [
-            Product.objects.get(name="Margarita pizza"),
-        ]
+        input_data = self.test_order_data_input
+        input_data["lineItems"][0]["productId"] = prod.id
+        updated_order_data = OrderSerializer(data=input_data)
+        products_check_mock.return_value = [prod]
         updated_order_data.is_valid()
         serializer = OrderSerializer()
         new_order_object = serializer.update(
@@ -373,19 +367,16 @@ class OrderSerializerUnitTests(UnitTestBase):
         new_order_serializer_data: ReturnDict = OrderSerializer(
             new_order_object
         ).data
-        test_json_data = self.test_order_2_data["lineItems"][0]
 
-        expected_product_id: dict = new_order_object.lineitem_set.values(
-            "product_id"
-        )[0]
-        actual_product_id: dict = {
-            "product_id": test_json_data["product"]["id"]
-        }
+        expected_product_id: int = prod.id
+        actual_product_id: dict = new_order_serializer_data["lineItems"][0][
+            "product"
+        ]["id"]
 
-        expected_quantity: dict = new_order_object.lineitem_set.values(
+        expected_quantity: dict = input_data["lineItems"][0]["quantity"]
+        actual_quantity: dict = new_order_serializer_data["lineItems"][0][
             "quantity"
-        )[0]
-        actual_quantity: dict = {"quantity": test_json_data["quantity"]}
+        ]
 
         expected_create_time: str = self.frozen_time_update
         actual_created: str = new_order_serializer_data["createdOn"]
@@ -396,7 +387,7 @@ class OrderSerializerUnitTests(UnitTestBase):
         expected_status: str = "Created"
         actual_status: str = new_order_object.order_status
 
-        expected_total: Decimal = Decimal(42.00)
+        expected_total: Decimal = Decimal(prod.price * expected_quantity)
         actual_total: Decimal = new_order_object.order_total
 
         products_check_mock.assert_called_once()
@@ -419,7 +410,9 @@ class OrderSerializerUnitTests(UnitTestBase):
         existing_product: Product = Product.objects.get(name="Margarita pizza")
         existing_product.retired = True
         existing_product.save()
-        new_order_data = OrderSerializer(data=self.test_order_2_data)
+        input_data = self.test_order_data_input
+        input_data["lineItems"][0]["productId"] = existing_product.id
+        new_order_data = OrderSerializer(data=input_data)
         new_order_data.is_valid()
         serializer = OrderSerializer()
         new_order_object = serializer.update(
@@ -459,9 +452,11 @@ class OrderSerializerUnitTests(UnitTestBase):
         existing_order: Order = orders.first()
         existing_product: Product = Product.objects.get(name="Margarita pizza")
         serializer = OrderSerializer()
-        updated_order_data = OrderSerializer(data=self.test_order_2_data)
+        input_data = self.test_order_data_input
+        input_data["lineItems"][0]["productId"] = self.product_burger.id
+        updated_order_data = OrderSerializer(data=input_data)
         products_check_mock.return_value = [existing_product]
-        updated_order_data.is_valid()
+        self.assertTrue(updated_order_data.is_valid())
         line_items_data: list[OrderedDict] = updated_order_data.validated_data[
             "lineitem_set"
         ]
@@ -471,9 +466,7 @@ class OrderSerializerUnitTests(UnitTestBase):
             order=existing_order, product=existing_product
         )
 
-        expected_quantity: dict = self.test_order_2_data["lineItems"][0][
-            "quantity"
-        ]
+        expected_quantity: dict = input_data["lineItems"][0]["quantity"]
         actual_quantity: dict = new_line_item.quantity
 
         expected_sub_total: Decimal = Decimal(42.00)
@@ -499,7 +492,9 @@ class OrderSerializerUnitTests(UnitTestBase):
         existing_product.retired = True
         existing_product.save()
         serializer = OrderSerializer()
-        updated_order_data = OrderSerializer(data=self.test_order_2_data)
+        input_data = self.test_order_data_input
+        input_data["lineItems"][0]["productId"] = existing_product.id
+        updated_order_data = OrderSerializer(data=self.test_order_data_input)
         updated_order_data.is_valid()
         line_items_data: list[OrderedDict] = updated_order_data.validated_data[
             "lineitem_set"

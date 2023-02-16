@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from rest_framework import serializers
 
-from answerking_app.models.models import Product, Order, LineItem
+from answerking_app.models.models import LineItem, Order, Product
 from answerking_app.models.serializers import LineItemSerializer
 from answerking_app.tests.test_unit.UnitTestBaseClass import UnitTestBase
 
@@ -26,10 +26,10 @@ class LineItemSerializerUnitTests(UnitTestBase):
         return valid
 
     def setUp(self):
-        prod: Product = Product.objects.create(**self.prod_data)
+        self.prod: Product = Product.objects.create(**self.prod_data)
         order: Order = Order.objects.create()
         line_item: LineItem = LineItem.objects.create(
-            order=order, product=prod, quantity=self.quant
+            order=order, product=self.prod, quantity=self.quant
         )
         line_item.calculate_sub_total()
 
@@ -71,7 +71,7 @@ class LineItemSerializerUnitTests(UnitTestBase):
 
     def test_line_item_serializer_quantity_less_than_zero_fail(self):
         serializer_data = {
-            "product": self.serialized_product_detail,
+            "productId": self.prod.id,
             "quantity": -1,
         }
         serializer = LineItemSerializer(data=serializer_data)
@@ -88,7 +88,7 @@ class LineItemSerializerUnitTests(UnitTestBase):
     def test_line_item_serializer_quantity_greater_than_max_val_fail(self):
         MAXNUMBERSIZE: int = 2147483647
         serializer_data = {
-            "product": self.serialized_product_detail,
+            "productId": self.prod.id,
             "quantity": MAXNUMBERSIZE + 1,
         }
         serializer = LineItemSerializer(data=serializer_data)
