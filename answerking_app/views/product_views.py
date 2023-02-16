@@ -100,9 +100,7 @@ class ProductPostView(
         return self.create(request, *args, **kwargs)
 
 
-class ProductIdGetView(
-    mixins.RetrieveModelMixin
-):
+class ProductIdGetView(mixins.RetrieveModelMixin):
     queryset: QuerySet = Product.objects.all()
     serializer_class: ProductSerializer = ProductSerializer
     permission_classes = [AllowAny]
