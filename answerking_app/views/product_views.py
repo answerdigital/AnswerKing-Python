@@ -5,8 +5,7 @@ from drf_spectacular.utils import (
     extend_schema,
 )
 from rest_framework import generics, mixins
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -21,7 +20,6 @@ from answerking_app.utils.schema.schema_examples import (
     product_body_example,
     product_categories_body_example,
     product_example,
-    retired_product_example,
 )
 from answerking_app.utils.url_parameter_check import check_url_parameter
 from answerking_app.models.permissions.auth_permissions import IsStaffUser
@@ -32,10 +30,9 @@ class ProductListView(
     mixins.CreateModelMixin,
     generics.GenericAPIView,
 ):
-
     queryset: QuerySet = Product.objects.all()
     serializer_class: ProductSerializer = ProductSerializer
-    permission_classes = [IsStaffUser]
+    permission_classes = [AllowAny]
 
     @extend_schema(
         tags=["Inventory"],
@@ -56,6 +53,15 @@ class ProductListView(
     )
     def get(self, request: Request, *args, **kwargs) -> Response:
         return self.list(request, *args, **kwargs)
+
+
+class ProductPostView(
+    mixins.CreateModelMixin,
+    generics.GenericAPIView,
+):
+    queryset: QuerySet = Product.objects.all()
+    serializer_class: ProductSerializer = ProductSerializer
+    permission_classes = [IsStaffUser]
 
     @extend_schema(
         tags=["Inventory"],
@@ -94,13 +100,12 @@ class ProductListView(
         return self.create(request, *args, **kwargs)
 
 
-class ProductDetailView(
-    RetireMixin,
-    generics.UpdateAPIView,
-    mixins.RetrieveModelMixin,
+class ProductIdGetView(
+    mixins.RetrieveModelMixin
 ):
     queryset: QuerySet = Product.objects.all()
     serializer_class: ProductSerializer = ProductSerializer
+    permission_classes = [AllowAny]
 
     @extend_schema(
         tags=["Inventory"],
@@ -144,6 +149,15 @@ class ProductDetailView(
     def get(self, request: Request, *args, **kwargs) -> Response:
         check_url_parameter(kwargs["pk"])
         return self.retrieve(request, *args, **kwargs)
+
+
+class ProductUpdateRetireView(
+    RetireMixin,
+    generics.UpdateAPIView,
+):
+    queryset: QuerySet = Product.objects.all()
+    serializer_class: ProductSerializer = ProductSerializer
+    permission_classes = [IsStaffUser]
 
     @extend_schema(
         tags=["Inventory"],
@@ -238,3 +252,11 @@ class ProductDetailView(
     def delete(self, request: Request, *args, **kwargs) -> Response:
         check_url_parameter(kwargs["pk"])
         return self.retire(request, *args, **kwargs)
+
+
+class ProductView(ProductListView, ProductPostView):
+    pass
+
+
+class ProductIdView(ProductIdGetView, ProductUpdateRetireView):
+    pass

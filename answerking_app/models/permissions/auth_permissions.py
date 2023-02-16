@@ -1,7 +1,7 @@
 from rest_framework.permissions import IsAdminUser, BasePermission
 
 
-class IsManagerUser(IsAdminUser):
+class IsStaffUser(IsAdminUser):
     """
     Allows access to Staff and Managers only.
     """
@@ -9,9 +9,9 @@ class IsManagerUser(IsAdminUser):
     pass
 
 
-class IsStaffUser(BasePermission):
+class IsManagerUser(BasePermission):
     """
-    Allows access to Managers only.
+    Allows access to Manager's only.
     """
 
     def has_permission(self, request, view):
