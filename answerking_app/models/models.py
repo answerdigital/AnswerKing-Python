@@ -46,6 +46,9 @@ class Order(models.Model):
     )
     created_on = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(
+        "auth.User", related_name="orders", on_delete=models.CASCADE
+    )
 
     def calculate_total(self):
         total = Decimal(0.00)
@@ -73,4 +76,3 @@ class LineItem(models.Model):
 
     class Meta:
         unique_together = [["order", "product"]]
-

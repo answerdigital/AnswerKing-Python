@@ -9,16 +9,8 @@ urlpatterns: list[partial] = [
     path(
         "register/manager",
         auth_views.RegisterManagerView.as_view(),
-        name="register_manager"
+        name="register_manager",
     ),
-    path(
-        "login",
-        auth_views.LoginView.as_view(),
-        name="token_obtain_pair"
-    ),
-    path(
-        'login/refresh/',
-        TokenRefreshView.as_view(),
-        name='token_refresh'
-    )
+    path("login", auth_views.LoginView.as_view(), name="token_obtain_pair"),
+    path("login/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]

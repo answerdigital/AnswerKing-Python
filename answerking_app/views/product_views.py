@@ -5,6 +5,8 @@ from drf_spectacular.utils import (
     extend_schema,
 )
 from rest_framework import generics, mixins
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -22,6 +24,7 @@ from answerking_app.utils.schema.schema_examples import (
     retired_product_example,
 )
 from answerking_app.utils.url_parameter_check import check_url_parameter
+from answerking_app.models.permissions.auth_permissions import IsStaffUser
 
 
 class ProductListView(
@@ -32,6 +35,7 @@ class ProductListView(
 
     queryset: QuerySet = Product.objects.all()
     serializer_class: ProductSerializer = ProductSerializer
+    permission_classes = [IsStaffUser]
 
     @extend_schema(
         tags=["Inventory"],

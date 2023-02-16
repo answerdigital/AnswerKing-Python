@@ -30,6 +30,7 @@ from answerking_app.utils.schema.schema_examples import (
 
 # classes for each endpoint and type of request
 
+
 class CategoryGetView(
     mixins.ListModelMixin,
     generics.GenericAPIView,
@@ -157,8 +158,8 @@ class CategoryIdGetView(
 
 
 class CategoryIdPutView(
-        mixins.UpdateModelMixin,
-        generics.GenericAPIView,
+    mixins.UpdateModelMixin,
+    generics.GenericAPIView,
 ):
     permission_classes = []
     queryset: QuerySet = Category.objects.all()
@@ -222,6 +223,7 @@ class CategoryIdDeleteView(
     permission_classes = []
     queryset: QuerySet = Category.objects.all()
     serializer_class: CategorySerializer = CategorySerializer
+
     @extend_schema(
         tags=["Inventory"],
         summary="Retire an existing category",
@@ -321,23 +323,16 @@ class CategoryProductGetView(
 
 # classes grouping all the requests for one endpoint
 
-class CategoryView(
-    CategoryGetView,
-    CategoryPostView
-):
+
+class CategoryView(CategoryGetView, CategoryPostView):
     pass
 
 
 class CategoryIdView(
-    CategoryIdGetView,
-    CategoryIdPutView,
-    CategoryIdDeleteView
+    CategoryIdGetView, CategoryIdPutView, CategoryIdDeleteView
 ):
     pass
 
 
-class CategoryProductView(
-    CategoryProductGetView
-):
+class CategoryProductView(CategoryProductGetView):
     pass
-

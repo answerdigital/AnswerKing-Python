@@ -252,9 +252,10 @@ class OrderSerializer(serializers.ModelSerializer):
     lineItems = LineItemSerializer(
         source="lineitem_set", many=True, required=False
     )
+    owner = serializers.ReadOnlyField(source="owner.username")
 
     def create(self, validated_data: dict) -> Order:
-        order: Order = Order.objects.create()
+        order: Order = Order.objects.create(owner=validated_data["owner"])
         if "lineitem_set" in validated_data:
             line_items_data = validated_data["lineitem_set"]
             self.create_order_line_items(
@@ -304,14 +305,15 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = (
+        fields = [
             "id",
             "createdOn",
             "lastUpdated",
             "orderStatus",
             "orderTotal",
             "lineItems",
-        )
+            "owner",
+        ]
         depth = 3
 
 
@@ -327,9 +329,7 @@ class ManagerAuthSerializer(serializers.ModelSerializer):
         validators=[UniqueValidator(queryset=User.objects.all())],
     )
     password = serializers.CharField(
-        write_only=True,
-        required=True,
-        validators=[validate_password]
+        write_only=True, required=True, validators=[validate_password]
     )
     password2 = serializers.CharField(
         write_only=True,
@@ -339,16 +339,16 @@ class ManagerAuthSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'username',
-            'password',
-            'password2',
-            'email',
-            'first_name',
-            'last_name',
+            "username",
+            "password",
+            "password2",
+            "email",
+            "first_name",
+            "last_name",
         )
 
     def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
+        if attrs["password"] != attrs["password2"]:
             raise ProblemDetails(
                 status=status.HTTP_400_BAD_REQUEST,
                 detail="The passwords supplied do not match",
@@ -363,15 +363,15 @@ class ManagerAuthSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
+            username=validated_data["username"],
+            email=validated_data["email"],
+            first_name=validated_data["first_name"],
+            last_name=validated_data["last_name"],
             is_staff=True,
             is_superuser=False,
         )
 
-        user.set_password(validated_data['password'])
+        user.set_password(validated_data["password"])
         user.save()
         return user
 
@@ -380,8 +380,8 @@ class LoginSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['username'] = user.username
-        token['email'] = user.email
+        token["username"] = user.username
+        token["email"] = user.email
         return token
 
     def validate(self, attrs):
