@@ -209,7 +209,13 @@ class LineItemProductSerializer(serializers.ModelSerializer):
 
 
 class LineItemSerializer(serializers.ModelSerializer):
-    productId = serializers.IntegerField()
+    product = LineItemProductSerializer(read_only=True)
+    productId = serializers.PrimaryKeyRelatedField(
+        source="product",
+        queryset=Product.objects.all(),
+        required=False,
+        write_only=True,
+    )
     quantity = serializers.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
     )
@@ -220,20 +226,9 @@ class LineItemSerializer(serializers.ModelSerializer):
         max_digits=18,
     )
 
-    def to_representation(self, instance):
-        return {
-            "id": instance.product.id,
-            "name": instance.product.name,
-            "description": instance.product.description,
-            "price": instance.product.price,
-            "category": instance.product.category,
-            "quantity": instance.quantity,
-            "subTotal": instance.sub_total,
-        }
-
     class Meta:
         model = LineItem
-        fields = ["productId", "quantity", "subTotal"]
+        fields = ["product", "productId", "quantity", "subTotal"]
         depth = 2
 
 
@@ -293,9 +288,7 @@ class OrderSerializer(serializers.ModelSerializer):
         products_id_list = []
         line_items_valid = []
         for product in line_items_data:
-            products_id_list.append(
-                Product.objects.get(id=product["productId"])
-            )
+            products_id_list.append(product["product"])
         products = products_check({"product_set": products_id_list})
         for order_item, product in zip(line_items_data, products):
             if order_item["quantity"] < 1:
