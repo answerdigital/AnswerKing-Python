@@ -9,7 +9,7 @@ clean:
 
 lint:
 	poetry run black . --line-length=79
-	- poetry run pycodestyle . --max-line-length=100
+	poetry run pycodestyle . --max-line-length=100 --exclude=**/snapshots/** 
 	poetry run pyright
 
 test: clean

@@ -221,8 +221,13 @@ class DeleteTests(IntegrationTestBase):
     @freeze_time(frozen_time)
     def test_delete_returns_ok(self):
         seeded_data = self.seedFixture("orders", "basic-1.json")
-        response = client.delete(f"/api/orders/{seeded_data['id']}")  # type: ignore[GeneralTypeIssue]
-        get_response = client.get(f"/api/orders/{seeded_data['id']}")  # type: ignore[GeneralTypeIssue]
+
+        response = client.delete(
+            f"/api/orders/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]
+        )
+        get_response = client.get(
+            f"/api/orders/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]
+        )
         assert_that(response.status_code).is_equal_to(204)
         assert_that(response.data, None)
         self.assertMatchSnapshot(get_response.json())
