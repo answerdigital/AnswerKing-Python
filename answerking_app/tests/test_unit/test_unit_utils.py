@@ -1,21 +1,25 @@
-import json
-from unittest.mock import Mock, MagicMock
 import copy
-from answerking_app.utils.serializer_data_functions import products_check
-from django.http import Http404, JsonResponse
+import json
+from unittest.mock import MagicMock, Mock
+
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.serializers import ValidationError
-from rest_framework.exceptions import ParseError
 from django.db import IntegrityError
+from django.http import Http404, JsonResponse
 from MySQLdb.constants.ER import DUP_ENTRY
+from rest_framework import status
+from rest_framework.exceptions import ParseError
+from rest_framework.response import Response
+from rest_framework.serializers import ValidationError
+
 from answerking_app.models.models import Product
 from answerking_app.tests.test_unit.UnitTestBaseClass import UnitTestBase
-from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
-from answerking_app.utils.url_parameter_check import check_url_parameter
-from answerking_app.utils.json404_middleware_config import json404_response
 from answerking_app.utils.exceptions_handler import wrapper
-from rest_framework import status
-from rest_framework.response import Response
+from answerking_app.utils.json404_middleware_config import json404_response
+from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
+from answerking_app.utils.serializer_data_functions import (
+    products_check_retired,
+)
+from answerking_app.utils.url_parameter_check import check_url_parameter
 
 
 class UtilsTests(UnitTestBase):
@@ -60,35 +64,10 @@ class UtilsTests(UnitTestBase):
             name=self.test_prod_data["name"]
         )
         data = {"product_set": [test_prod]}
-        actual_prod = products_check(data)
+        actual_prod = products_check_retired(data)
         expected_prod = test_prod
 
         self.assertEqual(actual_prod, [expected_prod])
-
-    def test_product_check_invalid(self):
-        test_prod: Product = Product.objects.get(
-            name=self.test_prod_data["name"]
-        )
-
-        self.assertRaises(
-            ProblemDetails,
-            products_check,
-            {"product_set": [test_prod.id + 1]},
-        )
-
-    def test_get_product_check_invalid_correct_exception_info(self):
-        test_prod: Product = Product.objects.get(
-            name=self.test_prod_data["name"]
-        )
-        data = {"product_set": [test_prod.id + 1]}
-
-        with self.assertRaises(ProblemDetails) as error:
-            products_check(data)
-        self.assertEqual(
-            error.exception.status_code, status.HTTP_400_BAD_REQUEST
-        )
-        self.assertEqual(error.exception.detail, "Product was not Found")
-        self.assertEqual(error.exception.title, "Product not found")
 
     def test_exception_handler_correct_exception_info_object_does_not_exist(
         self,
@@ -194,7 +173,7 @@ class UtilsTests(UnitTestBase):
     ):
         validated_data: dict = self.test_cat_det_serializer_data
         expected = []
-        actual: list[Product] = products_check(validated_data)
+        actual: list[Product] = products_check_retired(validated_data)
 
         self.assertEqual(actual, expected)
 
@@ -213,7 +192,7 @@ class UtilsTests(UnitTestBase):
             ]
         }
         expected: list[Product] = [prod_1, prod_2]
-        actual: list[Product] = products_check(validated_data)
+        actual: list[Product] = products_check_retired(validated_data)
 
         self.assertEqual(actual, expected)
 
@@ -227,7 +206,7 @@ class UtilsTests(UnitTestBase):
             validated_data["product_set"] = [
                 Product.objects.get(name="Old Pizza")
             ]
-            products_check(validated_data)
+            products_check_retired(validated_data)
 
         self.assertRaises(ProblemDetails)
         self.assertEqual(context.exception.status_code, status.HTTP_410_GONE)

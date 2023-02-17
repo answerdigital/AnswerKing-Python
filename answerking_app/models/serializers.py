@@ -17,7 +17,7 @@ from answerking_app.models.models import (
 from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 from answerking_app.utils.serializer_data_functions import (
     compress_white_spaces,
-    products_check,
+    products_check_retired,
 )
 
 MAXNUMBERSIZE = 2147483647
@@ -43,7 +43,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
     )
 
     def create(self, validated_data: dict) -> Category:
-        products: list[Product] = products_check(validated_data)
+        products: list[Product] = products_check_retired(validated_data)
         category: Category = Category.objects.create(
             name=validated_data["name"],
             description=validated_data["description"],
@@ -57,7 +57,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
                 status=status.HTTP_410_GONE,
                 detail="This category has been retired",
             )
-        products: list[Product] = products_check(validated_data)
+        products: list[Product] = products_check_retired(validated_data)
         category.name = validated_data["name"]
         category.description = validated_data["description"]
         category.save()
@@ -285,7 +285,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def validate_lineItems(self, line_items_data):
         list_products = [p["product"] for p in line_items_data]
-        products = products_check({"product_set": list_products})
+        products = products_check_retired({"product_set": list_products})
 
         line_items_valid = []
         for order_item, product in zip(line_items_data, products):
