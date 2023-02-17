@@ -27,7 +27,6 @@ from answerking_app.models.permissions.auth_permissions import IsStaffUser
 
 class ProductListView(
     mixins.ListModelMixin,
-    mixins.CreateModelMixin,
     generics.GenericAPIView,
 ):
     queryset: QuerySet = Product.objects.all()
@@ -55,7 +54,7 @@ class ProductListView(
         return self.list(request, *args, **kwargs)
 
 
-class ProductPostView(
+class ProductCreateView(
     mixins.CreateModelMixin,
     generics.GenericAPIView,
 ):
@@ -100,7 +99,7 @@ class ProductPostView(
         return self.create(request, *args, **kwargs)
 
 
-class ProductIdGetView(mixins.RetrieveModelMixin):
+class ProductRetrieveView(mixins.RetrieveModelMixin):
     queryset: QuerySet = Product.objects.all()
     serializer_class: ProductSerializer = ProductSerializer
     permission_classes = [AllowAny]
@@ -149,10 +148,7 @@ class ProductIdGetView(mixins.RetrieveModelMixin):
         return self.retrieve(request, *args, **kwargs)
 
 
-class ProductUpdateRetireView(
-    RetireMixin,
-    generics.UpdateAPIView,
-):
+class ProductUpdateView(generics.UpdateAPIView):
     queryset: QuerySet = Product.objects.all()
     serializer_class: ProductSerializer = ProductSerializer
     permission_classes = [IsStaffUser]
@@ -207,6 +203,12 @@ class ProductUpdateRetireView(
         check_url_parameter(kwargs["pk"])
         return self.update(request, *args, **kwargs)
 
+
+class ProductRetireView(RetireMixin):
+    queryset: QuerySet = Product.objects.all()
+    serializer_class: ProductSerializer = ProductSerializer
+    permission_classes = [IsStaffUser]
+
     @extend_schema(
         tags=["Inventory"],
         summary="Retire an existing product",
@@ -252,9 +254,16 @@ class ProductUpdateRetireView(
         return self.retire(request, *args, **kwargs)
 
 
-class ProductView(ProductListView, ProductPostView):
+class ProductView(
+    ProductListView,
+    ProductCreateView
+):
     pass
 
 
-class ProductIdView(ProductIdGetView, ProductUpdateRetireView):
+class ProductDetailView(
+    ProductRetrieveView,
+    ProductUpdateView,
+    ProductRetireView
+):
     pass
