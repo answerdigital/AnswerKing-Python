@@ -4,10 +4,8 @@ from unittest import mock
 from rest_framework import status
 from rest_framework.utils.serializer_helpers import ReturnDict
 
-from answerking_app.models.models import Product, Category
-from answerking_app.models.serializers import (
-    CategoryDetailSerializer,
-)
+from answerking_app.models.models import Category, Product
+from answerking_app.models.serializers import CategoryDetailSerializer
 from answerking_app.tests.test_unit.UnitTestBaseClass import UnitTestBase
 from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
 
@@ -179,18 +177,18 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         self.assertEqual(set(serializer.errors), {"description"})
 
     @mock.patch(
-        serializer_path + "products_check",
+        serializer_path + "products_check_retired",
         return_value=[],
     )
     def test_cat_det_create_fn_no_prods_pass(
         self,
-        products_check_mock,
+        products_check_retired_mock,
     ):
         cds: CategoryDetailSerializer = CategoryDetailSerializer()
         new_cat: Category = cds.create(self.test_cat_det_serializer_data)
         cat_in_db: Category = Category.objects.get(pk=new_cat.id)
 
-        products_check_mock.assert_called_once()
+        products_check_retired_mock.assert_called_once()
         self.assertEqual(
             cat_in_db.name, self.test_cat_det_serializer_data["name"]
         )
@@ -201,18 +199,18 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         self.assertEqual(list(cat_in_db.product_set.all()), [])
 
     @mock.patch(
-        serializer_path + "products_check",
+        serializer_path + "products_check_retired",
     )
     def test_cat_det_create_fn_two_prods_pass(
         self,
-        products_check_mock,
+        products_check_retired_mock,
     ):
         to_seed: dict = {
             "margarita_pizza_data.json": "products",
             "pepperoni_pizza_data.json": "products",
         }
         seeded_data: list[dict] = self.seed_data(to_seed)
-        products_check_mock.return_value = [
+        products_check_retired_mock.return_value = [
             Product.objects.get(name="Margarita pizza"),
             Product.objects.get(name="Pepperoni pizza"),
         ]
@@ -224,7 +222,7 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
             val["name"] for val in cat_in_db.product_set.values("name")
         ]
 
-        products_check_mock.assert_called_once()
+        products_check_retired_mock.assert_called_once()
         self.assertEqual(
             cat_in_db.name, self.test_cat_det_serializer_data["name"]
         )
@@ -235,11 +233,11 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         self.assertEqual(actual_prod_names, expected_prod_names)
 
     @mock.patch(
-        serializer_path + "products_check",
+        serializer_path + "products_check_retired",
     )
     def test_cat_det_update_fn_retired_category_fail(
         self,
-        products_check_mock,
+        products_check_retired_mock,
     ):
         to_seed: dict = {"retired_cat_data.json": "categories"}
         self.seed_data(to_seed)
@@ -248,7 +246,7 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
             cds: CategoryDetailSerializer = CategoryDetailSerializer()
             cds.update(retired_cat, self.test_cat_det_serializer_data)
 
-        products_check_mock.assert_not_called()
+        products_check_retired_mock.assert_not_called()
         self.assertRaises(ProblemDetails)
         self.assertEqual(
             context.exception.detail, "This category has been retired"
@@ -256,11 +254,11 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         self.assertEqual(context.exception.status_code, status.HTTP_410_GONE)
 
     @mock.patch(
-        serializer_path + "products_check",
+        serializer_path + "products_check_retired",
     )
     def test_cat_det_update_fn_pass(
         self,
-        products_check_mock,
+        products_check_retired_mock,
     ):
         to_seed: dict = {
             "margarita_pizza_data.json": "products",
@@ -271,7 +269,7 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         serialized_data: CategoryDetailSerializer = CategoryDetailSerializer(
             seeded_data[2]
         )
-        products_check_mock.return_value = [
+        products_check_retired_mock.return_value = [
             Product.objects.get(name="Margarita pizza"),
             Product.objects.get(name="Pepperoni pizza"),
         ]
@@ -279,12 +277,12 @@ class CategoryDetailSerializerUnitTests(UnitTestBase):
         cds: CategoryDetailSerializer = CategoryDetailSerializer()
         updated_cat: Category = cds.update(cat, seeded_data[2])
 
-        products_check_mock.assert_called_once()
+        products_check_retired_mock.assert_called_once()
         self.assertEqual(updated_cat.name, serialized_data.data["name"])
         self.assertEqual(
             updated_cat.description, serialized_data.data["description"]
         )
         self.assertEqual(
             list(updated_cat.product_set.all()),
-            products_check_mock.return_value,
+            products_check_retired_mock.return_value,
         )

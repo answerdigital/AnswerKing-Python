@@ -1,5 +1,5 @@
 from assertpy import assert_that
-from ddt import ddt, data
+from ddt import data, ddt
 from django.test import Client
 from freezegun import freeze_time
 
@@ -122,13 +122,13 @@ class PostTests(IntegrationTestBase):
         )
         self.assertJSONErrorResponse(response.json())
 
-    def test_post_non_existent_product_id_returns_404(self):
+    def test_post_non_existent_product_id_returns_400(self):
         post_data = self.getFixture("orders", "non_existent-product-id.json")
         response = client.post(
             "/api/orders", post_data, content_type="application/json"
         )
         self.assertJSONErrorResponse(response.json())
-        assert_that(response.status_code).is_equal_to(404)
+        assert_that(response.status_code).is_equal_to(400)
 
 
 @ddt
@@ -221,8 +221,13 @@ class DeleteTests(IntegrationTestBase):
     @freeze_time(frozen_time)
     def test_delete_returns_ok(self):
         seeded_data = self.seedFixture("orders", "basic-1.json")
-        response = client.delete(f"/api/orders/{seeded_data['id']}")  # type: ignore[GeneralTypeIssue]
-        get_response = client.get(f"/api/orders/{seeded_data['id']}")  # type: ignore[GeneralTypeIssue]
+
+        response = client.delete(
+            f"/api/orders/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]
+        )
+        get_response = client.get(
+            f"/api/orders/{seeded_data['id']}"  # type: ignore[GeneralTypeIssue]
+        )
         assert_that(response.status_code).is_equal_to(204)
         assert_that(response.data, None)
         self.assertMatchSnapshot(get_response.json())

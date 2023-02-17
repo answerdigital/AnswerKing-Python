@@ -186,7 +186,14 @@ snapshots[
     "PostTests::test_post_invalid_data_returns_bad_request_1_invalid_missing_quantity_json 1"
 ] = {
     "detail": "Validation Error",
-    "errors": {"lineItems": [{"quantity": ["This field is required."]}]},
+    "errors": {
+        "lineItems": [
+            {
+                "productId": ['Invalid pk "1" - object does not exist.'],
+                "quantity": ["This field is required."],
+            }
+        ]
+    },
     "status": 400,
     "title": "Invalid input.",
     "type": "http://testserver/problems/error/",
@@ -197,7 +204,9 @@ snapshots[
 ] = {
     "detail": "Validation Error",
     "errors": {
-        "lineItems": [{"product": {"id": ["A valid integer is required."]}}]
+        "lineItems": [
+            {"productId": ["Incorrect type. Expected pk value, received str."]}
+        ]
     },
     "status": 400,
     "title": "Invalid input.",
@@ -210,7 +219,12 @@ snapshots[
     "detail": "Validation Error",
     "errors": {
         "lineItems": [
-            {"quantity": ["Ensure this value is greater than or equal to 0."]}
+            {
+                "productId": ['Invalid pk "1" - object does not exist.'],
+                "quantity": [
+                    "Ensure this value is greater than or equal to 0."
+                ],
+            }
         ]
     },
     "status": 400,
@@ -222,7 +236,14 @@ snapshots[
     "PostTests::test_post_invalid_data_returns_bad_request_4_invalid_quantity_string_json 1"
 ] = {
     "detail": "Validation Error",
-    "errors": {"lineItems": [{"quantity": ["A valid integer is required."]}]},
+    "errors": {
+        "lineItems": [
+            {
+                "productId": ['Invalid pk "1" - object does not exist.'],
+                "quantity": ["A valid integer is required."],
+            }
+        ]
+    },
     "status": 400,
     "title": "Invalid input.",
     "type": "http://testserver/problems/error/",
@@ -236,11 +257,15 @@ snapshots["PostTests::test_post_invalid_json_returns_bad_request 1"] = {
     "type": "http://testserver/problems/error/",
 }
 
-snapshots["PostTests::test_post_non_existent_product_id_returns_404 1"] = {
-    "detail": "Object was not Found",
-    "errors": ["Product matching query does not exist."],
-    "status": 404,
-    "title": "Resource not found",
+snapshots["PostTests::test_post_non_existent_product_id_returns_400 1"] = {
+    "detail": "Validation Error",
+    "errors": {
+        "lineItems": [
+            {"productId": ['Invalid pk "1000" - object does not exist.']}
+        ]
+    },
+    "status": 400,
+    "title": "Invalid input.",
     "type": "http://testserver/problems/error/",
 }
 
@@ -464,7 +489,9 @@ snapshots[
 ] = {
     "detail": "Validation Error",
     "errors": {
-        "lineItems": [{"product": {"id": ["A valid integer is required."]}}]
+        "lineItems": [
+            {"productId": ["Incorrect type. Expected pk value, received str."]}
+        ]
     },
     "status": 400,
     "title": "Invalid input.",

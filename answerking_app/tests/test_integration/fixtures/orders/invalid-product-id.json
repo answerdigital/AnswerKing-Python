@@ -2,9 +2,7 @@
   "id": 1,
   "lineItems": [
     {
-      "product": {
-        "id": "invalid"
-      },
+      "productId": "invalid",
       "quantity": 4
     }
   ]

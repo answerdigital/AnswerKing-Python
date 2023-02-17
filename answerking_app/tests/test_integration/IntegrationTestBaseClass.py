@@ -1,14 +1,15 @@
-from django.test import TransactionTestCase
-from answerking_app.models.models import (
-    Product,
-    Category,
-    Tag,
-    Order,
-    LineItem,
-)
-
-from snapshottest import TestCase
 import json
+
+from django.test import TransactionTestCase
+from snapshottest import TestCase
+
+from answerking_app.models.models import (
+    Category,
+    LineItem,
+    Order,
+    Product,
+    Tag,
+)
 
 
 class IntegrationTestBase(TransactionTestCase, TestCase):
@@ -37,7 +38,7 @@ class IntegrationTestBase(TransactionTestCase, TestCase):
     def create_order_lineItems(self, data):
         order = Order.objects.create(id=data["id"])
         for lineItem in data["lineItems"]:
-            prod: Product = Product.objects.get(pk=lineItem["product"]["id"])
+            prod: Product = Product.objects.get(pk=lineItem["productId"])
 
             LineItem.objects.create(
                 order=order, product=prod, quantity=lineItem["quantity"]
