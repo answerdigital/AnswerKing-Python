@@ -284,11 +284,10 @@ class OrderSerializer(serializers.ModelSerializer):
             new_line_item.calculate_sub_total()
 
     def validate_lineItems(self, line_items_data):
-        products_id_list = []
+        list_products = [p["product"] for p in line_items_data]
+        products = products_check({"product_set": list_products})
+
         line_items_valid = []
-        for product in line_items_data:
-            products_id_list.append(product["product"])
-        products = products_check({"product_set": products_id_list})
         for order_item, product in zip(line_items_data, products):
             if order_item["quantity"] < 1:
                 continue
