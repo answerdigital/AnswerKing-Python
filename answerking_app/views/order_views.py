@@ -105,7 +105,7 @@ class OrderRetrieveView(
     queryset: QuerySet = Order.objects.all()
     serializer_class: OrderSerializer = OrderSerializer
     lookup_url_kwarg: Literal["pk"] = "pk"
-    permission_classes = [IsOwner]
+    permission_classes = [IsOwner, IsStaffUser]
 
     @extend_schema(
         tags=["Orders"],
@@ -147,7 +147,7 @@ class OrderUpdateView(
     queryset: QuerySet = Order.objects.all()
     serializer_class: OrderSerializer = OrderSerializer
     lookup_url_kwarg: Literal["pk"] = "pk"
-    permission_classes = [IsOwner]
+    permission_classes = [IsOwner, IsStaffUser]
 
     @extend_schema(
         tags=["Orders"],
@@ -207,7 +207,7 @@ class OrderCancelView(
     queryset: QuerySet = Order.objects.all()
     serializer_class: OrderSerializer = OrderSerializer
     lookup_url_kwarg: Literal["pk"] = "pk"
-    permission_classes = [IsOwner]
+    permission_classes = [IsOwner, IsStaffUser]
 
     @extend_schema(
         tags=["Orders"],
