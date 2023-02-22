@@ -4,4 +4,8 @@ resource "aws_route53_record" "python" {
   type    = "A"
   ttl     = 300
   records = [aws_eip.lb.public_ip]
+
+  geolocation_routing_policy {
+    country = "GB"
+  }
 }
