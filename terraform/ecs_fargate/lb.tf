@@ -30,7 +30,7 @@ resource "aws_lb" "eip_lb" {
 }
 
 resource "aws_lb_target_group" "eip_target" {
-  name        = "tf-example-lb-tg"
+  name        = "${var.project_name}-lb-target-group"
   port        = var.host_port
   protocol    = var.lb_protocol
   target_type = "ip"
