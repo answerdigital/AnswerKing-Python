@@ -42,15 +42,25 @@ resource "aws_lb_target_group" "eip_target" {
   }
 }
 
+
+resource "aws_acm_certificate" "cert" {
+  domain_name       = var.dns_record_name
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 resource "aws_lb_listener" "eip_listener" {
   load_balancer_arn = aws_lb.eip_lb.arn
   port              = var.host_port
-  protocol          = var.lb_protocol
-
+  protocol          = "TLS"
+  certificate_arn = aws_acm_certificate.cert.arn
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.eip_target.arn
+    target_group_arn = aws_lb_target_group.eip_target.id
   }
 
   tags = {
@@ -58,3 +68,5 @@ resource "aws_lb_listener" "eip_listener" {
     Owner = var.owner
   }
 }
+
+
