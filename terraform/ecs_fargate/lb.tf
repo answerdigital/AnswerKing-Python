@@ -52,9 +52,22 @@ resource "aws_acm_certificate" "cert" {
   }
 }
 
+resource "aws_lb_listener" "eip_listener_http_301" {
+  load_balancer_arn = aws_lb.eip_lb.arn
+  port              = "80"
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.eip_target.id
+  }
+
+
+}
+
 resource "aws_lb_listener" "eip_listener" {
   load_balancer_arn = aws_lb.eip_lb.arn
-  port              = var.host_port
+  port              = "443"
   protocol          = "TLS"
   certificate_arn = aws_acm_certificate.cert.arn
 
