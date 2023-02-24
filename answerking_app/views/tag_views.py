@@ -86,8 +86,9 @@ class TagListView(
 
 class TagDetailView(
     RetireMixin,
-    generics.UpdateAPIView,
+    mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
+    generics.GenericAPIView,
 ):
     queryset: QuerySet = Tag.objects.all()
     serializer_class: TagSerializer = TagSerializer

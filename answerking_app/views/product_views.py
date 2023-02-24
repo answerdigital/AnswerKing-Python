@@ -92,8 +92,9 @@ class ProductListView(
 
 class ProductDetailView(
     RetireMixin,
-    generics.UpdateAPIView,
+    mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
+    generics.GenericAPIView,
 ):
     queryset: QuerySet = Product.objects.all()
     serializer_class: ProductSerializer = ProductSerializer
