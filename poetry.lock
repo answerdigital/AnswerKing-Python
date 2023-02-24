@@ -474,7 +474,7 @@ tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 
 [[package]]
 name = "pyright"
-version = "1.1.294"
+version = "1.1.295"
 description = "Command line wrapper for pyright"
 category = "dev"
 optional = false
@@ -576,7 +576,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "setuptools"
-version = "67.3.2"
+version = "67.4.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "main"
 optional = false
@@ -696,7 +696,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "aa1da511d057c24ebdaf8bcc3d0385da6b92bbcc1f9dbe33f56be9e2ebdcdcd7"
+content-hash = "63c0fcd254fd579aa595e4506f831bfc132a24de6011201927e2537e1b055903"
 
 [metadata.files]
 asgiref = [
@@ -1049,8 +1049,8 @@ pyjwt = [
     {file = "PyJWT-2.6.0.tar.gz", hash = "sha256:69285c7e31fc44f68a1feb309e948e0df53259d579295e6cfe2b1792329f05fd"},
 ]
 pyright = [
-    {file = "pyright-1.1.294-py3-none-any.whl", hash = "sha256:5b27e28a1cfc60cea707fd3b644769fa6dd0b194481cdcc2399cf2a51cc5a846"},
-    {file = "pyright-1.1.294.tar.gz", hash = "sha256:fea5fed3d6a3f02259e622c901e86a7b8bcf237d35e1cdfe01d0e0723768dcb6"},
+    {file = "pyright-1.1.295-py3-none-any.whl", hash = "sha256:57d6e66381edd38160342abdaea195fc6af16059eabe7e0816f04d42748b2c36"},
+    {file = "pyright-1.1.295.tar.gz", hash = "sha256:fa8ef1da35071fe351ee214576665857ceafc96418a4550a48b1f577267d9ac0"},
 ]
 pyrsistent = [
     {file = "pyrsistent-0.19.3-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:20460ac0ea439a3e79caa1dbd560344b64ed75e85d8703943e0b66c2a6150e4a"},
@@ -1179,8 +1179,8 @@ ruamel-yaml-clib = [
     {file = "ruamel.yaml.clib-0.2.7.tar.gz", hash = "sha256:1f08fd5a2bea9c4180db71678e850b995d2a5f4537be0e94557668cf0f5f9497"},
 ]
 setuptools = [
-    {file = "setuptools-67.3.2-py3-none-any.whl", hash = "sha256:bb6d8e508de562768f2027902929f8523932fcd1fb784e6d573d2cafac995a48"},
-    {file = "setuptools-67.3.2.tar.gz", hash = "sha256:95f00380ef2ffa41d9bba85d95b27689d923c93dfbafed4aecd7cf988a25e012"},
+    {file = "setuptools-67.4.0-py3-none-any.whl", hash = "sha256:f106dee1b506dee5102cc3f3e9e68137bbad6d47b616be7991714b0c62204251"},
+    {file = "setuptools-67.4.0.tar.gz", hash = "sha256:e5fd0a713141a4a105412233c63dc4e17ba0090c8e8334594ac790ec97792330"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
