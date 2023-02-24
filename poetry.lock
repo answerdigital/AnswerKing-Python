@@ -156,7 +156,7 @@ description = "django-cors-headers is a Django application for handling the serv
 category = "main"
 optional = false
 python-versions = ">=3.7"
-
+git a
 [package.dependencies]
 Django = ">=3.2"
 

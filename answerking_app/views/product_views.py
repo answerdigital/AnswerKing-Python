@@ -254,16 +254,11 @@ class ProductRetireView(RetireMixin):
         return self.retire(request, *args, **kwargs)
 
 
-class ProductView(
-    ProductListView,
-    ProductCreateView
-):
+class ProductView(ProductListView, ProductCreateView):
     pass
 
 
 class ProductDetailView(
-    ProductRetrieveView,
-    ProductUpdateView,
-    ProductRetireView
+    ProductRetrieveView, ProductUpdateView, ProductRetireView
 ):
     pass

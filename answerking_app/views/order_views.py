@@ -243,16 +243,9 @@ class OrderCancelView(
         return self.cancel_order(request, *args, **kwargs)
 
 
-class OrderView(
-    OrderListView,
-    OrderCreateView
-):
+class OrderView(OrderListView, OrderCreateView):
     pass
 
 
-class OrderDetailView(
-    OrderRetrieveView,
-    OrderUpdateView,
-    OrderCancelView
-):
+class OrderDetailView(OrderRetrieveView, OrderUpdateView, OrderCancelView):
     pass
