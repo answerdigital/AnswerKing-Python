@@ -16,7 +16,6 @@ from answerking_app.models.serializers import (
 from answerking_app.utils.mixins.RetireMixin import RetireMixin
 from answerking_app.utils.schema.schema_examples import (
     problem_detail_example,
-    retired_tag_example,
     tag_body_example,
     tag_example,
 )
@@ -86,8 +85,9 @@ class TagListView(
 
 class TagDetailView(
     RetireMixin,
-    generics.UpdateAPIView,
+    mixins.UpdateModelMixin,
     mixins.RetrieveModelMixin,
+    generics.GenericAPIView,
 ):
     queryset: QuerySet = Tag.objects.all()
     serializer_class: TagSerializer = TagSerializer
