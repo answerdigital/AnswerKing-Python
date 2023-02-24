@@ -19,7 +19,6 @@ from answerking_app.utils.schema.schema_examples import (
     product_body_example,
     product_categories_body_example,
     product_example,
-    retired_product_example,
 )
 from answerking_app.utils.url_parameter_check import check_url_parameter
 

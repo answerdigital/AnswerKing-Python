@@ -21,7 +21,6 @@ from drf_spectacular.utils import (
 )
 from answerking_app.utils.schema.schema_examples import (
     category_example,
-    retired_category_example,
     category_body_example,
     problem_detail_example,
     category_products_body_example,
