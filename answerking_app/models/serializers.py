@@ -1,11 +1,17 @@
+import re
+from abc import ABC
 from typing import OrderedDict
 
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from django.core.validators import (
     MaxValueValidator,
     MinValueValidator,
     RegexValidator,
 )
 from rest_framework import serializers, status
+from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from answerking_app.models.models import (
     Category,
@@ -246,9 +252,10 @@ class OrderSerializer(serializers.ModelSerializer):
     lineItems = LineItemSerializer(
         source="lineitem_set", many=True, required=False
     )
+    owner = serializers.ReadOnlyField(source="owner.username")
 
     def create(self, validated_data: dict) -> Order:
-        order: Order = Order.objects.create()
+        order: Order = Order.objects.create(owner=validated_data["owner"])
         if "lineitem_set" in validated_data:
             line_items_data = validated_data["lineitem_set"]
             self.create_order_line_items(
@@ -298,15 +305,93 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = (
+        fields = [
             "id",
             "createdOn",
             "lastUpdated",
             "orderStatus",
             "orderTotal",
             "lineItems",
-        )
+            "owner",
+        ]
         depth = 3
+
+
+class ManagerAuthSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())],
+        max_length=50,
+        min_length=4,
+    )
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())],
+    )
+    password = serializers.CharField(
+        write_only=True, required=True, validators=[validate_password]
+    )
+    password2 = serializers.CharField(
+        write_only=True,
+        required=True,
+    )
+
+    class Meta:
+        model = User
+        fields = (
+            "username",
+            "password",
+            "password2",
+            "email",
+            "first_name",
+            "last_name",
+        )
+
+    def validate(self, attrs):
+        if attrs["password"] != attrs["password2"]:
+            raise ProblemDetails(
+                status=status.HTTP_400_BAD_REQUEST,
+                detail="The passwords supplied do not match",
+            )
+        return attrs
+
+    def validate_first_name(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+    def validate_last_name(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            username=validated_data["username"],
+            email=validated_data["email"],
+            first_name=validated_data["first_name"],
+            last_name=validated_data["last_name"],
+            is_staff=True,
+            is_superuser=False,
+        )
+
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
+
+
+class LoginSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token["username"] = user.username
+        token["email"] = user.email
+        return token
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        return {
+            "username": self.user.username,
+            "email": self.user.email,
+            "first_name": self.user.first_name,
+            **attrs,
+        }
 
 
 class ErrorDetailSerializer(serializers.Serializer):

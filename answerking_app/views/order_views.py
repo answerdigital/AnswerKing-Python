@@ -2,10 +2,15 @@ from typing import Literal
 
 from django.db.models import QuerySet
 from rest_framework import generics, mixins
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from answerking_app.models.models import Order
+from answerking_app.models.permissions.auth_permissions import (
+    IsOwner,
+    IsStaffUser,
+)
 from answerking_app.models.serializers import (
     OrderSerializer,
     ProblemDetailSerializer,
@@ -26,13 +31,10 @@ from answerking_app.utils.schema.schema_examples import (
 )
 
 
-class OrderListView(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    generics.GenericAPIView,
-):
+class OrderListView(mixins.ListModelMixin, generics.GenericAPIView):
     queryset: QuerySet = Order.objects.all()
     serializer_class: OrderSerializer = OrderSerializer
+    permission_classes = [IsStaffUser]
 
     @extend_schema(
         tags=["Orders"],
@@ -49,6 +51,12 @@ class OrderListView(
     )
     def get(self, request: Request, *args, **kwargs) -> Response:
         return self.list(request, *args, **kwargs)
+
+
+class OrderCreateView(mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset: QuerySet = Order.objects.all()
+    serializer_class: OrderSerializer = OrderSerializer
+    permission_classes = [IsAuthenticated]
 
     @extend_schema(
         tags=["Orders"],
@@ -86,17 +94,18 @@ class OrderListView(
     def post(self, request: Request, *args, **kwargs) -> Response:
         return self.create(request)
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
-class OrderDetailView(
+
+class OrderRetrieveView(
     mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    CancelOrderMixin,
     generics.GenericAPIView,
 ):
-
     queryset: QuerySet = Order.objects.all()
     serializer_class: OrderSerializer = OrderSerializer
     lookup_url_kwarg: Literal["pk"] = "pk"
+    permission_classes = [IsOwner, IsStaffUser]
 
     @extend_schema(
         tags=["Orders"],
@@ -129,6 +138,16 @@ class OrderDetailView(
     def get(self, request: Request, *args, **kwargs) -> Response:
         check_url_parameter(kwargs["pk"])
         return self.retrieve(request, *args, **kwargs)
+
+
+class OrderUpdateView(
+    mixins.UpdateModelMixin,
+    generics.GenericAPIView,
+):
+    queryset: QuerySet = Order.objects.all()
+    serializer_class: OrderSerializer = OrderSerializer
+    lookup_url_kwarg: Literal["pk"] = "pk"
+    permission_classes = [IsOwner, IsStaffUser]
 
     @extend_schema(
         tags=["Orders"],
@@ -180,6 +199,16 @@ class OrderDetailView(
         check_url_parameter(kwargs["pk"])
         return self.update(request, *args, **kwargs)
 
+
+class OrderCancelView(
+    CancelOrderMixin,
+    generics.GenericAPIView,
+):
+    queryset: QuerySet = Order.objects.all()
+    serializer_class: OrderSerializer = OrderSerializer
+    lookup_url_kwarg: Literal["pk"] = "pk"
+    permission_classes = [IsOwner, IsStaffUser]
+
     @extend_schema(
         tags=["Orders"],
         summary="Cancel an existing order",
@@ -212,3 +241,11 @@ class OrderDetailView(
     def delete(self, request: Request, *args, **kwargs) -> Response:
         check_url_parameter(kwargs["pk"])
         return self.cancel_order(request, *args, **kwargs)
+
+
+class OrderView(OrderListView, OrderCreateView):
+    pass
+
+
+class OrderDetailView(OrderRetrieveView, OrderUpdateView, OrderCancelView):
+    pass

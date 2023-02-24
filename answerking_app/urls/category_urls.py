@@ -7,17 +7,17 @@ from answerking_app.views import category_views
 urlpatterns: list[partial] = [
     path(
         "categories",
-        category_views.CategoryListView.as_view(),
-        name="category_list",
+        category_views.CategoryView.as_view(),
+        name="category",
     ),
     path(
         "categories/<pk>",
-        category_views.CategoryDetailView.as_view(),
-        name="category_detail",
+        category_views.CategoryIdView.as_view(),
+        name="category_id",
     ),
     path(
         "categories/<pk>/products",
-        category_views.CategoryProductListView.as_view(),
-        name="category_product_list",
+        category_views.CategoryProductView.as_view(),
+        name="category_product",
     ),
 ]

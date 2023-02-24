@@ -2,6 +2,7 @@
 Django base settings for answerking project..
 """
 import os
+from datetime import timedelta
 from os.path import join
 from pathlib import Path
 
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "drf_problems",
+    "rest_framework_simplejwt.token_blacklist",
 ]
 
 MIDDLEWARE = [
@@ -81,6 +83,9 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "answerking_app.utils.exceptions_handler.wrapper",
     "COERCE_DECIMAL_TO_STRING": False,
     "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S.%fZ",
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
 }
 
 # Database
@@ -97,7 +102,7 @@ DATABASES = {
     }
 }
 
-# Password validation
+# Password permissions
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -120,6 +125,13 @@ JSON404_DATA_FUNCTION = json404_response
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+}
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
