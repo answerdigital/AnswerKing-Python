@@ -102,13 +102,14 @@ celerybeat-schedule.*
 *.sage.py
 
 # Environments
-.env
+.env*
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+variables_env.tf
 
 # mkdocs documentation
 /site
@@ -143,3 +144,11 @@ GitHub.sublime-settings
 
 .idea/*
 *.sqlite3
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.*
+terraform.tfstate.backup
+.terraform.tfstate.lock.info

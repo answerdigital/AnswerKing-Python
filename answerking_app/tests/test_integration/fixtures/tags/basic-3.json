@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "Halal",
+    "description": "Tag identifying a product as halal."
+  },
+  {
+    "id": 2,
+    "name": "Vegetarian",
+    "description": "Tag identifying a product as vegetarian."
+  },
+  {
+    "id": 3,
+    "name": "Vegan",
+    "description": "Tag identifying a product as vegan."
+  }
+]

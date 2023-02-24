@@ -1,9 +1,0 @@
-{
-    "id": 1,
-    "name": "fifty chars Lorem ipsum dolor sit amet consectetur",
-    "price": "1.20",
-    "description": "desc",
-    "stock": 100,
-    "calories": 100,
-    "retired": false
-}

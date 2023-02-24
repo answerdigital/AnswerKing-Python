@@ -8,25 +8,32 @@ packages = [{include = "answerking_app"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-django = "^4.1.2"
+django = "^4.1.7"
 djangorestframework = "^3.14.0"
 mysqlclient = "^2.1.1"
 django-cors-headers = "^3.13.0"
 drf-writable-nested = "^0.7.0"
 django-json-404-middleware = { git = "https://github.com/Axeltherabbit/django-json-404-middleware" }
-python-dotenv = "^0.21.0"
+python-dotenv = "^0.21.1"
 drf-problems = { git = "https://github.com/Axeltherabbit/drf-problems" }
 typing-extensions = "^4.4.0"
+freezegun = "^1.2.2"
+pytz = "^2022.7"
+tzdata = "^2022.7"
+drf-spectacular = "^0.25.1"
+gunicorn = "^20.1.0"
+generics = "^6.0.0"
+drf-ignore-slash-middleware = "^0.0.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
-pyright = "^1.1.278"
-coverage = "^6.5.0"
+pyright = "^1.1.292"
 pycodestyle = "^2.9.1"
-drf-yasg = "^1.21.4"
 assertpy = "^1.1"
 snapshottest = "^0.6.0"
 ddt = "^1.6.0"
+coverage = "^6.5.0"
+drf-yasg = "^1.21.5"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,13 +1,12 @@
 """
-Django base settings for answerking project.
+Django base settings for answerking project..
 """
 import os
+from os.path import join
 from pathlib import Path
 
-from os.path import join
-from dotenv import load_dotenv
-
 from corsheaders.defaults import default_headers, default_methods
+from dotenv import load_dotenv
 
 from answerking_app.utils.json404_middleware_config import json404_response
 
@@ -25,10 +24,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -55,6 +51,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_json_404_middleware.JSON404Middleware",
+    "drf_ignore_slash_middleware.SlashIgnoreMiddleware",
 ]
 
 ROOT_URLCONF = "answerking.urls"
@@ -83,6 +80,7 @@ REST_FRAMEWORK = {
     ],
     "EXCEPTION_HANDLER": "answerking_app.utils.exceptions_handler.wrapper",
     "COERCE_DECIMAL_TO_STRING": False,
+    "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S.%fZ",
 }
 
 # Database
@@ -90,7 +88,7 @@ REST_FRAMEWORK = {
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": os.environ.get("DATABASE_ENGINE"),
         "NAME": os.environ.get("DATABASE_NAME"),
         "HOST": os.environ.get("DATABASE_HOST"),
         "PORT": os.environ.get("DATABASE_PORT"),
@@ -143,15 +141,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOW_METHODS = default_methods
 CORS_ALLOW_HEADERS = default_headers + ("Access-Control-Allow-Origin",)
 CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",
-#     "http://127.0.0.1:3000"
-# ]
 
 CORS_REPLACE_HTTPS_REFERER = False
 
 SECURE_PROXY_SSL_HEADER = None
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 

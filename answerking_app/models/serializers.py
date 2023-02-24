@@ -1,4 +1,3 @@
-import re
 from typing import OrderedDict
 
 from django.core.validators import (
@@ -10,26 +9,27 @@ from rest_framework import serializers, status
 
 from answerking_app.models.models import (
     Category,
-    Product,
-    Order,
     LineItem,
+    Order,
+    Product,
+    Tag,
 )
-from answerking_app.utils.get_object_or_400 import get_product_or_400
 from answerking_app.utils.mixins.ApiExceptions import ProblemDetails
+from answerking_app.utils.serializer_data_functions import (
+    compress_white_spaces,
+    products_check_retired,
+)
 
 MAXNUMBERSIZE = 2147483647
-
-
-def compress_white_spaces(value: str) -> str:
-    return re.sub(" +", " ", value)
+name_regex_str = "^[a-zA-Z0-9 !]+$"
+desc_regex_str = "^[a-zA-Z0-9 .!,#]+$"
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(required=False)
     name = serializers.CharField(
         max_length=50,
         allow_blank=False,
-        validators=[RegexValidator("^[a-zA-Z !]+$")],
+        validators=[RegexValidator(name_regex_str)],
     )
     description = serializers.CharField(
         max_length=200,
@@ -37,18 +37,18 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         allow_blank=True,
         validators=[
             RegexValidator(
-                "^[a-zA-Z .!,#]+$",
+                desc_regex_str,
             )
         ],
     )
 
     def create(self, validated_data: dict) -> Category:
-        products: list[Product] = self.products_check(validated_data)
+        products: list[Product] = products_check_retired(validated_data)
         category: Category = Category.objects.create(
             name=validated_data["name"],
             description=validated_data["description"],
         )
-        category.products.add(*products)
+        category.product_set.add(*products)
         return category
 
     def update(self, category: Category, validated_data: dict) -> Category:
@@ -57,28 +57,12 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
                 status=status.HTTP_410_GONE,
                 detail="This category has been retired",
             )
-        products: list[Product] = self.products_check(validated_data)
+        products: list[Product] = products_check_retired(validated_data)
         category.name = validated_data["name"]
         category.description = validated_data["description"]
         category.save()
-        category.products.set(objs=products)
+        category.product_set.set(objs=products)
         return category
-
-    def products_check(self, validated_data: dict) -> list[Product]:
-        products: list[Product] = []
-        if "products" in validated_data:
-            products_id_list: list[int] = [
-                prod["id"] for prod in validated_data["products"]
-            ]
-            for product_id in products_id_list:
-                product: Product = get_product_or_400(Product, pk=product_id)
-                if product.retired:
-                    raise ProblemDetails(
-                        status=status.HTTP_410_GONE,
-                        detail="This product has been retired",
-                    )
-                products.append(product)
-        return products
 
     class Meta:
         model = Category
@@ -88,64 +72,19 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         return compress_white_spaces(value)
 
 
-class ProductSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(required=False)
-    name = serializers.CharField(
-        max_length=50,
-        allow_blank=False,
-        validators=[RegexValidator("^[a-zA-Z !]+$")],
-    )
-    price = serializers.DecimalField(
-        max_digits=18,
-        decimal_places=2,
-        validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
-    )
-    description = serializers.CharField(
-        max_length=200,
-        allow_null=True,
-        allow_blank=True,
-        validators=[
-            RegexValidator(
-                "^[a-zA-Z .!,#]+$",
-            )
-        ],
-    )
-    categories = CategoryDetailSerializer(
-        source="category_set", many=True, required=False
-    )
-    retired = serializers.BooleanField(required=False)
-
-    class Meta:
-        model = Product
-        fields = (
-            "id",
-            "name",
-            "description",
-            "price",
-            "categories",
-            "retired",
-        )
-
-    def validate_name(self, value: str) -> str:
-        return compress_white_spaces(value)
-
-    def validate_description(self, value: str) -> str:
-        return compress_white_spaces(value)
-
-
-class ProductDetailSerializer(ProductSerializer):
-    class Meta:
-        model = Product
-        fields = ["id"]
-
-
 class CategorySerializer(CategoryDetailSerializer):
     createdOn = serializers.DateTimeField(source="created_on", read_only=True)
     lastUpdated = serializers.DateTimeField(
         source="last_updated", read_only=True
     )
-    products = ProductDetailSerializer(many=True)
+
     retired = serializers.BooleanField(required=False)
+    products = serializers.PrimaryKeyRelatedField(
+        source="product_set",
+        many=True,
+        queryset=Product.objects.all(),
+        required=False,
+    )
 
     class Meta:
         model = Category
@@ -160,23 +99,122 @@ class CategorySerializer(CategoryDetailSerializer):
         )
 
 
-class ProductSerializerReadOnly(serializers.ModelSerializer):
-    id = serializers.IntegerField()
-    categories = CategoryDetailSerializer(
-        source="category_set", read_only=True, many=True
+class ProductSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(
+        max_length=50,
+        allow_blank=False,
+        validators=[RegexValidator(name_regex_str)],
     )
+    price = serializers.DecimalField(
+        max_digits=18,
+        decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
+    )
+    description = serializers.CharField(
+        max_length=200,
+        allow_null=True,
+        allow_blank=True,
+        validators=[
+            RegexValidator(
+                desc_regex_str,
+            )
+        ],
+    )
+    retired = serializers.BooleanField(required=False)
+    category = CategoryDetailSerializer(read_only=True)
+    categoryId = serializers.PrimaryKeyRelatedField(
+        source="category",
+        queryset=Category.objects.all(),
+        required=False,
+        write_only=True,
+    )
+    tags = serializers.PrimaryKeyRelatedField(
+        source="tag_set",
+        queryset=Tag.objects.all(),
+        many=True,
+        required=False,
+    )
+
+    class Meta:
+        model = Product
+        fields = (
+            "id",
+            "name",
+            "description",
+            "price",
+            "category",
+            "categoryId",
+            "tags",
+            "retired",
+        )
+        depth = 1
+
+    def validate_name(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+    def validate_description(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+
+class TagSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(
+        max_length=50,
+        allow_blank=False,
+        validators=[RegexValidator(name_regex_str)],
+    )
+    description = serializers.CharField(
+        max_length=200,
+        allow_null=True,
+        allow_blank=True,
+        validators=[
+            RegexValidator(
+                desc_regex_str,
+            )
+        ],
+    )
+    products = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(),
+        many=True,
+        required=False,
+    )
+    retired = serializers.BooleanField(required=False)
+
+    class Meta:
+        model = Tag
+        fields = (
+            "id",
+            "name",
+            "description",
+            "products",
+            "retired",
+        )
+
+    def validate_name(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+    def validate_description(self, value: str) -> str:
+        return compress_white_spaces(value)
+
+
+class LineItemProductSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
     price = serializers.DecimalField(
         max_digits=18, decimal_places=2, read_only=True
     )
 
     class Meta:
         model = Product
-        read_only_fields = ["name", "description", "price", "categories"]
-        exclude = ["retired"]
+        read_only_fields = ["name", "description", "price"]
+        exclude = ["retired", "category"]
 
 
 class LineItemSerializer(serializers.ModelSerializer):
-    product = ProductSerializerReadOnly()
+    product = LineItemProductSerializer(read_only=True)
+    productId = serializers.PrimaryKeyRelatedField(
+        source="product",
+        queryset=Product.objects.all(),
+        write_only=True,
+    )
     quantity = serializers.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(MAXNUMBERSIZE)],
     )
@@ -189,7 +227,7 @@ class LineItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LineItem
-        fields = ["product", "quantity", "subTotal"]
+        fields = ["product", "productId", "quantity", "subTotal"]
         depth = 2
 
 
@@ -212,8 +250,8 @@ class OrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data: dict) -> Order:
         order: Order = Order.objects.create()
         if "lineitem_set" in validated_data:
-            line_items_data: list[OrderedDict] = validated_data["lineitem_set"]
-            self.create_and_add_products_to_order(
+            line_items_data = validated_data["lineitem_set"]
+            self.create_order_line_items(
                 order=order, line_items_data=line_items_data
             )
         order.calculate_total()
@@ -222,9 +260,8 @@ class OrderSerializer(serializers.ModelSerializer):
     def update(self, order_to_update: Order, validated_data: dict) -> Order:
         if "lineitem_set" in validated_data:
             line_items_data: list[OrderedDict] = validated_data["lineitem_set"]
-            self.check_products(line_items_data)
             LineItem.objects.filter(order_id=order_to_update.id).delete()
-            self.create_and_add_products_to_order(
+            self.create_order_line_items(
                 order=order_to_update, line_items_data=line_items_data
             )
         else:
@@ -233,23 +270,31 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return order_to_update
 
-    def check_products(self, line_items_data: list[OrderedDict]):
-        for order_item in line_items_data:
-            get_product_or_400(Product, pk=order_item["product"]["id"])
-
-    def create_and_add_products_to_order(
-        self, order: Order, line_items_data: list[OrderedDict]
+    def create_order_line_items(
+        self,
+        order: Order,
+        line_items_data: list[OrderedDict],
     ):
         for order_item in line_items_data:
-            product: Product = Product.objects.get(
-                pk=order_item["product"]["id"]
-            )
-            if product.retired or order_item["quantity"] < 1:
-                continue
             new_line_item = LineItem.objects.create(
-                order=order, product=product, quantity=order_item["quantity"]
+                order=order,
+                product=order_item["product"],
+                quantity=order_item["quantity"],
             )
             new_line_item.calculate_sub_total()
+
+    def validate_lineItems(self, line_items_data):
+        list_products = [p["product"] for p in line_items_data]
+        products = products_check_retired({"product_set": list_products})
+
+        line_items_valid = []
+        for order_item, product in zip(line_items_data, products):
+            if order_item["quantity"] < 1:
+                continue
+            line_items_valid.append(
+                {"product": product, "quantity": order_item["quantity"]}
+            )
+        return line_items_valid
 
     class Meta:
         model = Order
@@ -262,3 +307,18 @@ class OrderSerializer(serializers.ModelSerializer):
             "lineItems",
         )
         depth = 3
+
+
+class ErrorDetailSerializer(serializers.Serializer):
+    name = serializers.CharField()
+
+
+class ProblemDetailSerializer(serializers.Serializer):
+    errors = ErrorDetailSerializer(many=True)
+    type = serializers.CharField()
+    title = serializers.CharField()
+    status = serializers.IntegerField()
+    traceID = serializers.CharField()
+
+    class Meta:
+        fields = ("errors", "type", "title", "status", "traceID")

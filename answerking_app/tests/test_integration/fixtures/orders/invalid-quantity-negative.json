@@ -1,0 +1,9 @@
+{
+  "id": 1,
+  "lineItems": [
+    {
+      "productId": 1,
+      "quantity": -10
+    }
+  ]
+}

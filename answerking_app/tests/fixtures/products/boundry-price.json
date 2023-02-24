@@ -1,9 +1,0 @@
-{
-    "id": 1,
-    "name": "Burger",
-    "price": "2147483647.00",
-    "description": "desc",
-    "stock": 100,
-    "calories": 100,
-    "retired": false
-}

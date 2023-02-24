@@ -1,0 +1,9 @@
+{
+  "id": 1,
+  "lineItems": [
+    {
+      "productId": "invalid",
+      "quantity": 4
+    }
+  ]
+}
