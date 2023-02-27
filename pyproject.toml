@@ -11,7 +11,7 @@ python = "^3.10"
 django = "^4.1.7"
 djangorestframework = "^3.14.0"
 mysqlclient = "^2.1.1"
-django-cors-headers = "^3.13.0"
+django-cors-headers = "^3.14.0"
 drf-writable-nested = "^0.7.0"
 django-json-404-middleware = { git = "https://github.com/Axeltherabbit/django-json-404-middleware" }
 python-dotenv = "^1.0.0"
