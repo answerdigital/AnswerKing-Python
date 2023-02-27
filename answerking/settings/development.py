@@ -9,6 +9,8 @@ INSTALLED_APPS += (
     "coverage",
     "drf_spectacular",
 )
+ALLOWED_HOSTS = ["*"]
+
 
 MIDDLEWARE.remove("django.middleware.csrf.CsrfViewMiddleware")
 
