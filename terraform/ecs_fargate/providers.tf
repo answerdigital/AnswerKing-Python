@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 module "vpc_subnet_setup" {
-  source              = "git::https://github.com/AnswerConsulting/AnswerKing-Infrastructure.git//Terraform_modules/vpc_subnets?ref=v1.0.0"
+  source              = "git::https://github.com/answerdigital/terraform-modules//Terraform_modules/vpc_subnets?ref=v1.0.0"
   project_name        = var.project_name
   owner               = var.owner
   num_public_subnets  = 1
@@ -12,7 +12,7 @@ module "vpc_subnet_setup" {
 }
 
 module "rds_serverless_cluster_setup" {
-  source                     = "git::https://github.com/AnswerConsulting/AnswerKing-Infrastructure.git//Terraform_modules/rds_serverless_cluster?ref=v1.0.0"
+  source                     = "git::https://github.com/answerdigital/terraform-modules//Terraform_modules/rds_serverless_cluster?ref=v1.0.0"
   project_name               = var.project_name
   owner                      = var.owner
   database_name              = var.database_name
