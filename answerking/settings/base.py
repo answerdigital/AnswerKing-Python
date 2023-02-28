@@ -6,6 +6,7 @@ from os.path import join
 from pathlib import Path
 
 from corsheaders.defaults import default_headers, default_methods
+from django.conf.global_settings import ALLOWED_HOSTS
 from dotenv import load_dotenv
 
 from answerking_app.utils.json404_middleware_config import json404_response
@@ -24,12 +25,14 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+"""
 ALLOWED_HOSTS = [
     "python.answerking.co.uk",
     "www.python.answerking.co.uk",
     "answerking.co.uk",
 ]
-
+"""
+ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
@@ -148,8 +151,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_REPLACE_HTTPS_REFERER = False
 
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ("X-Forwarded-Proto", "https")
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 

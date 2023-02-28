@@ -1,22 +1,10 @@
-resource "aws_eip" "lb" {
-  vpc = true
-
-  tags = {
-    Name  = "${var.project_name}-eip"
-    Owner = var.owner
-  }
-}
-
-resource "aws_lb" "eip_lb" {
+resource "aws_lb" "lb" {
   name               = "${var.project_name}-lb"
   load_balancer_type = var.lb_type
   internal           = false
-  ip_address_type    = "ipv4"
-
-  subnet_mapping {
-    subnet_id     = module.vpc_subnet_setup.public_subnet_ids[0]
-    allocation_id = aws_eip.lb.id
-  }
+  subnets            = module.vpc_subnet_setup.private_subnet_ids
+  drop_invalid_header_fields = true
+  security_groups    = [aws_security_group.lb_sg.id]
 
   access_logs {
     bucket  = aws_s3_bucket.elb_logs.bucket
@@ -29,10 +17,10 @@ resource "aws_lb" "eip_lb" {
   }
 }
 
-resource "aws_lb_target_group" "eip_target" {
+resource "aws_lb_target_group" "target" {
   name        = "${var.project_name}-lb-target-group"
   port        = var.host_port
-  protocol    = var.lb_protocol
+  protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = module.vpc_subnet_setup.vpc_id
 
@@ -52,28 +40,31 @@ resource "aws_acm_certificate" "cert" {
   }
 }
 
-resource "aws_lb_listener" "eip_listener_http_301" {
-  load_balancer_arn = aws_lb.eip_lb.arn
+resource "aws_lb_listener" "listener_http_redirect_https" {
+  load_balancer_arn = aws_lb.lb.arn
   port              = "80"
-  protocol          = "TCP"
+  protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.eip_target.id
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
-
-
 }
 
-resource "aws_lb_listener" "eip_listener" {
-  load_balancer_arn = aws_lb.eip_lb.arn
+resource "aws_lb_listener" "listener" {
+  load_balancer_arn = aws_lb.lb.arn
   port              = "443"
-  protocol          = "TLS"
+  protocol          = "HTTPS"
   certificate_arn = aws_acm_certificate.cert.arn
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.eip_target.id
+    target_group_arn = aws_lb_target_group.target.id
   }
 
   tags = {

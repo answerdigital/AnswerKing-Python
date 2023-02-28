@@ -113,7 +113,7 @@ variable "lb_protocol" {
 variable "lb_type" {
   type        = string
   description = "Load balancer type."
-  default     = "network"
+  default     = "application"
 }
 
 # DNS

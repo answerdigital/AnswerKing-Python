@@ -44,3 +44,39 @@ resource "aws_security_group" "rds_sg" {
     Owner = var.owner
   }
 }
+
+resource "aws_security_group" "lb_sg" {
+  #checkov:skip=CKV_AWS_260:Allowing ingress from 0.0.0.0 for public HTTP(S) access
+  name        = "${var.project_name}-alb-sg"
+  description = "Security group for Application Load Balancer"
+  vpc_id       = module.vpc_subnet_setup.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "HTTP"
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "HTTPS"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "All traffic"
+  }
+
+  tags = {
+    Name  = "${var.project_name}-alb-sg"
+    Owner = var.owner
+  }
+}
