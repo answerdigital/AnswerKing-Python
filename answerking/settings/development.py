@@ -9,6 +9,8 @@ INSTALLED_APPS += (
     "coverage",
     "drf_spectacular",
 )
+ALLOWED_HOSTS = ["*"]
+
 
 MIDDLEWARE.remove("django.middleware.csrf.CsrfViewMiddleware")
 
@@ -22,4 +24,5 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
-SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False

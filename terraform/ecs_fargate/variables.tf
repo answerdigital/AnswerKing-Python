@@ -113,7 +113,7 @@ variable "lb_protocol" {
 variable "lb_type" {
   type        = string
   description = "Load balancer type."
-  default     = "network"
+  default     = "application"
 }
 
 # DNS
@@ -123,3 +123,4 @@ variable "dns_record_name" {
   description = "Hosted zone record name."
   default     = "python.answerking.co.uk"
 }
+
