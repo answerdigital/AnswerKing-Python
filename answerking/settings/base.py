@@ -24,14 +24,12 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-"""
 ALLOWED_HOSTS = [
     "python.answerking.co.uk",
     "www.python.answerking.co.uk",
     "answerking.co.uk",
 ]
-"""
-ALLOWED_HOSTS = ["*"]
+
 # Application definition
 
 INSTALLED_APPS = [
