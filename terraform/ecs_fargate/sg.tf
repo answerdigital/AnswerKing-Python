@@ -46,7 +46,6 @@ resource "aws_security_group" "rds_sg" {
 }
 
 resource "aws_security_group" "lb_sg" {
-  #checkov:skip=CKV_AWS_260:Allowing ingress from 0.0.0.0 for public HTTP(S) access
   name        = "${var.project_name}-alb-sg"
   description = "Security group for Application Load Balancer"
   vpc_id       = module.vpc_subnet_setup.vpc_id
@@ -66,6 +65,7 @@ resource "aws_security_group" "lb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "HTTPS"
   }
+
 
   egress {
     from_port   = 0

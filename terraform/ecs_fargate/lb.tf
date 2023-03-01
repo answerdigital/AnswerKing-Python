@@ -20,10 +20,19 @@ resource "aws_lb" "lb" {
 resource "aws_lb_target_group" "target" {
   name        = "${var.project_name}-lb-target-group"
   port        = var.host_port
-  protocol    = "HTTP"
+  protocol    = "HTTPS"
   target_type = "ip"
   vpc_id      = module.vpc_subnet_setup.vpc_id
 
+  health_check {
+    healthy_threshold   = "3"
+    interval            = "300"
+    protocol            = "HTTP"
+    matcher             = "200"
+    timeout             = "3"
+    path                = "/healthcheck/"
+    unhealthy_threshold = "2"
+  }
   tags = {
     Name  = "${var.project_name}-lb-target-group"
     Owner = var.owner
