@@ -6,7 +6,6 @@ from os.path import join
 from pathlib import Path
 
 from corsheaders.defaults import default_headers, default_methods
-from django.conf.global_settings import ALLOWED_HOSTS
 from dotenv import load_dotenv
 
 from answerking_app.utils.json404_middleware_config import json404_response

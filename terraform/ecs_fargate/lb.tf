@@ -2,7 +2,7 @@ resource "aws_lb" "lb" {
   name               = "${var.project_name}-lb"
   load_balancer_type = var.lb_type
   internal           = false
-  subnets            = module.vpc_subnet_setup.private_subnet_ids
+  subnets            = module.vpc_subnet_setup.public_subnet_ids
   drop_invalid_header_fields = true
   security_groups    = [aws_security_group.lb_sg.id]
 
@@ -20,7 +20,7 @@ resource "aws_lb" "lb" {
 resource "aws_lb_target_group" "target" {
   name        = "${var.project_name}-lb-target-group"
   port        = var.host_port
-  protocol    = "HTTPS"
+  protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = module.vpc_subnet_setup.vpc_id
 

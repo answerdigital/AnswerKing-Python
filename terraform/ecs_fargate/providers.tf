@@ -7,7 +7,7 @@ module "vpc_subnet_setup" {
   source              = "git::https://github.com/answerdigital/terraform-modules//Terraform_modules/vpc_subnets?ref=v1.0.0"
   project_name        = var.project_name
   owner               = var.owner
-  num_public_subnets  = 1
+  num_public_subnets  = 2
   num_private_subnets = 2
 }
 
