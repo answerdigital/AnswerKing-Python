@@ -23,7 +23,6 @@ from answerking_app.utils.url_parameter_check import check_url_parameter
 
 
 class UtilsTests(UnitTestBase):
-
     utb = UnitTestBase()
 
     test_prod_data: dict = utb.get_fixture(
