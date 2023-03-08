@@ -93,7 +93,6 @@ class OrderDetailView(
     CancelOrderMixin,
     generics.GenericAPIView,
 ):
-
     queryset: QuerySet = Order.objects.all()
     serializer_class: OrderSerializer = OrderSerializer
     lookup_url_kwarg: Literal["pk"] = "pk"

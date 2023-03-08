@@ -28,7 +28,6 @@ class ProductListView(
     mixins.CreateModelMixin,
     generics.GenericAPIView,
 ):
-
     queryset: QuerySet = Product.objects.all()
     serializer_class: ProductSerializer = ProductSerializer
 

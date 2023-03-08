@@ -10,7 +10,6 @@ from answerking_app.tests.test_unit.UnitTestBaseClass import UnitTestBase
 
 
 class ProductSerializerTests(UnitTestBase):
-
     utb = UnitTestBase()
 
     serializer_path: str = "answerking_app.models.serializers."
