@@ -28,7 +28,7 @@ django-easy-health-check = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
-pyright = "^1.1.298"
+pyright = "^1.1.300"
 pycodestyle = "^2.9.1"
 assertpy = "^1.1"
 snapshottest = "^0.6.0"
