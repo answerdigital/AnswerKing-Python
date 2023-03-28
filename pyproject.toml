@@ -18,7 +18,7 @@ python-dotenv = "^1.0.0"
 drf-problems = { git = "https://github.com/Axeltherabbit/drf-problems" }
 typing-extensions = "^4.4.0"
 freezegun = "^1.2.2"
-pytz = "^2022.7"
+pytz = "^2023.2"
 tzdata = "^2022.7"
 drf-spectacular = "^0.26.1"
 gunicorn = "^20.1.0"
